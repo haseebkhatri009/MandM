@@ -84,7 +84,7 @@
   --sidebar-ring: #c9a87f;
 }
 
-.dark {
+/* .dark {
   color-scheme: dark;
   --background: #1a1a1a;
   --foreground: #f5f1ed;
@@ -117,9 +117,9 @@
   --sidebar-accent-foreground: #f5f1ed;
   --sidebar-border: #3a3a3a;
   --sidebar-ring: #d4a574;
-}
+} */
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root:not(.light) {
     color-scheme: dark;
     --background: oklch(0.145 0 0);
@@ -154,7 +154,7 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
   }
-}
+} */
 
 @layer base {
   * {
