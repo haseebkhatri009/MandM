@@ -38,7 +38,7 @@ export default function Navbar() {
               whileHover={{ scale: 1.05, rotate: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             />
-            <span className="hidden sm:inline font-serif text-lg text-primary font-bold">
+<span className="font-serif text-base sm:text-lg text-primary font-bold">
               M&M Scents
             </span>
           </Link>
