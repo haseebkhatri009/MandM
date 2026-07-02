@@ -26,17 +26,19 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-background border-b border-border">
+    <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <img 
+          <Link href="/" className="flex items-center gap-2 group">
+            <motion.img 
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-JcYvSSgzZgAPnalbf3iR7aptCoX1JC.jpg" 
               alt="M&M Scents Logo" 
               className="w-10 h-10 object-contain"
+              whileHover={{ scale: 1.05, rotate: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
             />
-            <span className="hidden sm:inline font-serif text-lg text-primary font-semibold">
+            <span className="hidden sm:inline font-serif text-lg text-primary font-bold">
               M&M Scents
             </span>
           </Link>
@@ -45,22 +47,23 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-6">
             <Link 
               href="/products" 
-              className="text-foreground hover:text-primary transition-colors"
+              className="text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105"
             >
               Shop
             </Link>
             {user && (
               <Link 
                 href="/orders" 
-                className="text-foreground hover:text-primary transition-colors"
+                className="text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105"
               >
                 My Orders
-            </Link>)}
+              </Link>
+            )}
             
             {isAdmin && (
               <Link 
                 href="/admin" 
-                className="px-3 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity"
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium hover:shadow-lg"
               >
                 Admin
               </Link>
@@ -70,7 +73,7 @@ export default function Navbar() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={handleLogout}
-                  className="px-3 py-2 bg-secondary text-foreground rounded-lg hover:bg-muted transition-colors"
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium hover:scale-105"
                 >
                   Logout
                 </button>
@@ -78,19 +81,28 @@ export default function Navbar() {
             ) : (
               <Link 
                 href="/login" 
-                className="px-3 py-2 bg-secondary text-foreground rounded-lg hover:bg-muted transition-colors"
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium hover:shadow-lg hover:scale-105"
               >
                 Login
               </Link>
             )}
 
             {/* Cart Icon */}
-            <Link href="/cart" className="relative">
-              <ShoppingCart className="w-6 h-6 text-foreground hover:text-primary transition-colors" />
+            <Link href="/cart" className="relative group">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <ShoppingCart className="w-6 h-6 text-gray-700 group-hover:text-primary transition-colors duration-300" />
+              </motion.div>
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <motion.span 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
+                >
                   {cartCount}
-                </span>
+                </motion.span>
               )}
             </Link>
           </div>
@@ -98,16 +110,16 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-4">
             <Link href="/cart" className="relative">
-              <ShoppingCart className="w-5 h-5 text-foreground" />
+              <ShoppingCart className="w-5 h-5 text-gray-700" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px] shadow-md">
                   {cartCount}
                 </span>
               )}
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-foreground"
+              className="text-gray-700 hover:text-primary transition-colors"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -120,12 +132,12 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="md:hidden pb-4 border-t border-border"
+            className="md:hidden pb-4 border-t border-gray-200 bg-white"
           >
             <div className="flex flex-col gap-3 pt-4">
               <Link 
                 href="/products" 
-                className="px-4 py-2 hover:bg-secondary rounded-lg transition-colors"
+                className="px-4 py-2 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Shop
@@ -134,7 +146,7 @@ export default function Navbar() {
               {user && (
                 <Link 
                   href="/orders" 
-                  className="px-4 py-2 hover:bg-secondary rounded-lg transition-colors"
+                  className="px-4 py-2 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   My Orders
@@ -144,7 +156,7 @@ export default function Navbar() {
               {isAdmin && (
                 <Link 
                   href="/admin" 
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity"
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium text-center"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Admin
@@ -158,7 +170,7 @@ export default function Navbar() {
                       handleLogout();
                       setMobileMenuOpen(false);
                     }}
-                    className="px-4 py-2 bg-secondary text-foreground rounded-lg hover:bg-muted transition-colors text-left"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300 text-left font-medium"
                   >
                     Logout
                   </button>
@@ -166,7 +178,7 @@ export default function Navbar() {
               ) : (
                 <Link 
                   href="/login" 
-                  className="px-4 py-2 bg-secondary text-foreground rounded-lg hover:bg-muted transition-colors"
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium text-center"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Login

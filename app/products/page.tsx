@@ -448,7 +448,7 @@ export default function ProductsPage() {
         </section>
 
         {/* Footer */}
-        <motion.footer
+        {/* <motion.footer
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -480,7 +480,12 @@ export default function ProductsPage() {
               <p className="text-xs text-muted-foreground/60">Crafted with care for your beauty</p>
             </motion.div>
           </div>
-        </motion.footer>
+        </motion.footer> */}
+        <footer className="bg-white py-8 px-4 border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
+  <div className="max-w-7xl mx-auto text-center text-muted-foreground text-sm">
+    <p>&copy; 2024 M&M Scents. All rights reserved.</p>
+  </div>
+</footer>
       </div>
     </div>
   );

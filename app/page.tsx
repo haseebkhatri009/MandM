@@ -396,7 +396,7 @@ export default function Home() {
 
       {/* Watermark - Same as other pages */}
       <motion.div
-        className="fixed inset-0 pointer-events-none opacity-[0.08] z-0 flex items-center justify-center"
+        className="fixed inset-0 pointer-events-none opacity-[0.08] z-15 flex items-center justify-center"
         animate={{
           scale: [1, 1.08, 1],
         }}
@@ -407,16 +407,16 @@ export default function Home() {
         }}
       >
         <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-JcYvSSgzZgAPnalbf3iR7aptCoX1JC.jpg"
+          src="https://i.ibb.co/7NLfzpHj/LOGO-removebg-preview.png"
           alt="M&M Watermark"
           className="w-96 h-96 object-contain"
         />
       </motion.div>
 
       {/* Main Content - Positioned above watermark */}
-      <div className="relative z-10">
+      <div className="relative ">
         {/* Hero Banner */}
-        <section className="relative w-full h-[calc(100vh-64px)] max-h-[600px] overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
+        <section className="relative w-full h-[calc(100vh-64px)] max-h-[600px] overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20 z-15">
           <motion.div
             initial={{ scale: 1.1, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -476,7 +476,7 @@ export default function Home() {
         </section>
 
         {/* Featured Products */}
-        <section className="py-16 px-4 relative">
+        <section className="py-16 px-4 relative bg-white">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -597,11 +597,11 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-secondary/90 backdrop-blur-sm py-8 px-4 border-t border-border">
-          <div className="max-w-7xl mx-auto text-center text-muted-foreground text-sm">
-            <p>&copy; 2024 M&M Scents. All rights reserved.</p>
-          </div>
-        </footer>
+        <footer className="bg-white py-8 px-4 border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
+  <div className="max-w-7xl mx-auto text-center text-muted-foreground text-sm">
+    <p>&copy; 2024 M&M Scents. All rights reserved.</p>
+  </div>
+</footer>
       </div>
     </div>
   );
