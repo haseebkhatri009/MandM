@@ -421,7 +421,7 @@ export default function Home() {
             initial={{ scale: 1.1, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 bg-cover bg-center brightness-70"
             style={{
               backgroundImage: `url('${banner.backgroundImage}')`,
               backgroundSize: 'cover',
