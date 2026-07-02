@@ -133,9 +133,11 @@ export default function ProductsPage() {
 
       {/* Main Content - Positioned above watermark */}
       <div className="relative z-10">
-        {/* Header */}
-        <section className="bg-gradient-to-b from-secondary/90 to-background/90 border-b border-border/50 py-24 px-4 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto">
+        {/* Header - Full height on all devices */}
+        <section className="relative w-full min-h-[calc(100vh-64px)] max-h-[600px] overflow-hidden bg-gradient-to-b from-secondary/90 to-background/90 backdrop-blur-sm flex items-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+          
+          <div className="relative w-full max-w-7xl mx-auto px-4 py-12 md:py-24">
             <motion.div
               initial={{ opacity: 0, y: -30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -146,7 +148,7 @@ export default function ProductsPage() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
-                className="text-6xl md:text-7xl lg:text-8xl font-serif font-bold bg-gradient-to-r from-primary via-foreground to-accent bg-clip-text text-transparent mb-6 leading-tight text-balance"
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold bg-gradient-to-r from-primary via-foreground to-accent bg-clip-text text-transparent mb-4 sm:mb-6 leading-tight text-balance"
               >
                 Our Collection
               </motion.h1>
@@ -155,7 +157,7 @@ export default function ProductsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed"
+                className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed"
               >
                 Discover our handpicked selection of premium perfumes, luxurious wax collections, and skincare essentials. Each product is curated for quality and elegance.
               </motion.p>
@@ -190,10 +192,10 @@ export default function ProductsPage() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-card/80 backdrop-blur-sm sticky top-14 z-10 py-6 px-4 border-b border-border shadow-sm "
+          className="bg-card/80 backdrop-blur-sm sticky top-14 z-10 py-4 sm:py-6 px-4 border-b border-border shadow-sm"
         >
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center ">
+            <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch md:items-center">
               {/* Search */}
               <motion.div
                 className="flex-1 relative"
@@ -206,17 +208,17 @@ export default function ProductsPage() {
                   placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border-2 border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-input/90 backdrop-blur-sm focus:border-primary transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 sm:py-3 border-2 border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-input/90 backdrop-blur-sm focus:border-primary transition-all text-sm sm:text-base"
                 />
               </motion.div>
 
               {/* Category Filter */}
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1.5 sm:gap-2 flex-wrap overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                 <motion.button
                   onClick={() => setSelectedCategory('all')}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-4 py-3 rounded-lg font-semibold transition-all ${
+                  className={`px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition-all text-xs sm:text-sm whitespace-nowrap ${
                     selectedCategory === 'all'
                       ? 'bg-primary text-white shadow-lg'
                       : 'bg-secondary/80 backdrop-blur-sm text-foreground hover:bg-muted border border-border'
@@ -233,7 +235,7 @@ export default function ProductsPage() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className={`px-4 py-3 rounded-lg font-semibold transition-all whitespace-nowrap ${
+                    className={`px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition-all text-xs sm:text-sm whitespace-nowrap ${
                       selectedCategory === cat
                         ? 'bg-primary text-white shadow-lg'
                         : 'bg-secondary/80 backdrop-blur-sm text-foreground hover:bg-muted border border-border'
@@ -248,7 +250,7 @@ export default function ProductsPage() {
         </motion.section>
 
         {/* Products Grid */}
-        <section className="py-16 px-4">
+        <section className="py-8 sm:py-16 px-4">
           <div className="max-w-7xl mx-auto">
             {loading ? (
               <motion.div
@@ -268,7 +270,7 @@ export default function ProductsPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+                className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
               >
                 {filteredProducts.map((product, index) => (
                   <motion.div
@@ -305,24 +307,24 @@ export default function ProductsPage() {
                             initial={{ scale: 0, rotate: -180 }}
                             animate={{ scale: 1, rotate: 0 }}
                             transition={{ delay: 0.2, type: "spring" }}
-                            className="absolute top-3 right-3 bg-gradient-to-r from-primary to-accent text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg"
+                            className="absolute top-2 right-2 bg-gradient-to-r from-primary to-accent text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-bold shadow-lg"
                           >
                             -{Math.round((product.discount / product.price) * 100)}%
                           </motion.div>
                         )}
 
                         {/* Stock Status Badge */}
-                        <div className="absolute bottom-3 left-3">
+                        <div className="absolute bottom-2 left-2">
                           {(product.stock || 0) <= 0 ? (
-                            <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm">
+                            <span className="bg-red-500 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold backdrop-blur-sm">
                               Out of Stock
                             </span>
                           ) : (product.stock || 0) < 5 ? (
-                            <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm">
+                            <span className="bg-yellow-500 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold backdrop-blur-sm">
                               Only {product.stock} left
                             </span>
                           ) : (
-                            <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm">
+                            <span className="bg-green-500 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold backdrop-blur-sm">
                               In Stock
                             </span>
                           )}
@@ -337,7 +339,7 @@ export default function ProductsPage() {
                           <motion.span
                             initial={{ scale: 0 }}
                             whileHover={{ scale: 1 }}
-                            className="text-white font-semibold text-sm bg-black/50 px-4 py-2 rounded backdrop-blur-sm"
+                            className="text-white font-semibold text-xs sm:text-sm bg-black/50 px-3 sm:px-4 py-1.5 sm:py-2 rounded backdrop-blur-sm"
                           >
                             View Details
                           </motion.span>
@@ -346,16 +348,16 @@ export default function ProductsPage() {
                     </Link>
 
                     {/* Product Info */}
-                    <div className="p-4 space-y-3 flex-1 flex flex-col">
+                    <div className="p-2 sm:p-4 space-y-1.5 sm:space-y-3 flex-1 flex flex-col">
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.1 }}
                       >
-                        <p className="text-xs text-primary mb-2 uppercase tracking-widest font-bold letter-spacing">
+                        <p className="text-[10px] sm:text-xs text-primary mb-1 uppercase tracking-widest font-bold">
                           {product.category}
                         </p>
-                        <h3 className="font-serif font-bold text-foreground mb-2 line-clamp-2 text-base leading-snug">
+                        <h3 className="font-serif font-bold text-foreground mb-1 sm:mb-2 line-clamp-2 text-xs sm:text-base leading-snug">
                           {product.name}
                         </h3>
                       </motion.div>
@@ -365,7 +367,7 @@ export default function ProductsPage() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.15 }}
-                          className="text-sm text-muted-foreground line-clamp-2 flex-1 leading-relaxed"
+                          className="text-[10px] sm:text-sm text-muted-foreground line-clamp-2 flex-1 leading-relaxed hidden sm:block"
                         >
                           {product.description}
                         </motion.p>
@@ -376,13 +378,13 @@ export default function ProductsPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
-                        className="flex items-center gap-3 pt-2"
+                        className="flex items-center gap-2 sm:gap-3 pt-1 sm:pt-2"
                       >
-                        <span className="text-2xl font-bold text-primary">
+                        <span className="text-sm sm:text-2xl font-bold text-primary">
                           ₹{Math.round(product.price - (product.discount || 0))}
                         </span>
                         {product.discount && (
-                          <span className="text-sm text-muted-foreground line-through font-medium">
+                          <span className="text-[10px] sm:text-sm text-muted-foreground line-through font-medium">
                             ₹{product.price}
                           </span>
                         )}
@@ -394,7 +396,7 @@ export default function ProductsPage() {
                         whileHover={{ scale: (product.stock || 0) > 0 ? 1.05 : 1 }}
                         whileTap={{ scale: (product.stock || 0) > 0 ? 0.95 : 1 }}
                         disabled={(product.stock || 0) <= 0}
-                        className={`w-full py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2 mt-auto text-sm md:text-base ${
+                        className={`w-full py-1.5 sm:py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-1 sm:gap-2 mt-1 sm:mt-auto text-[10px] sm:text-sm md:text-base ${
                           (product.stock || 0) <= 0
                             ? 'bg-muted/70 text-muted-foreground cursor-not-allowed opacity-50 backdrop-blur-sm'
                             : 'bg-gradient-to-r from-primary to-accent text-white hover:shadow-lg active:shadow-md'
@@ -402,13 +404,15 @@ export default function ProductsPage() {
                       >
                         {(product.stock || 0) > 0 ? (
                           <>
-                            <ShoppingCart size={18} />
-                            Add to Cart
+                            <ShoppingCart size={14} className="sm:w-[18px] sm:h-[18px]" />
+                            <span className="hidden xs:inline">Add to Cart</span>
+                            <span className="xs:hidden">Add</span>
                           </>
                         ) : (
                           <>
-                            <AlertCircle size={18} />
-                            Out of Stock
+                            <AlertCircle size={14} className="sm:w-[18px] sm:h-[18px]" />
+                            <span className="hidden xs:inline">Out of Stock</span>
+                            <span className="xs:hidden">OOS</span>
                           </>
                         )}
                       </motion.button>
@@ -420,16 +424,16 @@ export default function ProductsPage() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-20 bg-card/90 backdrop-blur-sm rounded-lg border border-border"
+                className="text-center py-12 sm:py-20 bg-card/90 backdrop-blur-sm rounded-lg border border-border"
               >
                 <motion.div
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="mb-6"
+                  className="mb-4 sm:mb-6"
                 >
-                  <Filter size={48} className="text-muted-foreground mx-auto opacity-30" />
+                  <Filter size={36} className="sm:w-[48px] sm:h-[48px] text-muted-foreground mx-auto opacity-30" />
                 </motion.div>
-                <p className="text-muted-foreground mb-6 text-lg">No products found matching your criteria</p>
+                <p className="text-muted-foreground mb-4 sm:mb-6 text-base sm:text-lg">No products found matching your criteria</p>
                 <motion.button
                   onClick={() => {
                     setSearchTerm('');
@@ -437,10 +441,10 @@ export default function ProductsPage() {
                   }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:shadow-lg transition-all font-semibold"
+                  className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-lg hover:shadow-lg transition-all font-semibold text-sm sm:text-base"
                 >
                   Clear Filters
-                  <ArrowRight size={18} />
+                  <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" />
                 </motion.button>
               </motion.div>
             )}
@@ -448,44 +452,11 @@ export default function ProductsPage() {
         </section>
 
         {/* Footer */}
-        {/* <motion.footer
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="bg-gradient-to-t from-secondary/90 to-background/90 py-12 px-4 mt-16 border-t border-border backdrop-blur-sm"
-        >
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              className="text-center mb-8"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <motion.img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-JcYvSSgzZgAPnalbf3iR7aptCoX1JC.jpg"
-                alt="M&M Scents"
-                className="h-16 w-auto mx-auto mb-4 opacity-60 hover:opacity-100 transition-opacity"
-                whileHover={{ scale: 1.1 }}
-              />
-            </motion.div>
-
-            <motion.div
-              className="text-center text-muted-foreground text-sm"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <p className="mb-2">&copy; 2024 M&M Scents. All rights reserved.</p>
-              <p className="text-xs text-muted-foreground/60">Crafted with care for your beauty</p>
-            </motion.div>
+        <footer className="bg-white py-6 sm:py-8 px-4 border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
+          <div className="max-w-7xl mx-auto text-center text-muted-foreground text-xs sm:text-sm">
+            <p>&copy; 2024 M&M Scents. All rights reserved.</p>
           </div>
-        </motion.footer> */}
-        <footer className="bg-white py-8 px-4 border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
-  <div className="max-w-7xl mx-auto text-center text-muted-foreground text-sm">
-    <p>&copy; 2024 M&M Scents. All rights reserved.</p>
-  </div>
-</footer>
+        </footer>
       </div>
     </div>
   );
