@@ -7,15 +7,22 @@ import { useAuth } from '@/lib/authContext';
 import Navbar from '@/components/Navbar';
 import { rtdb } from '@/lib/firebase';
 import { ref, onValue } from 'firebase/database';
-import { Package, ShoppingCart, TrendingUp, Settings } from 'lucide-react';
+import { Package, ShoppingCart, TrendingUp, Settings, Clock, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 interface DashboardStats {
   totalProducts: number;
   totalOrders: number;
-  totalRevenue: number;
-  pendingOrders: number;
+  totalRevenue: number;      // Only confirmed orders
+  pendingRevenue: number;    // Pending, Shipped, Delivered orders
+  pendingOrders: number;     // Only 'pending, shipped and delivered' status
+  confirmedOrders: number;   // Count of confirmed orders
 }
+
+// Only "confirmed" status counts as total income
+const CONFIRMED_STATUS = 'confirmed';
+// Statuses that count as pending income (all except confirmed and cancelled)
+const PENDING_STATUSES = ['pending', 'shipped', 'delivered'];
 
 export default function AdminDashboard() {
   const { user, isAdmin, loading: authLoading, userData } = useAuth();
@@ -24,13 +31,15 @@ export default function AdminDashboard() {
     totalProducts: 0,
     totalOrders: 0,
     totalRevenue: 0,
-    pendingOrders: 0
+    pendingRevenue: 0,
+    pendingOrders: 0,
+    confirmedOrders: 0
   });
   const [loading, setLoading] = useState(true);
 
   // Check admin access - wait for auth to load first
   useEffect(() => {
-    if (authLoading) return; // Wait for auth to finish loading
+    if (authLoading) return;
 
     console.log('[v0] Admin check:', { user: user?.email, isAdmin, userData });
     
@@ -64,11 +73,26 @@ export default function AdminDashboard() {
         const orders = Object.values(data) as any[];
         const totalOrders = orders.length;
         let totalRevenue = 0;
+        let pendingRevenue = 0;
         let pendingOrders = 0;
+        let confirmedOrders = 0;
 
         orders.forEach((order) => {
-          totalRevenue += order.total || 0;
-          if (order.status === 'pending') {
+          // Skip cancelled orders
+          if (order.status === 'cancelled') return;
+
+          // Total Revenue: ONLY "confirmed" orders
+          if (order.status === CONFIRMED_STATUS) {
+            totalRevenue += order.total || 0;
+            confirmedOrders++;
+          } 
+          // Pending Revenue: "pending", "shipped", "delivered" orders
+          else if (PENDING_STATUSES.includes(order.status)) {
+            pendingRevenue += order.total || 0;
+          }
+
+          // Pending orders count (pending, shipped, delivered)
+          if (PENDING_STATUSES.includes(order.status)) {
             pendingOrders++;
           }
         });
@@ -77,14 +101,18 @@ export default function AdminDashboard() {
           ...prev,
           totalOrders,
           totalRevenue,
-          pendingOrders
+          pendingRevenue,
+          pendingOrders,
+          confirmedOrders
         }));
       } else {
         setStats(prev => ({
           ...prev,
           totalOrders: 0,
           totalRevenue: 0,
-          pendingOrders: 0
+          pendingRevenue: 0,
+          pendingOrders: 0,
+          confirmedOrders: 0
         }));
       }
       setLoading(false);
@@ -102,7 +130,8 @@ export default function AdminDashboard() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Navbar />
         <div className="text-center">
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -130,15 +159,16 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto">
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">Loading dashboard...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
             </div>
           ) : (
             <>
-              {/* Stats Grid */}
+              {/* Stats Grid - 6 Cards */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8"
               >
                 {/* Total Products */}
                 <motion.div
@@ -170,26 +200,62 @@ export default function AdminDashboard() {
                   <p className="text-xs text-muted-foreground mt-2">All time orders</p>
                 </motion.div>
 
-                {/* Total Revenue */}
+                {/* Total Revenue (Earned) - Only Confirmed Orders */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-card rounded-lg shadow-lg p-6 border border-border hover:shadow-xl transition-shadow"
+                  className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-6 shadow-sm"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-muted-foreground text-sm font-semibold">Total Revenue</h3>
-                    <TrendingUp className="w-5 h-5 text-primary" />
+                    <h3 className="text-sm font-semibold text-green-700">💰 Total Revenue</h3>
+                    <TrendingUp className="w-5 h-5 text-green-600" />
                   </div>
-                  <p className="text-3xl font-bold text-primary">₹{Math.round(stats.totalRevenue).toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground mt-2">From completed orders</p>
+                  <p className="text-3xl font-bold text-green-800">₹{Math.round(stats.totalRevenue).toLocaleString()}</p>
+                  <p className="text-xs text-green-600 mt-2">
+                    {stats.confirmedOrders} confirmed orders
+                  </p>
+                  <p className="text-xs text-green-600">(Only confirmed orders)</p>
                 </motion.div>
 
-                {/* Pending Orders */}
+                {/* Pending Revenue - Pending, Shipped, Delivered Orders */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
+                  className="bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-200 rounded-lg p-6 shadow-sm"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-semibold text-yellow-700">⏳ Pending Revenue</h3>
+                    <Clock className="w-5 h-5 text-yellow-600" />
+                  </div>
+                  <p className="text-3xl font-bold text-yellow-800">₹{Math.round(stats.pendingRevenue).toLocaleString()}</p>
+                  <p className="text-xs text-yellow-600 mt-2">
+                    {stats.pendingOrders} pending orders
+                  </p>
+                  <p className="text-xs text-yellow-600">(Pending, Shipped, Delivered)</p>
+                </motion.div>
+
+                {/* Confirmed Orders Count */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="bg-card rounded-lg shadow-lg p-6 border border-border hover:shadow-xl transition-shadow"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-muted-foreground text-sm font-semibold">Confirmed Orders</h3>
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                  </div>
+                  <p className="text-3xl font-bold text-green-600">{stats.confirmedOrders}</p>
+                  <p className="text-xs text-muted-foreground mt-2">Confirmed orders</p>
+                </motion.div>
+
+                {/* Pending Orders Count - Pending, Shipped, Delivered */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
                   className="bg-card rounded-lg shadow-lg p-6 border border-border hover:shadow-xl transition-shadow"
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -197,7 +263,7 @@ export default function AdminDashboard() {
                     <ShoppingCart className="w-5 h-5 text-yellow-500" />
                   </div>
                   <p className="text-3xl font-bold text-yellow-600">{stats.pendingOrders}</p>
-                  <p className="text-xs text-muted-foreground mt-2">Need attention</p>
+                  <p className="text-xs text-muted-foreground mt-2">Pending, Shipped, Delivered</p>
                 </motion.div>
               </motion.div>
 
@@ -205,8 +271,8 @@ export default function AdminDashboard() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                transition={{ delay: 0.6 }}
+                className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"
               >
                 {/* Manage Products */}
                 <Link
@@ -259,7 +325,7 @@ export default function AdminDashboard() {
                   </p>
                 </Link>
 
-                {/* Analytics */}
+                {/* Quick Stats */}
                 <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
                   <div className="flex items-start justify-between mb-4">
                     <div>
@@ -270,7 +336,8 @@ export default function AdminDashboard() {
                   </div>
                   <div className="text-xs space-y-1 text-muted-foreground">
                     <p>✓ {stats.totalOrders} total orders</p>
-                    <p>✓ ₹{Math.round(stats.totalRevenue / Math.max(stats.totalOrders, 1))} avg order</p>
+                    <p>✓ {stats.confirmedOrders} confirmed orders</p>
+                    <p>✓ {stats.pendingOrders} pending orders</p>
                     <p>✓ {stats.totalProducts} products active</p>
                   </div>
                 </div>

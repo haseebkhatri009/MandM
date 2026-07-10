@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/authContext';
 import { rtdb } from '@/lib/firebase';
-import { ref, onValue, update } from 'firebase/database';
-import { ArrowLeft, MessageCircle, Eye } from 'lucide-react';
+import { ref, onValue, update, get } from 'firebase/database';
+import { ArrowLeft, MessageCircle, Eye, TrendingUp, Clock } from 'lucide-react';
 import Link from 'next/link';
+import Swal from 'sweetalert2';
 
 interface OrderItem {
   id: string;
@@ -41,6 +42,12 @@ const statusColors: Record<string, string> = {
 };
 
 const statusOptions = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+
+// Only "confirmed" status counts as total income
+const CONFIRMED_STATUS = 'confirmed';
+
+// Statuses that count as pending income (all except confirmed and cancelled)
+const PENDING_STATUSES = ['pending', 'shipped', 'delivered'];
 
 export default function AdminOrdersPage() {
   const { user, isAdmin, loading: authLoading } = useAuth();
@@ -93,17 +100,207 @@ export default function AdminOrdersPage() {
     return () => unsubscribe();
   }, [isAdmin]);
 
-  const handleStatusChange = async (orderId: string, newStatus: string) => {
+  // Calculate income statistics
+  const calculateIncome = () => {
+    let totalIncome = 0;      // Only from "confirmed" orders
+    let pendingIncome = 0;    // From "pending", "shipped", "delivered" orders
+
+    orders.forEach(order => {
+      // Skip cancelled orders
+      if (order.status === 'cancelled') return;
+
+      // Total Income: ONLY "confirmed" orders
+      if (order.status === CONFIRMED_STATUS) {
+        totalIncome += order.total;
+      } 
+      // Pending Income: "pending", "shipped", "delivered" orders
+      else if (PENDING_STATUSES.includes(order.status)) {
+        pendingIncome += order.total;
+      }
+    });
+
+    return { totalIncome, pendingIncome };
+  };
+
+  const { totalIncome, pendingIncome } = calculateIncome();
+
+  // Count orders by status for display
+  const pendingCount = orders.filter(o => PENDING_STATUSES.includes(o.status)).length;
+  const confirmedCount = orders.filter(o => o.status === CONFIRMED_STATUS).length;
+
+  // Restore stock function (add stock back)
+  const restoreStock = async (items: OrderItem[]) => {
+    for (const item of items) {
+      try {
+        const productRef = ref(rtdb, `products/${item.id}`);
+        const snapshot = await get(productRef);
+        if (snapshot.exists()) {
+          const product = snapshot.val();
+          const currentStock = product.stock || 0;
+          const newStock = currentStock + item.quantity;
+          
+          await update(productRef, {
+            stock: newStock
+          });
+          console.log(`✅ Stock restored for ${item.name}: ${currentStock} -> ${newStock}`);
+        }
+      } catch (error) {
+        console.error(`Error restoring stock for ${item.name}:`, error);
+      }
+    }
+  };
+
+  // Cut stock function (subtract stock)
+  const cutStock = async (items: OrderItem[]) => {
+    for (const item of items) {
+      try {
+        const productRef = ref(rtdb, `products/${item.id}`);
+        const snapshot = await get(productRef);
+        if (snapshot.exists()) {
+          const product = snapshot.val();
+          const currentStock = product.stock || 0;
+          const newStock = Math.max(0, currentStock - item.quantity);
+          
+          await update(productRef, {
+            stock: newStock
+          });
+          console.log(`✅ Stock cut for ${item.name}: ${currentStock} -> ${newStock}`);
+        }
+      } catch (error) {
+        console.error(`Error cutting stock for ${item.name}:`, error);
+      }
+    }
+  };
+
+  const handleStatusChange = async (orderId: string, newStatus: string, order: Order) => {
+    const oldStatus = order.status;
+
+    // If status is being changed to cancelled
+    if (newStatus === 'cancelled') {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'This will cancel the order and restore all items to stock!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, cancel order!',
+        cancelButtonText: 'No, keep it'
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        // Restore stock for all items in the order
+        await restoreStock(order.items);
+        
+        // Update order status to cancelled
+        const orderRef = ref(rtdb, `orders/${orderId}`);
+        await update(orderRef, {
+          status: newStatus,
+          updatedAt: new Date().toISOString()
+        });
+
+        await Swal.fire({
+          icon: 'success',
+          title: 'Order Cancelled!',
+          text: 'Order has been cancelled and stock has been restored.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } catch (error) {
+        console.error('[v0] Error cancelling order:', error);
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to cancel order. Please try again.'
+        });
+      }
+      return;
+    }
+
+    // If changing from cancelled to any other status (pending/confirmed/shipped/delivered)
+    if (oldStatus === 'cancelled' && newStatus !== 'cancelled') {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'This will cut stock for all items in this order!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, restore order!',
+        cancelButtonText: 'No, keep cancelled'
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        // Cut stock (subtract) for all items
+        await cutStock(order.items);
+        
+        // Update order status
+        const orderRef = ref(rtdb, `orders/${orderId}`);
+        await update(orderRef, {
+          status: newStatus,
+          updatedAt: new Date().toISOString()
+        });
+
+        await Swal.fire({
+          icon: 'success',
+          title: 'Order Restored!',
+          text: `Order has been restored to ${newStatus} and stock has been updated.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } catch (error) {
+        console.error('[v0] Error restoring order:', error);
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to restore order. Please try again.'
+        });
+      }
+      return;
+    }
+
+    // For normal status changes (pending -> confirmed -> shipped -> delivered)
     try {
       const orderRef = ref(rtdb, `orders/${orderId}`);
       await update(orderRef, {
         status: newStatus,
         updatedAt: new Date().toISOString()
       });
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Status Updated!',
+        text: `Order status changed to ${newStatus}`,
+        timer: 1500,
+        showConfirmButton: false
+      });
     } catch (error) {
       console.error('[v0] Error updating order:', error);
-      alert('Error updating order status');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'Failed to update order status. Please try again.'
+      });
     }
+  };
+
+  // Wrapper function to handle status change with SweetAlert
+  const onStatusChange = async (orderId: string, newStatus: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    
+    // If changing to same status, do nothing
+    if (order.status === newStatus) return;
+
+    await handleStatusChange(orderId, newStatus, order);
   };
 
   const filteredOrders = filterStatus === 'all' 
@@ -120,7 +317,10 @@ export default function AdminOrdersPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -150,6 +350,61 @@ export default function AdminOrdersPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Income Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          {/* Total Income Card - Only Confirmed Orders */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-6 shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-green-700 font-medium mb-1">💰 Total Income</p>
+                <p className="text-3xl font-bold text-green-800">
+                  PKR {totalIncome.toLocaleString()}
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  {confirmedCount} confirmed orders
+                </p>
+                <p className="text-xs text-green-600">
+                  (Only confirmed orders included)
+                </p>
+              </div>
+              <div className="bg-green-200 p-3 rounded-full">
+                <TrendingUp className="w-6 h-6 text-green-700" />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Pending Income Card - Pending, Shipped, Delivered Orders */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-200 rounded-lg p-6 shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-yellow-700 font-medium mb-1">⏳ Pending Income</p>
+                <p className="text-3xl font-bold text-yellow-800">
+                  PKR {pendingIncome.toLocaleString()}
+                </p>
+                <p className="text-xs text-yellow-600 mt-1">
+                  {pendingCount} orders (Pending, Shipped, Delivered)
+                </p>
+                <p className="text-xs text-yellow-600">
+                  (All non-confirmed & non-cancelled orders)
+                </p>
+              </div>
+              <div className="bg-yellow-200 p-3 rounded-full">
+                <Clock className="w-6 h-6 text-yellow-700" />
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
         {/* Status Filter */}
         <div className="flex gap-2 mb-8 flex-wrap">
           <button
@@ -183,7 +438,8 @@ export default function AdminOrdersPage() {
         {/* Orders List */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading orders...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading orders...</p>
           </div>
         ) : filteredOrders.length > 0 ? (
           <motion.div
@@ -217,7 +473,7 @@ export default function AdminOrdersPage() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground mb-1">Amount</p>
-                      <p className="font-bold text-lg text-primary">₹{Math.round(order.total)}</p>
+                      <p className="font-bold text-lg text-primary">PKR {Math.round(order.total).toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
@@ -252,7 +508,7 @@ export default function AdminOrdersPage() {
                       <h3 className="font-semibold mb-3 text-foreground">Status</h3>
                       <select
                         value={order.status}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                        onChange={(e) => onStatusChange(order.id, e.target.value)}
                         className={`w-full px-3 py-2 rounded-lg border text-sm font-semibold transition-all ${statusColors[order.status]} cursor-pointer`}
                       >
                         {statusOptions.map((status) => (
@@ -261,6 +517,21 @@ export default function AdminOrdersPage() {
                           </option>
                         ))}
                       </select>
+                      {order.status === 'cancelled' && (
+                        <p className="text-xs text-red-500 mt-1">
+                          ⚠️ Stock restored • Not counted in income
+                        </p>
+                      )}
+                      {order.status === 'confirmed' && (
+                        <p className="text-xs text-blue-500 mt-1">
+                          💰 Added to Total Income
+                        </p>
+                      )}
+                      {PENDING_STATUSES.includes(order.status) && (
+                        <p className="text-xs text-yellow-500 mt-1">
+                          ⏳ Added to Pending Income
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -342,7 +613,7 @@ export default function AdminOrdersPage() {
                     <div key={idx} className="flex justify-between text-sm p-2 bg-secondary rounded">
                       <span>{item.name}</span>
                       <span>x{item.quantity}</span>
-                      <span className="font-semibold">₹{Math.round(item.price * item.quantity)}</span>
+                      <span className="font-semibold">PKR {Math.round(item.price * item.quantity).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
@@ -350,8 +621,23 @@ export default function AdminOrdersPage() {
 
               <div className="border-t border-border pt-4">
                 <p className="text-lg font-bold">
-                  Total: ₹{Math.round(selectedOrder.total)}
+                  Total: PKR {Math.round(selectedOrder.total).toLocaleString()}
                 </p>
+                {selectedOrder.status === 'confirmed' && (
+                  <p className="text-sm text-green-600 mt-1">
+                    ✅ This order is included in Total Income
+                  </p>
+                )}
+                {PENDING_STATUSES.includes(selectedOrder.status) && (
+                  <p className="text-sm text-yellow-600 mt-1">
+                    ⏳ This order is included in Pending Income
+                  </p>
+                )}
+                {selectedOrder.status === 'cancelled' && (
+                  <p className="text-sm text-red-600 mt-1">
+                    ❌ Cancelled order - not counted in any income
+                  </p>
+                )}
               </div>
             </div>
 
