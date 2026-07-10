@@ -350,7 +350,7 @@ export default function AdminDashboard() {
       {/* Footer */}
       <footer className="bg-secondary py-8 px-4 mt-12">
         <div className="max-w-7xl mx-auto text-center text-muted-foreground text-sm">
-          <p>&copy; 2024 M&M Scents Admin Panel. All rights reserved.</p>
+          <p>&copy; 2024 M&M Scents Admin Panel. All rights reserved..</p>
         </div>
       </footer>
     </div>
