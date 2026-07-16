@@ -2327,7 +2327,6 @@
 
 
 
-
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -2445,7 +2444,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signup = async (email: string, password: string, name: string) => {
     try {
-      // ✅ Check if email already exists in RTDB
       const usersRef = ref(rtdb, 'users');
       const emailQuery = query(usersRef, orderByChild('email'), equalTo(email));
       const snapshot = await get(emailQuery);
@@ -2481,7 +2479,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signupWithPhone = async (phone: string, password: string, name: string) => {
     try {
-      // ✅ Check if phone already exists in RTDB
       const usersRef = ref(rtdb, 'users');
       const phoneQuery = query(usersRef, orderByChild('phone'), equalTo(phone));
       const snapshot = await get(phoneQuery);
@@ -2570,20 +2567,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // ============== ✅ UPDATED RESET PASSWORD WITH FLAG ==============
+  // ============== PASSWORD RESET FUNCTIONS ==============
 
   const resetPassword = async (email: string) => {
     try {
-      // ✅ Step 1: Send reset email
       const actionCodeSettings = {
-        url: `${window.location.origin}/reset-password`,
+        url: `${window.location.origin}/login`,
         handleCodeInApp: false,
       };
       
       await sendPasswordResetEmail(auth, email, actionCodeSettings);
       console.log('✅ Reset email sent to:', email);
       
-      // ✅ Step 2: Immediately set passwordReset flag in RTDB
       try {
         const usersRef = ref(rtdb, 'users');
         const snapshot = await get(usersRef);
@@ -2604,7 +2599,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
           
           if (userUid) {
-            // ✅ UPDATE existing user - NO duplicate
             await update(ref(rtdb, `users/${userUid}`), {
               passwordReset: true,
               passwordResetAt: new Date().toISOString(),
@@ -2772,7 +2766,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // ============== ✅ CHECK RTDB PASSWORD (NO DUPLICATE CREATION) ==============
+  // ============== ✅ CHECK RTDB PASSWORD - NO FLAG RESET HERE ==============
 
   const checkAndUpdateRTDBPassword = async (user: User): Promise<boolean> => {
     try {
@@ -2784,26 +2778,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('🔍 RTDB Data:', { 
           password: userData.password ? '✅ exists' : '❌ missing',
           passwordReset: userData.passwordReset,
-          email: userData.email
+          email: userData.email,
+          uid: user.uid
         });
         
         // ✅ Check if passwordReset flag is true OR password is missing
+        // ⚠️ DO NOT reset the flag here - let the modal handle it
         if (userData.passwordReset === true || !userData.password || userData.password === '') {
           console.log('⚠️ Password reset required (flag or missing password)');
-          
-          // ✅ Reset the flag after showing modal
-          await update(userRef, {
-            passwordReset: false
-          });
-          
           return true; // Modal aayega
         }
         return false;
       }
       
-      // ✅ AGAR USER EXIST NAHI KARTA TOH SIRF FLAG RETURN KARO, CREATE MAT KARO
       console.log('⚠️ User not found in RTDB, but DO NOT create new entry');
-      return true; // Modal aayega (user ko password set karne dega)
+      return true;
       
     } catch (error) {
       console.error('Error checking RTDB password:', error);
@@ -2811,7 +2800,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // ============== UPDATE RTDB PASSWORD ==============
+  // ============== UPDATE RTDB PASSWORD - FLAG RESET HERE ==============
 
   const updateRTDBPassword = async (uid: string, newPassword: string): Promise<void> => {
     try {
@@ -2821,12 +2810,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (snapshot.exists()) {
         await update(userRef, {
           password: newPassword,
-          passwordReset: false,
+          passwordReset: false,  // ✅ Flag reset here (when password is actually changed)
           updatedAt: new Date().toISOString()
         });
         console.log('✅ RTDB password updated for user:', uid);
       } else {
-        // ✅ Agar user exist nahi karta toh naya create karo
         await set(userRef, {
           uid: uid,
           password: newPassword,
@@ -2842,7 +2830,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // ============== CHANGE PASSWORD WITH OLD ==============
+  // ============== CHANGE PASSWORD WITH OLD - FLAG RESET HERE ==============
 
   const changePasswordWithOld = async (oldPassword: string, newPassword: string) => {
     try {
@@ -2858,7 +2846,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userRef = ref(rtdb, `users/${user.uid}`);
       await update(userRef, { 
         password: newPassword,
-        passwordReset: false,
+        passwordReset: false,  // ✅ Flag reset here (only when password is actually changed)
         updatedAt: new Date().toISOString()
       });
       
