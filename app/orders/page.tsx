@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 import { useAuth } from '@/lib/authContext';
 import { rtdb } from '@/lib/firebase';
 import { ref, query, orderByChild, equalTo, onValue } from 'firebase/database';
-import { Package, Truck, CheckCircle, Clock, AlertCircle, Eye } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, AlertCircle, Eye, Bell } from 'lucide-react';
 
 interface OrderItem {
   id: string;
@@ -22,12 +22,13 @@ interface Order {
   userId: string;
   items: OrderItem[];
   total: number;
-  status: 'pending' | 'dispatched' | 'delivered';
+  status: 'pending' | 'dispatched' | 'delivered' | 'confirmed' | 'shipped' | 'cancelled';
   userEmail: string;
   userPhone: string;
   userAddress: string;
   createdAt: number;
   adminNotes?: string;
+  adminNotesUpdatedAt?: number; // To track when note was added/updated
 }
 
 export default function OrdersPage() {
@@ -37,6 +38,28 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [viewedNotes, setViewedNotes] = useState<Set<string>>(new Set());
+
+  // Load viewed notes from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('viewedOrderNotes');
+      if (saved) {
+        try {
+          setViewedNotes(new Set(JSON.parse(saved)));
+        } catch (e) {
+          console.error('Error loading viewed notes:', e);
+        }
+      }
+    }
+  }, []);
+
+  // Save viewed notes to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('viewedOrderNotes', JSON.stringify([...viewedNotes]));
+    }
+  }, [viewedNotes]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -75,9 +98,14 @@ export default function OrdersPage() {
       case 'pending':
         return <Clock className="text-yellow-600" size={20} />;
       case 'dispatched':
+      case 'shipped':
         return <Truck className="text-blue-600" size={20} />;
       case 'delivered':
         return <CheckCircle className="text-green-600" size={20} />;
+      case 'confirmed':
+        return <CheckCircle className="text-blue-600" size={20} />;
+      case 'cancelled':
+        return <AlertCircle className="text-red-600" size={20} />;
       default:
         return <AlertCircle size={20} />;
     }
@@ -88,9 +116,14 @@ export default function OrdersPage() {
       case 'pending':
         return 'bg-yellow-100 border-yellow-300 text-yellow-900';
       case 'dispatched':
+      case 'shipped':
         return 'bg-blue-100 border-blue-300 text-blue-900';
       case 'delivered':
         return 'bg-green-100 border-green-300 text-green-900';
+      case 'confirmed':
+        return 'bg-blue-100 border-blue-300 text-blue-900';
+      case 'cancelled':
+        return 'bg-red-100 border-red-300 text-red-900';
       default:
         return 'bg-gray-100 border-gray-300 text-gray-900';
     }
@@ -104,6 +137,31 @@ export default function OrdersPage() {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // Check if order has unread admin note
+  const hasUnreadNote = (order: Order) => {
+    if (!order.adminNotes) return false;
+    const noteKey = `${order.id}_${order.adminNotesUpdatedAt || order.createdAt}`;
+    return !viewedNotes.has(noteKey);
+  };
+
+  // Mark note as viewed
+  const markNoteAsViewed = (order: Order) => {
+    if (order.adminNotes) {
+      const noteKey = `${order.id}_${order.adminNotesUpdatedAt || order.createdAt}`;
+      setViewedNotes(prev => new Set([...prev, noteKey]));
+    }
+  };
+
+  // Handle view details click
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrder(order);
+    setShowModal(true);
+    // Mark note as viewed when modal opens
+    if (order.adminNotes) {
+      markNoteAsViewed(order);
+    }
   };
 
   if (authLoading || loading) {
@@ -147,7 +205,6 @@ export default function OrdersPage() {
       {/* Main Content - Positioned above watermark */}
       <div className="relative z-10">
         {/* Header */}
-        {/* <section className="bg-gradient-to-b from-secondary/90 to-background/90 border-b border-border py-12 px-4 backdrop-blur-sm"> */}
         <section className="relative z-0 bg-gradient-to-b from-secondary/40 to-background/40 py-12 px-4">
           <div className="max-w-7xl mx-auto">
             <motion.div
@@ -164,84 +221,101 @@ export default function OrdersPage() {
         {/* Content */}
         <section className="py-12 px-4">
           <div className="max-w-7xl mx-auto">
-  {orders.length === 0 ? (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="text-center py-20 bg-transparent backdrop-blur-none rounded-lg border border-gray-200/30 shadow-sm"
-    >
-      <Package size={48} className="mx-auto mb-4 text-gray-400 opacity-50" />
-      <p className="text-gray-600 mb-6">You haven&apos;t placed any orders yet</p>
-      <motion.a
-        href="/products"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="inline-block px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:shadow-lg"
-      >
-        Start Shopping
-      </motion.a>
-    </motion.div>
-  ) : (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-4"
-    >
-      {orders.map((order, idx) => (
-        <motion.div
-          key={order.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: idx * 0.1 }}
-          className=" bg-transparent backdrop-blur-none border border-gray-700/20 rounded-lg p-6 shadow-lg hover:shadow-xl transition-all"
-        >
-          <div className=" grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
-            {/* Order ID & Date */}
-            <div>
-              <p className="text-xs text-gray-500 font-semibold uppercase mb-2">Order ID</p>
-              <p className="font-mono text-sm font-bold text-gray-800">{order.id.slice(0, 8)}...</p>
-              <p className="text-xs text-gray-500 mt-2">{formatDate(order.createdAt)}</p>
-            </div>
-
-            {/* Items Count */}
-            <div>
-              <p className="text-xs text-gray-500 font-semibold uppercase mb-2">Items</p>
-              <p className="text-lg font-bold text-gray-800">{order.items.length}</p>
-              <p className="text-xs text-gray-500">Total: {order.items.reduce((sum, item) => sum + item.quantity, 0)} units</p>
-            </div>
-
-            {/* Total Amount */}
-            <div>
-              <p className="text-xs text-gray-500 font-semibold uppercase mb-2">Total</p>
-              <p className="text-lg font-bold text-primary">₹{order.total}</p>
-            </div>
-
-            {/* Status & Action */}
-            <div className="flex flex-col gap-3">
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 ${getStatusColor(order.status)}`}>
-                {getStatusIcon(order.status)}
-                <span className="font-semibold capitalize">{order.status}</span>
-              </div>
-              <motion.button
-                onClick={() => {
-                  setSelectedOrder(order);
-                  setShowModal(true);
-                }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+            {orders.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-20 bg-transparent backdrop-blur-none rounded-lg border border-gray-200/30 shadow-sm"
               >
-                <Eye size={16} />
-                View Details
-              </motion.button>
-            </div>
+                <Package size={48} className="mx-auto mb-4 text-gray-400 opacity-50" />
+                <p className="text-gray-600 mb-6">You haven&apos;t placed any orders yet</p>
+                <motion.a
+                  href="/products"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-block px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:shadow-lg"
+                >
+                  Start Shopping
+                </motion.a>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="space-y-4"
+              >
+                {orders.map((order, idx) => (
+                  <motion.div
+                    key={order.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="bg-transparent backdrop-blur-none border border-gray-700/20 rounded-lg p-6 shadow-lg hover:shadow-xl transition-all relative"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+                      {/* Order ID & Date */}
+                      <div>
+                        <p className="text-xs text-gray-500 font-semibold uppercase mb-2">Order ID</p>
+                        <p className="font-mono text-sm font-bold text-gray-800">{order.id.slice(0, 8)}...</p>
+                        <p className="text-xs text-gray-500 mt-2">{formatDate(order.createdAt)}</p>
+                      </div>
+
+                      {/* Items Count */}
+                      <div>
+                        <p className="text-xs text-gray-500 font-semibold uppercase mb-2">Items</p>
+                        <p className="text-lg font-bold text-gray-800">{order.items.length}</p>
+                        <p className="text-xs text-gray-500">Total: {order.items.reduce((sum, item) => sum + item.quantity, 0)} units</p>
+                      </div>
+
+                      {/* Total Amount */}
+                      <div>
+                        <p className="text-xs text-gray-500 font-semibold uppercase mb-2">Total</p>
+                        <p className="text-lg font-bold text-primary">₹{order.total}</p>
+                      </div>
+
+                      {/* Status & Action */}
+                      <div className="flex flex-col gap-3 relative">
+                        <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 ${getStatusColor(order.status)}`}>
+                          {getStatusIcon(order.status)}
+                          <span className="font-semibold capitalize">{order.status}</span>
+                        </div>
+                        
+                        {/* View Details Button with Notification Dot */}
+                        <div className="relative">
+                          <motion.button
+                            onClick={() => handleViewDetails(order)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:shadow-lg transition-all w-full"
+                          >
+                            <Eye size={16} />
+                            View Details
+                          </motion.button>
+                          
+                          {/* Notification Dot */}
+                          {hasUnreadNote(order) && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="absolute -top-1 -right-1"
+                            >
+                              <span className="relative flex h-4 w-4">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500">
+                                  <Bell className="w-3 h-3 text-white absolute top-0.5 left-0.5" />
+                                </span>
+                              </span>
+                            </motion.div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
           </div>
-        </motion.div>
-      ))}
-    </motion.div>
-  )}
-</div>
         </section>
       </div>
 
@@ -335,12 +409,37 @@ export default function OrdersPage() {
                 </div>
               </div>
 
-              {/* Admin Notes */}
+              {/* Admin Notes - Display with Animation */}
               {selectedOrder.adminNotes && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h4 className="font-bold text-blue-900 mb-2">Order Notes</h4>
-                  <p className="text-blue-800">{selectedOrder.adminNotes}</p>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="bg-blue-100 p-2 rounded-full">
+                      <Bell className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-blue-900 mb-1 flex items-center gap-2">
+                        Admin Note
+                        <span className="text-xs bg-blue-200 text-blue-700 px-2 py-0.5 rounded-full">
+                          {selectedOrder.adminNotesUpdatedAt ? 
+                            new Date(selectedOrder.adminNotesUpdatedAt).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }) 
+                            : 'Recent'
+                          }
+                        </span>
+                      </h4>
+                      <p className="text-blue-800 leading-relaxed">{selectedOrder.adminNotes}</p>
+                    </div>
+                  </div>
+                </motion.div>
               )}
 
               {/* Totals */}

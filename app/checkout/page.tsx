@@ -865,7 +865,7 @@ export default function CheckoutPage() {
 
   // Fetch delivery charges from RTDB
   useEffect(() => {
-    const settingsRef = ref(rtdb, 'admin_settings/deliveryCharges');
+    const settingsRef = ref(rtdb, 'admin_settings/banner/deliveryCharges');
     const unsubscribe = onValue(settingsRef, (snapshot) => {
       if (snapshot.exists()) {
         setDeliveryCharge(snapshot.val());
