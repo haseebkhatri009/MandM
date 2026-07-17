@@ -4494,6 +4494,9 @@ import { getDatabase, ref, get, update } from 'firebase/database';
 import Navbar from '@/components/Navbar';
 import toast, { Toaster } from 'react-hot-toast';
 
+// ✅ Toast ID for tracking
+let cartToastId: string | null = null;
+
 export default function LoginPage() {
   const { 
     user, 
@@ -4547,12 +4550,13 @@ export default function LoginPage() {
   // Admin WhatsApp Number
   const ADMIN_WHATSAPP = '923111111111';
 
-  // ✅ Show toast if user came from cart page - Click to dismiss
+  // ✅ Show toast if user came from cart page
   useEffect(() => {
     const fromCart = new URLSearchParams(window.location.search).get('from');
     
     if (fromCart === 'cart') {
-      toast.error('🔒 Please login to view your cart', {
+      // ✅ Store toast ID
+      cartToastId = toast.error('🔒 Please login to view your cart', {
         duration: 4000,
         position: 'top-right',
         style: {
@@ -4564,12 +4568,28 @@ export default function LoginPage() {
           cursor: 'pointer',
         },
         icon: '🔒',
-        // ✅ Click on toast to dismiss
         onClick: () => {
-          toast.dismiss();
+          toast.dismiss(cartToastId!);
+          cartToastId = null;
         },
-      });
+      }) as string;
     }
+  }, []);
+
+  // ✅ Global click listener - Screen par kahi bhi click karne se toast remove
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      if (cartToastId) {
+        toast.dismiss(cartToastId);
+        cartToastId = null;
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+
+    return () => {
+      document.removeEventListener('click', handleGlobalClick);
+    };
   }, []);
 
   // ✅ Check if user is already logged in and needs password update
