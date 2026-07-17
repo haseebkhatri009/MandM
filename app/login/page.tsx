@@ -4547,7 +4547,7 @@ export default function LoginPage() {
   // Admin WhatsApp Number
   const ADMIN_WHATSAPP = '923111111111';
 
-  // ✅ Show toast if user came from cart page - HAR BAAR
+  // ✅ Show toast if user came from cart page - Click to dismiss
   useEffect(() => {
     const fromCart = new URLSearchParams(window.location.search).get('from');
     
@@ -4561,11 +4561,16 @@ export default function LoginPage() {
           padding: '16px 20px',
           borderRadius: '12px',
           fontSize: '15px',
+          cursor: 'pointer',
         },
         icon: '🔒',
+        // ✅ Click on toast to dismiss
+        onClick: () => {
+          toast.dismiss();
+        },
       });
     }
-  }, []); // ✅ Empty array - sirf page load par check karega
+  }, []);
 
   // ✅ Check if user is already logged in and needs password update
   useEffect(() => {
@@ -4917,6 +4922,7 @@ Please check the user's identity and reset their password from the admin panel.`
             color: '#fff',
             padding: '16px',
             borderRadius: '12px',
+            cursor: 'pointer',
           },
         }}
       />
