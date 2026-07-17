@@ -632,8 +632,6 @@
 
 
 
-
-
 'use client';
 
 import { motion } from 'framer-motion';
@@ -657,29 +655,20 @@ export default function CartPage() {
   const [stockErrors, setStockErrors] = useState<{ [key: string]: string }>({});
   const [productStocks, setProductStocks] = useState<{ [key: string]: number }>({});
 
-  // Check if user is logged in - redirect if not
+  // ✅ Redirect with query param - NO TOAST HERE
   useEffect(() => {
     if (!user) {
-      toast.error('Please login to view your cart', {
-        duration: 3000,
-        position: 'top-right',
-        style: {
-          background: '#EF4444',
-          color: '#fff',
-          padding: '16px',
-          borderRadius: '12px',
-        },
-        icon: '🔒',
-      });
-      setTimeout(() => {
-        router.push('/login');
-      }, 1500);
+      // ✅ Sirf redirect karo, toast nahi
+      const timer = setTimeout(() => {
+        router.push('/login?from=cart');
+      }, 500);
+      
+      return () => clearTimeout(timer);
     }
   }, [user, router]);
 
   // Clear cart when user logs out
   useEffect(() => {
-    // If user is not logged in, clear the cart
     if (!user && cartItems.length > 0) {
       clearCart();
     }
@@ -733,7 +722,7 @@ export default function CartPage() {
     fetchDeliveryCharges();
   }, []);
 
-  // Fetch stock for all cart items - ONLY for checking availability, NOT cutting stock
+  // Fetch stock for all cart items
   useEffect(() => {
     const fetchStocks = async () => {
       const stocks: { [key: string]: number } = {};
@@ -794,11 +783,10 @@ export default function CartPage() {
       });
     }
 
-    // Just update cart quantity - NO stock change
     updateQuantity(itemId, newQuantity);
   };
 
-  // Handle remove from cart - NO stock restore (stock was never cut)
+  // Handle remove from cart
   const handleRemoveFromCart = (itemId: string) => {
     removeFromCart(itemId);
     toast.success('Item removed from cart', {
@@ -814,7 +802,7 @@ export default function CartPage() {
     });
   };
 
-  // Handle clear cart - NO stock restore (stock was never cut)
+  // Handle clear cart
   const handleClearCart = () => {
     if (!confirm('Are you sure you want to clear your cart?')) return;
     clearCart();
@@ -851,7 +839,6 @@ export default function CartPage() {
       return;
     }
 
-    // Check if there are stock errors
     if (Object.keys(stockErrors).length > 0) {
       toast.error('Please fix stock issues before proceeding to checkout', {
         duration: 3000,
@@ -867,11 +854,10 @@ export default function CartPage() {
       return;
     }
 
-    // Proceed to checkout
     router.push('/checkout');
   };
 
-  // If user is not logged in, show loading or redirect
+  // ✅ If user is not logged in, show loading (redirect happening in useEffect)
   if (!user) {
     return (
       <div className="min-h-screen bg-background">
@@ -890,8 +876,6 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-
-        {/* Toaster Component */}
         <Toaster 
           position="top-right"
           toastOptions={{
@@ -904,7 +888,6 @@ export default function CartPage() {
             },
           }}
         />
-        
         <section className="py-20 px-4">
           <div className="max-w-4xl mx-auto">
             <motion.div
@@ -935,8 +918,6 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-
-      {/* Toaster Component */}
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -995,7 +976,6 @@ export default function CartPage() {
                       transition={{ delay: index * 0.05 }}
                       className="p-6 border-b border-border last:border-b-0 flex gap-4"
                     >
-                      {/* Product Image */}
                       <img
                         src={item.image}
                         alt={item.name}
@@ -1004,8 +984,6 @@ export default function CartPage() {
                           e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="96"%3E%3Crect fill="%23e8e3dc" width="96" height="96"/%3E%3C/svg%3E';
                         }}
                       />
-
-                      {/* Product Details */}
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground mb-1">
                           {item.name}
@@ -1013,8 +991,6 @@ export default function CartPage() {
                         <p className="text-xs text-muted-foreground mb-2 uppercase">
                           {item.category}
                         </p>
-
-                        {/* Price - PKR format */}
                         <div className="flex items-center gap-2 mb-3">
                           <span className="font-bold text-primary">
                             {formatPrice(finalPrice)}
@@ -1025,8 +1001,6 @@ export default function CartPage() {
                             </span>
                           )}
                         </div>
-
-                        {/* Quantity Controls with Stock Limit */}
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
@@ -1049,8 +1023,6 @@ export default function CartPage() {
                             (Max: {availableStock})
                           </span>
                         </div>
-
-                        {/* Stock Error Message */}
                         {stockError && (
                           <div className="flex items-center gap-1 mt-2 text-red-500 text-xs">
                             <AlertCircle size={14} />
@@ -1058,8 +1030,6 @@ export default function CartPage() {
                           </div>
                         )}
                       </div>
-
-                      {/* Total Price & Remove */}
                       <div className="text-right flex flex-col justify-between">
                         <div>
                           <p className="text-sm text-muted-foreground mb-1">Subtotal</p>
@@ -1090,32 +1060,24 @@ export default function CartPage() {
                 <h2 className="text-xl font-serif font-bold text-foreground mb-4">
                   Order Summary
                 </h2>
-
-                {/* Subtotal */}
                 <div className="flex justify-between mb-3 pb-3 border-b border-border">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-semibold text-foreground">
                     {formatPrice(totalPrice)}
                   </span>
                 </div>
-
-                {/* Delivery Charges - From Firebase */}
                 <div className="flex justify-between mb-4 pb-4 border-b border-border">
                   <span className="text-muted-foreground">Delivery Charges</span>
                   <span className="font-semibold text-foreground">
                     {loadingDelivery ? '...' : formatPrice(deliveryCharges || 0)}
                   </span>
                 </div>
-
-                {/* Total */}
                 <div className="flex justify-between mb-6">
                   <span className="text-lg font-bold text-foreground">Total</span>
                   <span className="text-xl font-bold text-primary">
                     {formatPrice(totalWithDelivery)}
                   </span>
                 </div>
-
-                {/* Checkout Button with Auth Check */}
                 <button
                   onClick={handleCheckout}
                   className={`block w-full py-3 rounded-lg font-semibold text-center transition-opacity ${
@@ -1127,16 +1089,12 @@ export default function CartPage() {
                 >
                   {Object.keys(stockErrors).length > 0 ? 'Fix Stock Issues' : 'Proceed to Checkout'}
                 </button>
-
-                {/* Continue Shopping */}
                 <Link
                   href="/products"
                   className="block w-full bg-secondary text-foreground py-3 rounded-lg font-semibold text-center hover:bg-muted transition-colors mt-3"
                 >
                   Continue Shopping
                 </Link>
-
-                {/* Clear Cart */}
                 <button
                   onClick={handleClearCart}
                   className="w-full mt-3 text-red-500 hover:text-red-700 transition-colors text-sm font-semibold"
@@ -1149,7 +1107,6 @@ export default function CartPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-secondary py-8 px-4 mt-12">
         <div className="max-w-7xl mx-auto text-center text-muted-foreground text-sm">
           <p>&copy; 2024 M&M Scents. All rights reserved.</p>

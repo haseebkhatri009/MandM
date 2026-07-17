@@ -4492,6 +4492,7 @@ import { Mail, Lock, AlertCircle, Eye, EyeOff, Phone, Key, X, CheckCircle, Loade
 import { useAuth } from '@/lib/authContext';
 import { getDatabase, ref, get, update } from 'firebase/database';
 import Navbar from '@/components/Navbar';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function LoginPage() {
   const { 
@@ -4539,12 +4540,32 @@ export default function LoginPage() {
   const [updateError, setUpdateError] = useState('');
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  // ✅ Redirect Success State
+  // Redirect Success State
   const [redirectSuccess, setRedirectSuccess] = useState(false);
   const [isRedirectFromReset, setIsRedirectFromReset] = useState(false);
 
   // Admin WhatsApp Number
   const ADMIN_WHATSAPP = '923111111111';
+
+  // ✅ Show toast if user came from cart page - HAR BAAR
+  useEffect(() => {
+    const fromCart = new URLSearchParams(window.location.search).get('from');
+    
+    if (fromCart === 'cart') {
+      toast.error('🔒 Please login to view your cart', {
+        duration: 4000,
+        position: 'top-right',
+        style: {
+          background: '#EF4444',
+          color: '#fff',
+          padding: '16px 20px',
+          borderRadius: '12px',
+          fontSize: '15px',
+        },
+        icon: '🔒',
+      });
+    }
+  }, []); // ✅ Empty array - sirf page load par check karega
 
   // ✅ Check if user is already logged in and needs password update
   useEffect(() => {
@@ -4575,13 +4596,11 @@ export default function LoginPage() {
     
     console.log('🔍 URL Params:', { mode, apiKey, oobCode });
     
-    // ✅ Agar mode resetPassword hai ya oobCode hai toh redirect success
     if (mode === 'resetPassword' || oobCode || apiKey) {
       console.log('✅ Password reset redirect detected!');
       setRedirectSuccess(true);
       setIsRedirectFromReset(true);
       
-      // Clear URL params after showing success
       setTimeout(() => {
         window.history.replaceState({}, '', '/login');
       }, 4000);
@@ -4888,6 +4907,20 @@ Please check the user's identity and reset their password from the admin panel.`
     <div className="min-h-screen bg-background">
       <Navbar />
 
+      {/* Toaster Component */}
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#333',
+            color: '#fff',
+            padding: '16px',
+            borderRadius: '12px',
+          },
+        }}
+      />
+
       <div className="flex items-center justify-center px-4 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -4911,7 +4944,7 @@ Please check the user's identity and reset their password from the admin panel.`
               </p>
             </motion.div>
 
-            {/* ✅ Redirect Success Message */}
+            {/* Redirect Success Message */}
             {redirectSuccess && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}

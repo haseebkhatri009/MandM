@@ -985,6 +985,7 @@ import { rtdb } from '@/lib/firebase';
 import { ref, get, onValue } from 'firebase/database';
 import { CartItem, useCart } from '@/lib/cartContext';
 import { useAuth } from '@/lib/authContext';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface Product {
   id: string;
@@ -1096,6 +1097,27 @@ export default function ProductDetailsPage() {
   }, [product, user, cartItems]);
 
   const handleAddToCart = () => {
+    // ✅ Check if user is logged in
+    if (!user) {
+      toast.error('🔒 Please login to add items to cart', {
+        duration: 3000,
+        position: 'top-right',
+        style: {
+          background: '#EF4444',
+          color: '#fff',
+          padding: '16px 20px',
+          borderRadius: '12px',
+          fontSize: '15px',
+        },
+        icon: '🔒',
+      });
+      // ✅ Redirect to login after 1.5 seconds
+      setTimeout(() => {
+        router.push('/login');
+      }, 1500);
+      return;
+    }
+
     if (product && quantity > 0) {
       const cartItem: CartItem = {
         id: product.id,
@@ -1109,13 +1131,28 @@ export default function ProductDetailsPage() {
       addToCart(cartItem);
       setAddedToCart(true);
       setIsInCart(true);
+      
+      // ✅ Show success toast
+      toast.success(`🛒 ${product.name} added to cart!`, {
+        duration: 2000,
+        position: 'top-right',
+        style: {
+          background: '#10B981',
+          color: '#fff',
+          padding: '16px 20px',
+          borderRadius: '12px',
+          fontSize: '15px',
+        },
+        icon: '🛒',
+      });
+      
       setTimeout(() => setAddedToCart(false), 2000);
     }
   };
 
   const isOutOfStock = product && (product.stock === undefined || product.stock === 0);
   const stockStatus = product?.stock || 0;
-  const maxQuantity = Math.min(stockStatus, 10);
+  const maxQuantity = stockStatus;
   const canAddToCart = product && quantity > 0 && !isOutOfStock && quantity <= stockStatus && !isInCart;
   const isDeliveryFree = deliveryCharge === 0;
 
@@ -1140,6 +1177,9 @@ export default function ProductDetailsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/30 relative overflow-hidden">
+      {/* Toast Container */}
+      <Toaster position="top-right" />
+
       {/* Animated Watermark */}
       <motion.div
         className="fixed inset-0 pointer-events-none opacity-[0.04] z-0"
@@ -1174,7 +1214,7 @@ export default function ProductDetailsPage() {
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             Back to Products
           </Link>
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <button
               onClick={() => setIsWishlisted(!isWishlisted)}
               className="p-2 rounded-full hover:bg-secondary transition-colors"
@@ -1184,7 +1224,7 @@ export default function ProductDetailsPage() {
             <button className="p-2 rounded-full hover:bg-secondary transition-colors">
               <Share2 size={20} className="text-muted-foreground" />
             </button>
-          </div>
+          </div> */}
         </div>
       </motion.div>
 
@@ -1435,7 +1475,7 @@ export default function ProductDetailsPage() {
               whileHover={canAddToCart ? { scale: 1.02 } : {}}
               whileTap={canAddToCart ? { scale: 0.98 } : {}}
               onClick={handleAddToCart}
-              disabled={!canAddToCart}
+              disabled={!canAddToCart && !isInCart}
               className={`relative w-full py-4 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
                 isInCart
                   ? 'bg-green-500 text-white cursor-not-allowed opacity-80'
