@@ -1991,7 +1991,7 @@ export default function ProductsPage() {
         {/* Footer */}
         <footer className="bg-white py-6 sm:py-8 px-4 border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
           <div className="max-w-7xl mx-auto text-center text-gray-600 text-xs sm:text-sm">
-            <p>&copy; 2024 M&M Scents. All rights reserved.</p>
+            <p>&copy; 2026 M&M Scents. All rights reserved.</p>
           </div>
         </footer>
       </div>

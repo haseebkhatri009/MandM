@@ -54,14 +54,14 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 //         }
 //         setLoading(false);
@@ -115,7 +115,7 @@
 //             backgroundPosition: 'center'
 //           }}
 //         />
-        
+
 //         {/* Overlay */}
 //         <div className="absolute inset-0 bg-white/10" />
 
@@ -135,7 +135,7 @@
 //             >
 //               {banner.heading}
 //             </motion.h1>
-            
+
 //             <motion.p
 //               initial={{ opacity: 0, y: 20 }}
 //               animate={{ opacity: 1, y: 0 }}
@@ -224,7 +224,7 @@
 //                     <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
 //                       {product.name}
 //                     </h3>
-                    
+
 //                     {/* Price */}
 //                     <div className="flex items-center gap-2 mb-4">
 //                       <span className="text-lg font-bold text-primary">
@@ -288,8 +288,6 @@
 //   );
 // }
 
-
-
 // 'use client';
 
 // import { useEffect, useState } from 'react';
@@ -346,14 +344,14 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 //         }
 //         setLoading(false);
@@ -428,7 +426,7 @@
 //               backgroundPosition: 'center 40%'
 //             }}
 //           />
-          
+
 //           {/* Overlay */}
 //           <div className="absolute inset-0 bg-black/60" />
 
@@ -448,7 +446,7 @@
 //               >
 //                 {banner.heading}
 //               </motion.h1>
-              
+
 //               <motion.p
 //                 initial={{ opacity: 0, y: 20 }}
 //                 animate={{ opacity: 1, y: 0 }}
@@ -542,7 +540,7 @@
 //                       <h3 className="font-serif font-semibold text-foreground mb-2 line-clamp-2">
 //                         {product.name}
 //                       </h3>
-                      
+
 //                       {/* Price */}
 //                       <div className="flex items-center gap-2 mb-4">
 //                         <span className="text-lg font-bold text-primary">
@@ -607,10 +605,6 @@
 //   );
 // }
 
-
-
-
-
 // 'use client';
 
 // import { useEffect, useState } from 'react';
@@ -664,9 +658,9 @@
 //   // Check if product has valid discount - ONLY if discount > 0
 //   const hasValidDiscount = (product: Product) => {
 //     // Strictly check: discount must exist, be greater than 0, and less than price
-//     return product.discount !== undefined && 
-//            product.discount !== null && 
-//            product.discount > 0 && 
+//     return product.discount !== undefined &&
+//            product.discount !== null &&
+//            product.discount > 0 &&
 //            product.discount < product.price;
 //   };
 
@@ -700,14 +694,14 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 //         }
 //         setLoading(false);
@@ -782,7 +776,7 @@
 //               backgroundPosition: 'center 40%'
 //             }}
 //           />
-          
+
 //           {/* Overlay */}
 //           <div className="absolute inset-0 bg-black/60" />
 
@@ -802,7 +796,7 @@
 //               >
 //                 {banner.heading}
 //               </motion.h1>
-              
+
 //               <motion.p
 //                 initial={{ opacity: 0, y: 20 }}
 //                 animate={{ opacity: 1, y: 0 }}
@@ -897,7 +891,7 @@
 //                       <h3 className="font-serif font-semibold text-gray-900 mb-2 line-clamp-2">
 //                         {product.name}
 //                       </h3>
-                      
+
 //                       {/* Price - Only show discount if discount > 0 */}
 //                       <div className="flex items-center gap-2 mb-4">
 //                         <span className="text-lg font-bold text-primary">
@@ -962,8 +956,6 @@
 //   );
 // }
 
-
-
 // 'use client';
 
 // import { useEffect, useState } from 'react';
@@ -1023,9 +1015,9 @@
 //   // Check if product has valid discount - ONLY if discount > 0
 //   const hasValidDiscount = (product: Product) => {
 //     // Strictly check: discount must exist, be greater than 0, and less than price
-//     return product.discount !== undefined && 
-//            product.discount !== null && 
-//            product.discount > 0 && 
+//     return product.discount !== undefined &&
+//            product.discount !== null &&
+//            product.discount > 0 &&
 //            product.discount < product.price;
 //   };
 
@@ -1059,14 +1051,14 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 //         }
 //         setLoading(false);
@@ -1150,7 +1142,7 @@
 //       <Navbar />
 
 //       {/* Toaster Component */}
-//       <Toaster 
+//       <Toaster
 //         position="top-right"
 //         toastOptions={{
 //           duration: 3000,
@@ -1197,7 +1189,7 @@
 //               backgroundPosition: 'center 40%'
 //             }}
 //           />
-          
+
 //           {/* Overlay */}
 //           <div className="absolute inset-0 bg-black/60" />
 
@@ -1217,7 +1209,7 @@
 //               >
 //                 {banner.heading}
 //               </motion.h1>
-              
+
 //               <motion.p
 //                 initial={{ opacity: 0, y: 20 }}
 //                 animate={{ opacity: 1, y: 0 }}
@@ -1280,7 +1272,7 @@
 //                 {products.slice(0, 4).map((product, index) => {
 //                   const inCart = isProductInCart(product.id);
 //                   const discountPercent = getDiscountPercentage(product);
-                  
+
 //                   return (
 //                     <motion.div
 //                       key={product.id}
@@ -1319,7 +1311,7 @@
 //                             </span>
 //                           )}
 //                         </div>
-                        
+
 //                         {/* Price - Only show discount if discount > 0 */}
 //                         <div className="flex items-center gap-2 mb-4">
 //                           <span className="text-lg font-bold text-primary">
@@ -1457,9 +1449,9 @@
 //   // Check if product has valid discount - ONLY if discount > 0
 //   const hasValidDiscount = (product: Product) => {
 //     // Strictly check: discount must exist, be greater than 0, and less than price
-//     return product.discount !== undefined && 
-//            product.discount !== null && 
-//            product.discount > 0 && 
+//     return product.discount !== undefined &&
+//            product.discount !== null &&
+//            product.discount > 0 &&
 //            product.discount < product.price;
 //   };
 
@@ -1503,19 +1495,19 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 
 //           // Filter and set display products
 //           const featuredProducts = productsData.filter(p => p.isFeatured === true);
-          
+
 //           if (featuredProducts.length > 0) {
 //             // If featured products exist, show them (max 4)
 //             setDisplayProducts(featuredProducts.slice(0, 4));
@@ -1606,7 +1598,7 @@
 //       <Navbar />
 
 //       {/* Toaster Component */}
-//       <Toaster 
+//       <Toaster
 //         position="top-right"
 //         toastOptions={{
 //           duration: 3000,
@@ -1653,7 +1645,7 @@
 //               backgroundPosition: 'center 40%'
 //             }}
 //           />
-          
+
 //           {/* Overlay */}
 //           <div className="absolute inset-0 bg-black/60" />
 
@@ -1673,7 +1665,7 @@
 //               >
 //                 {banner.heading}
 //               </motion.h1>
-              
+
 //               <motion.p
 //                 initial={{ opacity: 0, y: 20 }}
 //                 animate={{ opacity: 1, y: 0 }}
@@ -1710,8 +1702,8 @@
 //               className="text-center mb-12"
 //             >
 //               <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-gray-900">
-//                 {products.filter(p => p.isFeatured === true).length > 0 
-//                   ? '⭐ Featured Products' 
+//                 {products.filter(p => p.isFeatured === true).length > 0
+//                   ? '⭐ Featured Products'
 //                   : '✨ Our Products'}
 //               </h2>
 //               <p className="text-gray-600 max-w-lg mx-auto">
@@ -1740,7 +1732,7 @@
 //                 {displayProducts.map((product, index) => {
 //                   const inCart = isProductInCart(product.id);
 //                   const discountPercent = getDiscountPercentage(product);
-                  
+
 //                   return (
 //                     <motion.div
 //                       key={product.id}
@@ -1784,7 +1776,7 @@
 //                             </span>
 //                           )}
 //                         </div>
-                        
+
 //                         {/* Price - Only show discount if discount > 0 */}
 //                         <div className="flex items-center gap-2 mb-4">
 //                           <span className="text-lg font-bold text-primary">
@@ -1929,9 +1921,9 @@
 //   // Check if product has valid discount - ONLY if discount > 0
 //   const hasValidDiscount = (product: Product) => {
 //     // Strictly check: discount must exist, be greater than 0, and less than price
-//     return product.discount !== undefined && 
-//            product.discount !== null && 
-//            product.discount > 0 && 
+//     return product.discount !== undefined &&
+//            product.discount !== null &&
+//            product.discount > 0 &&
 //            product.discount < product.price;
 //   };
 
@@ -1984,19 +1976,19 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 
 //           // Filter and set display products
 //           const featuredProducts = productsData.filter(p => p.isFeatured === true);
-          
+
 //           if (featuredProducts.length > 0) {
 //             // If featured products exist, show them (max 4)
 //             setDisplayProducts(featuredProducts.slice(0, 4));
@@ -2106,21 +2098,21 @@
 //                 <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
 //                 {banner.marqueeText}
 //                 <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
-                
+
 //                 {/* Show Min Order for Free Delivery - ONLY if > 0 */}
 //                 {banner.minOrderForFreeDelivery > 0 && (
 //                   <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
 //                     🎯 Free delivery above {formatPrice(banner.minOrderForFreeDelivery)}
 //                   </span>
 //                 )}
-                
+
 //                 {/* ONLY show Free Delivery when deliveryCharges === 0 */}
 //                 {banner.deliveryCharges === 0 && (
 //                   <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
 //                     🎉 Free Delivery
 //                   </span>
 //                 )}
-                
+
 //                 {/* DO NOTHING when deliveryCharges > 0 - No badge shown */}
 //               </span>
 //             </span>
@@ -2134,7 +2126,7 @@
 //       <Navbar />
 
 //       {/* Toaster Component */}
-//       <Toaster 
+//       <Toaster
 //         position="top-right"
 //         toastOptions={{
 //           duration: 3000,
@@ -2181,7 +2173,7 @@
 //               backgroundPosition: 'center 40%'
 //             }}
 //           />
-          
+
 //           {/* Overlay */}
 //           <div className="absolute inset-0 bg-black/60" />
 
@@ -2201,7 +2193,7 @@
 //               >
 //                 {banner.heading}
 //               </motion.h1>
-              
+
 //               <motion.p
 //                 initial={{ opacity: 0, y: 20 }}
 //                 animate={{ opacity: 1, y: 0 }}
@@ -2238,8 +2230,8 @@
 //               className="text-center mb-12"
 //             >
 //               <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-gray-900">
-//                 {products.filter(p => p.isFeatured === true).length > 0 
-//                   ? '⭐ Featured Products' 
+//                 {products.filter(p => p.isFeatured === true).length > 0
+//                   ? '⭐ Featured Products'
 //                   : '✨ Our Products'}
 //               </h2>
 //               <p className="text-gray-600 max-w-lg mx-auto">
@@ -2268,7 +2260,7 @@
 //                 {displayProducts.map((product, index) => {
 //                   const inCart = isProductInCart(product.id);
 //                   const discountPercent = getDiscountPercentage(product);
-                  
+
 //                   return (
 //                     <motion.div
 //                       key={product.id}
@@ -2311,7 +2303,7 @@
 //                             </span>
 //                           )}
 //                         </div>
-                        
+
 //                         {/* Price */}
 //                         <div className="flex items-center gap-2 mb-4">
 //                           <span className="text-lg font-bold text-primary">
@@ -2387,7 +2379,6 @@
 //   );
 // }
 
-
 // 'use client';
 
 // import { useEffect, useState } from 'react';
@@ -2456,9 +2447,9 @@
 
 //   // Check if product has valid discount
 //   const hasValidDiscount = (product: Product) => {
-//     return product.discount !== undefined && 
-//            product.discount !== null && 
-//            product.discount > 0 && 
+//     return product.discount !== undefined &&
+//            product.discount !== null &&
+//            product.discount > 0 &&
 //            product.discount < product.price;
 //   };
 
@@ -2488,7 +2479,7 @@
 
 //   // ✅ Check if heading and subheading are empty
 //   const hasHeadingOrSubheading = () => {
-//     return (banner.heading && banner.heading.trim() !== '') || 
+//     return (banner.heading && banner.heading.trim() !== '') ||
 //            (banner.subheading && banner.subheading.trim() !== '');
 //   };
 
@@ -2516,18 +2507,18 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 
 //           const featuredProducts = productsData.filter(p => p.isFeatured === true);
-          
+
 //           if (featuredProducts.length > 0) {
 //             setDisplayProducts(featuredProducts.slice(0, 4));
 //           } else {
@@ -2629,13 +2620,13 @@
 //                       <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
 //                       {banner.marqueeText}
 //                       <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
-                      
+
 //                       {banner.minOrderForFreeDelivery > 0 && (
 //                         <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
 //                           🎯 Free delivery above {formatPrice(banner.minOrderForFreeDelivery)}
 //                         </span>
 //                       )}
-                      
+
 //                       {banner.deliveryCharges === 0 && (
 //                         <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
 //                           🎉 Free Delivery
@@ -2652,7 +2643,7 @@
 
 //       <Navbar />
 
-//       <Toaster 
+//       <Toaster
 //         position="top-right"
 //         toastOptions={{
 //           duration: 3000,
@@ -2700,7 +2691,7 @@
 //               backgroundPosition: 'center 40%'
 //             }}
 //           />
-          
+
 //           {/* Mobile Background */}
 //           {banner.backgroundImageMobile && (
 //             <motion.div
@@ -2715,7 +2706,7 @@
 //               }}
 //             />
 //           )}
-          
+
 //           {/* Fallback if no mobile image */}
 //           {!banner.backgroundImageMobile && (
 //             <motion.div
@@ -2730,7 +2721,7 @@
 //               }}
 //             />
 //           )}
-          
+
 //           {/* Overlay */}
 //           <div className="absolute inset-0 bg-black/60" />
 
@@ -2753,7 +2744,7 @@
 //                   {banner.heading}
 //                 </motion.h1>
 //               )}
-              
+
 //               {/* ✅ Only show subheading if it has value */}
 //               {banner.subheading && banner.subheading.trim() !== '' && (
 //                 <motion.p
@@ -2803,7 +2794,7 @@
 //   >
 //     {/* Golden Gradient Text */}
 //     <span className="relative">
-//       <span 
+//       <span
 //         className="relative z-10"
 //         style={{
 //           background: 'linear-gradient(135deg, #ffffff 0%, #f5e6d3 30%, #ffd700 60%, #f5e6d3 80%, #ffffff 100%)',
@@ -2816,9 +2807,9 @@
 //       >
 //         {banner.buttonText}
 //       </span>
-      
+
 //       {/* Glow Effect Behind Text */}
-//       <span 
+//       <span
 //         className="absolute inset-0 blur-3xl opacity-30 -z-0"
 //         style={{
 //           background: 'radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%)',
@@ -2830,21 +2821,21 @@
 //     {/* Animated Arrow */}
 //     <motion.span
 //       animate={{ x: [0, 8, 0] }}
-//       transition={{ 
-//         duration: 1.5, 
+//       transition={{
+//         duration: 1.5,
 //         repeat: Infinity,
 //         ease: "easeInOut"
 //       }}
 //       className="relative"
 //     >
-//       <ArrowRight 
-//         size={60} 
-//         strokeWidth={1.5} 
+//       <ArrowRight
+//         size={60}
+//         strokeWidth={1.5}
 //         className="inline-block"
-//         style={{ 
+//         style={{
 //           color: '#ffd700',
 //           filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.4))'
-//         }} 
+//         }}
 //       />
 //     </motion.span>
 //   </Link>
@@ -2865,8 +2856,8 @@
 //               className="text-center mb-12"
 //             >
 //               <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-gray-900">
-//                 {products.filter(p => p.isFeatured === true).length > 0 
-//                   ? '⭐ Featured Products' 
+//                 {products.filter(p => p.isFeatured === true).length > 0
+//                   ? '⭐ Featured Products'
 //                   : '✨ Our Products'}
 //               </h2>
 //               <p className="text-gray-600 max-w-lg mx-auto">
@@ -2895,7 +2886,7 @@
 //                 {displayProducts.map((product, index) => {
 //                   const inCart = isProductInCart(product.id);
 //                   const discountPercent = getDiscountPercentage(product);
-                  
+
 //                   return (
 //                     <motion.div
 //                       key={product.id}
@@ -2935,7 +2926,7 @@
 //                             </span>
 //                           )}
 //                         </div>
-                        
+
 //                         <div className="flex items-center gap-2 mb-4">
 //                           <span className="text-lg font-bold text-primary">
 //                             {formatPrice(getFinalPrice(product))}
@@ -3007,17 +2998,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
-
 //chatgpt img
 
 // 'use client';
@@ -3087,9 +3067,9 @@
 //   };
 
 //   const hasValidDiscount = (product: Product) => {
-//     return product.discount !== undefined && 
-//            product.discount !== null && 
-//            product.discount > 0 && 
+//     return product.discount !== undefined &&
+//            product.discount !== null &&
+//            product.discount > 0 &&
 //            product.discount < product.price;
 //   };
 
@@ -3139,18 +3119,18 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 
 //           const featuredProducts = productsData.filter(p => p.isFeatured === true);
-          
+
 //           if (featuredProducts.length > 0) {
 //             setDisplayProducts(featuredProducts.slice(0, 4));
 //           } else {
@@ -3252,13 +3232,13 @@
 //                       <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
 //                       {banner.marqueeText}
 //                       <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
-                      
+
 //                       {banner.minOrderForFreeDelivery > 0 && (
 //                         <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
 //                           🎯 Free delivery above {formatPrice(banner.minOrderForFreeDelivery)}
 //                         </span>
 //                       )}
-                      
+
 //                       {banner.deliveryCharges === 0 && (
 //                         <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
 //                           🎉 Free Delivery
@@ -3275,7 +3255,7 @@
 
 //       <Navbar />
 
-//       <Toaster 
+//       <Toaster
 //         position="top-right"
 //         toastOptions={{
 //           duration: 3000,
@@ -3333,7 +3313,7 @@
 //               backgroundPosition: 'center 40%'
 //             }}
 //           />
-          
+
 //           {/* ✅ Tablet Background (md to lg) */}
 //           {banner.backgroundImageTablet && (
 //             <motion.div
@@ -3348,7 +3328,7 @@
 //               }}
 //             />
 //           )}
-          
+
 //           {/* ✅ Fallback Tablet - if no tablet image, use desktop */}
 //           {!banner.backgroundImageTablet && (
 //             <motion.div
@@ -3363,7 +3343,7 @@
 //               }}
 //             />
 //           )}
-          
+
 //           {/* ✅ Mobile Background (below md) */}
 //           {banner.backgroundImageMobile && (
 //             <motion.div
@@ -3378,7 +3358,7 @@
 //               }}
 //             />
 //           )}
-          
+
 //           {/* ✅ Fallback Mobile - if no mobile image, use desktop */}
 //           {!banner.backgroundImageMobile && (
 //             <motion.div
@@ -3393,7 +3373,7 @@
 //               }}
 //             />
 //           )}
-          
+
 //           {/* ✅ Lighter Gradient Overlay */}
 //           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
 
@@ -3452,19 +3432,19 @@
 //               >
 //                 {/* Button Glow */}
 //                 <span className="absolute inset-0 bg-gradient-to-r from-[#C9A84C] to-[#A8893A] rounded-full blur opacity-20 sm:opacity-30" />
-                
+
 //                 {/* ✅ Main Button - Responsive sizing */}
-//                 <span className="relative flex items-center justify-center 
-//                   px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-3.5 lg:px-14 lg:py-4.5 
-//                   bg-[#C9A84C] border-2 border-[#C9A84C] rounded-full 
-//                   overflow-hidden transition-all duration-500 
+//                 <span className="relative flex items-center justify-center
+//                   px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-3.5 lg:px-14 lg:py-4.5
+//                   bg-[#C9A84C] border-2 border-[#C9A84C] rounded-full
+//                   overflow-hidden transition-all duration-500
 //                   hover:bg-[#B8963E] hover:border-[#B8963E]
-                 
+
 //                 ">
 //                   {/* Button Text - Responsive font size */}
-//                   <span className="relative z-10 text-black 
-//                     font-serif font-bold tracking-[0.15em] sm:tracking-[0.2em] 
-//                     text-[10px] xs:text-xs sm:text-sm md:text-base lg:text-base lg:px-4  
+//                   <span className="relative z-10 text-black
+//                     font-serif font-bold tracking-[0.15em] sm:tracking-[0.2em]
+//                     text-[10px] xs:text-xs sm:text-sm md:text-base lg:text-base lg:px-4
 //                     uppercase
 //                      min-[800px]:max-[1023px]:px-10
 //                      min-[650px]:max-[767px]:px-20
@@ -3501,8 +3481,8 @@
 //                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#C9A84C]" />
 //               </div>
 //               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4 text-gray-900">
-//                 {products.filter(p => p.isFeatured === true).length > 0 
-//                   ? '⭐ Featured Products' 
+//                 {products.filter(p => p.isFeatured === true).length > 0
+//                   ? '⭐ Featured Products'
 //                   : '✨ Our Products'}
 //               </h2>
 //               <p className="text-sm sm:text-base text-gray-600 max-w-lg mx-auto font-light tracking-wide px-4">
@@ -3531,7 +3511,7 @@
 //                 {displayProducts.map((product, index) => {
 //                   const inCart = isProductInCart(product.id);
 //                   const discountPercent = getDiscountPercentage(product);
-                  
+
 //                   return (
 //                     <motion.div
 //                       key={product.id}
@@ -3571,7 +3551,7 @@
 //                             </span>
 //                           )}
 //                         </div>
-                        
+
 //                         <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
 //                           <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C9A84C]">
 //                             {formatPrice(getFinalPrice(product))}
@@ -3649,9 +3629,6 @@
 //   );
 // }
 
-
-
-
 //ok without mobile mode multiple img
 // 'use client';
 
@@ -3665,7 +3642,6 @@
 // import { CartItem, useCart } from '@/lib/cartContext';
 // import { useAuth } from '@/lib/authContext';
 // import toast, { Toaster } from 'react-hot-toast';
-
 
 // interface Product {
 //   id: string;
@@ -3719,9 +3695,9 @@
 //   };
 
 //   const hasValidDiscount = (product: Product) => {
-//     return product.discount !== undefined && 
-//            product.discount !== null && 
-//            product.discount > 0 && 
+//     return product.discount !== undefined &&
+//            product.discount !== null &&
+//            product.discount > 0 &&
 //            product.discount < product.price;
 //   };
 
@@ -3770,18 +3746,18 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 
 //           const featuredProducts = productsData.filter(p => p.isFeatured === true);
-          
+
 //           if (featuredProducts.length > 0) {
 //             setDisplayProducts(featuredProducts.slice(0, 4));
 //           } else {
@@ -3883,13 +3859,13 @@
 //                       <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
 //                       {banner.marqueeText}
 //                       <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
-                      
+
 //                       {banner.minOrderForFreeDelivery > 0 && (
 //                         <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
 //                           🎯 Free delivery above {formatPrice(banner.minOrderForFreeDelivery)}
 //                         </span>
 //                       )}
-                      
+
 //                       {banner.deliveryCharges === 0 && (
 //                         <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
 //                           🎉 Free Delivery
@@ -3906,7 +3882,7 @@
 
 //       <Navbar />
 
-//       <Toaster 
+//       <Toaster
 //         position="top-right"
 //         toastOptions={{
 //           duration: 3000,
@@ -3964,7 +3940,7 @@
 //               backgroundPosition: 'center 40%'
 //             }}
 //           />
-          
+
 //           {/* ✅ Mobile Background (400px and below) - FULL SCREEN with SCALE */}
 //           {banner.backgroundImageMobile && (
 //             <motion.div
@@ -3980,7 +3956,7 @@
 //               }}
 //             />
 //           )}
-          
+
 //           {/* ✅ Fallback Mobile - if no mobile image, use desktop with cover */}
 //           {!banner.backgroundImageMobile && (
 //             <motion.div
@@ -3995,7 +3971,7 @@
 //               }}
 //             />
 //           )}
-          
+
 //           {/* ✅ Gradient Overlay */}
 //           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
 
@@ -4072,8 +4048,6 @@
 //         bg-[#C9A84C]
 //         border-2
 //         border-[#C9A84C]
-
-        
 
 //         overflow-hidden
 
@@ -4161,8 +4135,8 @@
 //                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#C9A84C]" />
 //               </div>
 //               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4 text-gray-900">
-//                 {products.filter(p => p.isFeatured === true).length > 0 
-//                   ? '⭐ Featured Products' 
+//                 {products.filter(p => p.isFeatured === true).length > 0
+//                   ? '⭐ Featured Products'
 //                   : '✨ Our Products'}
 //               </h2>
 //               <p className="text-sm sm:text-base text-gray-600 max-w-lg mx-auto font-light tracking-wide px-4">
@@ -4191,7 +4165,7 @@
 //                 {displayProducts.map((product, index) => {
 //                   const inCart = isProductInCart(product.id);
 //                   const discountPercent = getDiscountPercentage(product);
-                  
+
 //                   return (
 //                     <motion.div
 //                       key={product.id}
@@ -4231,7 +4205,7 @@
 //                             </span>
 //                           )}
 //                         </div>
-                        
+
 //                         <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
 //                           <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C9A84C]">
 //                             {formatPrice(getFinalPrice(product))}
@@ -4408,9 +4382,9 @@
 //   };
 
 //   const hasValidDiscount = (product: Product) => {
-//     return product.discount !== undefined && 
-//            product.discount !== null && 
-//            product.discount > 0 && 
+//     return product.discount !== undefined &&
+//            product.discount !== null &&
+//            product.discount > 0 &&
 //            product.discount < product.price;
 //   };
 
@@ -4463,18 +4437,18 @@
 //         if (snapshot.exists()) {
 //           const productsData: Product[] = [];
 //           const data = snapshot.val();
-          
+
 //           Object.keys(data).forEach((key) => {
 //             productsData.push({
 //               id: key,
 //               ...data[key]
 //             } as Product);
 //           });
-          
+
 //           setProducts(productsData);
 
 //           const featuredProducts = productsData.filter(p => p.isFeatured === true);
-          
+
 //           if (featuredProducts.length > 0) {
 //             setDisplayProducts(featuredProducts.slice(0, 4));
 //           } else {
@@ -4576,13 +4550,13 @@
 //                       <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
 //                       {banner.marqueeText}
 //                       <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
-                      
+
 //                       {banner.minOrderForFreeDelivery > 0 && (
 //                         <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
 //                           🎯 Free delivery above {formatPrice(banner.minOrderForFreeDelivery)}
 //                         </span>
 //                       )}
-                      
+
 //                       {banner.deliveryCharges === 0 && (
 //                         <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
 //                           🎉 Free Delivery
@@ -4599,7 +4573,7 @@
 
 //       <Navbar />
 
-//       <Toaster 
+//       <Toaster
 //         position="top-right"
 //         toastOptions={{
 //           duration: 3000,
@@ -4657,7 +4631,7 @@
 //               backgroundPosition: 'center 40%'
 //             }}
 //           />
-          
+
 //           {/* ✅ Mobile Background (400px and below) - SLIDESHOW */}
 //           {mobileImages.length > 0 && (
 //             <AnimatePresence mode="wait">
@@ -4677,7 +4651,7 @@
 //               />
 //             </AnimatePresence>
 //           )}
-          
+
 //           {/* ✅ Fallback Mobile - if no mobile images, use desktop with cover */}
 //           {mobileImages.length === 0 && (
 //             <motion.div
@@ -4692,7 +4666,7 @@
 //               }}
 //             />
 //           )}
-          
+
 //           {/* ✅ Gradient Overlay */}
 //           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
 
@@ -4708,8 +4682,8 @@
 //                   key={index}
 //                   onClick={() => setCurrentMobileIndex(index)}
 //                   className={`h-1 rounded-full transition-all duration-300 ${
-//                     currentMobileIndex === index 
-//                       ? 'w-4 bg-[#C9A84C]' 
+//                     currentMobileIndex === index
+//                       ? 'w-4 bg-[#C9A84C]'
 //                       : 'w-2 bg-white/40 hover:bg-white/60'
 //                   }`}
 //                 />
@@ -4875,8 +4849,8 @@
 //                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#C9A84C]" />
 //               </div>
 //               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4 text-gray-900">
-//                 {products.filter(p => p.isFeatured === true).length > 0 
-//                   ? '⭐ Featured Products' 
+//                 {products.filter(p => p.isFeatured === true).length > 0
+//                   ? '⭐ Featured Products'
 //                   : '✨ Our Products'}
 //               </h2>
 //               <p className="text-sm sm:text-base text-gray-600 max-w-lg mx-auto font-light tracking-wide px-4">
@@ -4905,7 +4879,7 @@
 //                 {displayProducts.map((product, index) => {
 //                   const inCart = isProductInCart(product.id);
 //                   const discountPercent = getDiscountPercentage(product);
-                  
+
 //                   return (
 //                     <motion.div
 //                       key={product.id}
@@ -4945,7 +4919,7 @@
 //                             </span>
 //                           )}
 //                         </div>
-                        
+
 //                         <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
 //                           <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C9A84C]">
 //                             {formatPrice(getFinalPrice(product))}
@@ -5024,18 +4998,18 @@
 // }
 
 //mobile mode issue solved
-'use client';
+"use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
-import { ArrowRight, CheckCircle, Sparkles } from 'lucide-react';
-import { rtdb } from '@/lib/firebase';
-import { ref, onValue } from 'firebase/database';
-import Navbar from '@/components/Navbar';
-import { CartItem, useCart } from '@/lib/cartContext';
-import { useAuth } from '@/lib/authContext';
-import toast, { Toaster } from 'react-hot-toast';
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { ArrowRight, CheckCircle, Sparkles } from "lucide-react";
+import { rtdb } from "@/lib/firebase";
+import { ref, onValue } from "firebase/database";
+import Navbar from "@/components/Navbar";
+import { CartItem, useCart } from "@/lib/cartContext";
+import { useAuth } from "@/lib/authContext";
+import toast, { Toaster } from "react-hot-toast";
 
 interface Product {
   id: string;
@@ -5066,18 +5040,18 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
   const [banner, setBanner] = useState<BannerData>({
-    heading: '',
-    subheading: '',
-    buttonText: 'SHOP NOW',
-    backgroundImage: 'https://i.ibb.co/MkhVcztQ/theme.jpg',
-    backgroundImageMobile: '',
-    backgroundImageMobile2: '',
-    backgroundImageMobile3: '',
-    backgroundImageMobile4: '',
-    backgroundImageMobile5: '',
-    marqueeText: '',
+    heading: "",
+    subheading: "",
+    buttonText: "SHOP NOW",
+    backgroundImage: "https://i.ibb.co/MkhVcztQ/theme.jpg",
+    backgroundImageMobile: "",
+    backgroundImageMobile2: "",
+    backgroundImageMobile3: "",
+    backgroundImageMobile4: "",
+    backgroundImageMobile5: "",
+    marqueeText: "",
     minOrderForFreeDelivery: 0,
-    deliveryCharges: 0
+    deliveryCharges: 0,
   });
   const [loading, setLoading] = useState(true);
   const [currentMobileIndex, setCurrentMobileIndex] = useState(0);
@@ -5091,10 +5065,14 @@ export default function Home() {
   const getMobileImages = () => {
     const images = [];
     if (banner.backgroundImageMobile) images.push(banner.backgroundImageMobile);
-    if (banner.backgroundImageMobile2) images.push(banner.backgroundImageMobile2);
-    if (banner.backgroundImageMobile3) images.push(banner.backgroundImageMobile3);
-    if (banner.backgroundImageMobile4) images.push(banner.backgroundImageMobile4);
-    if (banner.backgroundImageMobile5) images.push(banner.backgroundImageMobile5);
+    if (banner.backgroundImageMobile2)
+      images.push(banner.backgroundImageMobile2);
+    if (banner.backgroundImageMobile3)
+      images.push(banner.backgroundImageMobile3);
+    if (banner.backgroundImageMobile4)
+      images.push(banner.backgroundImageMobile4);
+    if (banner.backgroundImageMobile5)
+      images.push(banner.backgroundImageMobile5);
     return images;
   };
 
@@ -5132,8 +5110,8 @@ export default function Home() {
       setIsMobile(window.innerWidth <= 400);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Auto-slide effect for mobile images - 5 seconds
@@ -5157,23 +5135,25 @@ export default function Home() {
   }, [mobileImages.length, isMobile]);
 
   const isProductInCart = (productId: string) => {
-    return cartItems.some(item => item.id === productId);
+    return cartItems.some((item) => item.id === productId);
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ur-PK', {
-      style: 'currency',
-      currency: 'PKR',
+    return new Intl.NumberFormat("ur-PK", {
+      style: "currency",
+      currency: "PKR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
   };
 
   const hasValidDiscount = (product: Product) => {
-    return product.discount !== undefined && 
-           product.discount !== null && 
-           product.discount > 0 && 
-           product.discount < product.price;
+    return (
+      product.discount !== undefined &&
+      product.discount !== null &&
+      product.discount > 0 &&
+      product.discount < product.price
+    );
   };
 
   const getDiscountPercentage = (product: Product) => {
@@ -5199,44 +5179,48 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      const bannerRef = ref(rtdb, 'admin_settings/banner');
+      const bannerRef = ref(rtdb, "admin_settings/banner");
       const unsubscribeBanner = onValue(bannerRef, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           setBanner({
-            heading: data.heading || '',
-            subheading: data.subheading || '',
-            buttonText: data.buttonText || 'SHOP NOW',
-            backgroundImage: data.backgroundImage || 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-JcYvSSgzZgAPnalbf3iR7aptCoX1JC.jpg',
-            backgroundImageMobile: data.backgroundImageMobile || '',
-            backgroundImageMobile2: data.backgroundImageMobile2 || '',
-            backgroundImageMobile3: data.backgroundImageMobile3 || '',
-            backgroundImageMobile4: data.backgroundImageMobile4 || '',
-            backgroundImageMobile5: data.backgroundImageMobile5 || '',
-            marqueeText: data.marqueeText || '',
+            heading: data.heading || "",
+            subheading: data.subheading || "",
+            buttonText: data.buttonText || "SHOP NOW",
+            backgroundImage:
+              data.backgroundImage ||
+              "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-JcYvSSgzZgAPnalbf3iR7aptCoX1JC.jpg",
+            backgroundImageMobile: data.backgroundImageMobile || "",
+            backgroundImageMobile2: data.backgroundImageMobile2 || "",
+            backgroundImageMobile3: data.backgroundImageMobile3 || "",
+            backgroundImageMobile4: data.backgroundImageMobile4 || "",
+            backgroundImageMobile5: data.backgroundImageMobile5 || "",
+            marqueeText: data.marqueeText || "",
             minOrderForFreeDelivery: data.minOrderForFreeDelivery || 0,
-            deliveryCharges: data.deliveryCharges || 0
+            deliveryCharges: data.deliveryCharges || 0,
           });
         }
       });
 
-      const productsRef = ref(rtdb, 'products');
+      const productsRef = ref(rtdb, "products");
       const unsubscribeProducts = onValue(productsRef, (snapshot) => {
         if (snapshot.exists()) {
           const productsData: Product[] = [];
           const data = snapshot.val();
-          
+
           Object.keys(data).forEach((key) => {
             productsData.push({
               id: key,
-              ...data[key]
+              ...data[key],
             } as Product);
           });
-          
+
           setProducts(productsData);
 
-          const featuredProducts = productsData.filter(p => p.isFeatured === true);
-          
+          const featuredProducts = productsData.filter(
+            (p) => p.isFeatured === true,
+          );
+
           if (featuredProducts.length > 0) {
             setDisplayProducts(featuredProducts.slice(0, 4));
           } else {
@@ -5252,26 +5236,26 @@ export default function Home() {
         unsubscribeProducts();
       };
     } catch (error) {
-      console.log('[v0] Error fetching data:', error);
+      console.log("[v0] Error fetching data:", error);
       setLoading(false);
     }
   }, []);
 
   const handleAddToCart = (product: Product) => {
     if (!user) {
-      toast.error('Please login first to add items to cart', {
+      toast.error("Please login first to add items to cart", {
         duration: 3000,
-        position: 'top-right',
+        position: "top-right",
         style: {
-          background: '#EF4444',
-          color: '#fff',
-          padding: '16px',
-          borderRadius: '12px',
+          background: "#EF4444",
+          color: "#fff",
+          padding: "16px",
+          borderRadius: "12px",
         },
-        icon: '🔒',
+        icon: "🔒",
       });
       setTimeout(() => {
-        window.location.href = '/login';
+        window.location.href = "/login";
       }, 1500);
       return;
     }
@@ -5279,14 +5263,14 @@ export default function Home() {
     if (isProductInCart(product.id)) {
       toast.error(`${product.name} is already in your cart!`, {
         duration: 3000,
-        position: 'top-right',
+        position: "top-right",
         style: {
-          background: '#F59E0B',
-          color: '#fff',
-          padding: '16px',
-          borderRadius: '12px',
+          background: "#F59E0B",
+          color: "#fff",
+          padding: "16px",
+          borderRadius: "12px",
         },
-        icon: '⚠️',
+        icon: "⚠️",
       });
       return;
     }
@@ -5298,21 +5282,21 @@ export default function Home() {
       discount: product.discount,
       image: product.image,
       quantity: 1,
-      category: product.category
+      category: product.category,
     };
 
     addToCart(cartItem);
 
     toast.success(`${product.name} added to cart!`, {
       duration: 3000,
-      position: 'top-right',
+      position: "top-right",
       style: {
-        background: '#10B981',
-        color: '#fff',
-        padding: '16px',
-        borderRadius: '12px',
+        background: "#10B981",
+        color: "#fff",
+        padding: "16px",
+        borderRadius: "12px",
       },
-      icon: '🛒',
+      icon: "🛒",
     });
   };
 
@@ -5324,7 +5308,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto relative">
             <div className="overflow-hidden">
               <motion.div
-                animate={{ x: ['100%', '-100%'] }}
+                animate={{ x: ["100%", "-100%"] }}
                 transition={{
                   duration: 20,
                   repeat: Infinity,
@@ -5333,18 +5317,22 @@ export default function Home() {
                 className="flex whitespace-nowrap"
               >
                 {[...Array(2)].map((_, index) => (
-                  <span key={index} className="text-white font-medium text-sm md:text-base tracking-wide flex items-center gap-8 mx-4">
+                  <span
+                    key={index}
+                    className="text-white font-medium text-sm md:text-base tracking-wide flex items-center gap-8 mx-4"
+                  >
                     <span className="flex items-center gap-3">
                       <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
                       {banner.marqueeText}
                       <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
-                      
+
                       {banner.minOrderForFreeDelivery > 0 && (
                         <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
-                          🎯 Free delivery above {formatPrice(banner.minOrderForFreeDelivery)}
+                          🎯 Free delivery above{" "}
+                          {formatPrice(banner.minOrderForFreeDelivery)}
                         </span>
                       )}
-                      
+
                       {banner.deliveryCharges === 0 && (
                         <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
                           🎉 Free Delivery
@@ -5361,15 +5349,15 @@ export default function Home() {
 
       <Navbar />
 
-      <Toaster 
+      <Toaster
         position="top-right"
         toastOptions={{
           duration: 3000,
           style: {
-            background: '#333',
-            color: '#fff',
-            padding: '16px',
-            borderRadius: '12px',
+            background: "#333",
+            color: "#fff",
+            padding: "16px",
+            borderRadius: "12px",
           },
         }}
       />
@@ -5379,12 +5367,12 @@ export default function Home() {
         className="fixed inset-0 pointer-events-none opacity-[0.06] z-15 flex items-center justify-center"
         animate={{
           scale: [1, 1.05, 1],
-          opacity: [0.05, 0.08, 0.05]
+          opacity: [0.05, 0.08, 0.05],
         }}
         transition={{
           duration: 20,
           repeat: Infinity,
-          ease: "easeInOut"
+          ease: "easeInOut",
         }}
       >
         <div className="relative w-[80%] max-w-4xl">
@@ -5395,9 +5383,15 @@ export default function Home() {
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center font-serif text-[#8B7355] opacity-30">
-              <div className="text-xs md:text-sm tracking-[0.3em] uppercase">GLOW WITH BEAUTY,</div>
-              <div className="text-xl md:text-3xl font-bold tracking-[0.2em]">M&M</div>
-              <div className="text-xs md:text-sm tracking-[0.3em] uppercase">STAY WITH SCENT</div>
+              <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+                GLOW WITH BEAUTY,
+              </div>
+              <div className="text-xl md:text-3xl font-bold tracking-[0.2em]">
+                M&M
+              </div>
+              <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+                STAY WITH SCENT
+              </div>
             </div>
           </div>
         </div>
@@ -5407,229 +5401,190 @@ export default function Home() {
       <div className="relative">
         {/* Hero Banner */}
         <section className="relative w-full h-[calc(100vh-64px)] max-h-[600px] overflow-hidden z-15 bg-black">
-          {/* ✅ Desktop Background (above 400px) */}
-          <motion.div
-            initial={{ scale: 1.1, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 bg-cover bg-center brightness-50 max-[400px]:hidden"
-            style={{
-              backgroundImage: `url('${banner.backgroundImage}')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center 40%'
+  {/* ✅ Desktop Background - Sirf desktop pe */}
+  <motion.div
+    initial={{ scale: 1.1, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    transition={{ duration: 0.8 }}
+    className="absolute inset-0 bg-cover bg-center brightness-50 max-[400px]:hidden"
+    style={{
+      backgroundImage: `url('${banner.backgroundImage}')`,
+      backgroundSize: "cover",
+      backgroundPosition: "center 40%",
+    }}
+  />
+
+  {/* ✅ Mobile Background - Images slide with NO BLACK */}
+  {mobileImages.length > 0 && isMobile && imagesLoaded && (
+    <div className="absolute inset-[-20px] max-[400px]:block hidden overflow-hidden">
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={currentMobileIndex}
+          initial={{ x: "100%" }}
+          animate={{ x: "0%" }}
+          exit={{ x: "-100%" }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className="absolute inset-0 brightness-60"
+          style={{
+            backgroundImage: `url('${mobileImages[currentMobileIndex]}')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+      </AnimatePresence>
+    </div>
+  )}
+
+  {/* ✅ Gradient Overlay */}
+  <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
+
+  {/* Gold Border Lines */}
+  <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+  <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+
+  {/* Content */}
+  <div className="relative h-full flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 px-4">
+    {/* SHOP NOW Button */}
+    <motion.div
+      initial={{ opacity: 0, y: 40, scale: 0.9 }}
+      animate={{
+        opacity: 1,
+        y: [0, -8, 0],
+        scale: [1, 1.02, 1],
+      }}
+      transition={{
+        opacity: {
+          duration: 0.8,
+          ease: "easeOut",
+        },
+        y: {
+          duration: 2.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        },
+        scale: {
+          duration: 2.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        },
+      }}
+    >
+      <Link
+        href="/products"
+        className="
+          group
+          relative
+          inline-block
+          transition-all
+          duration-300
+          hover:scale-105
+
+          max-[400px]:bottom-[0px]
+          min-[400px]:max-[650px]:bottom-[125px]
+          min-[650px]:max-[767px]:bottom-[110px]
+          min-[768px]:max-[799px]:bottom-[90px]
+          min-[800px]:max-[1023px]:bottom-[80px]
+          min-[1024px]:max-[1099px]:bottom-[70px]
+          min-[1100px]:max-[1199px]:bottom-[60px]
+          min-[1200px]:max-[1299px]:bottom-[50px]
+          min-[1300px]:max-[1359px]:bottom-[37px]
+          min-[1360px]:right-[2px]
+          min-[1360px]:bottom-[23px]
+        "
+      >
+        {/* Glow */}
+        <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#A8893A] blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500" />
+
+        {/* Button */}
+        <span
+          className="
+            relative
+            flex
+            items-center
+            justify-center
+
+            px-6 py-2.5
+            sm:px-8 sm:py-3
+            md:px-10 md:py-3.5
+            lg:px-14 lg:py-4.5
+
+            bg-[#C9A84C]
+            border-2
+            border-[#C9A84C]
+
+            
+
+            overflow-hidden
+
+            transition-all
+            duration-500
+
+            hover:bg-[#B8963E]
+            hover:border-[#B8963E]
+
+            shadow-[0_10px_30px_rgba(201,168,76,0.35)]
+            group-hover:shadow-[0_15px_50px_rgba(201,168,76,0.7)]
+          "
+        >
+          <motion.span
+            animate={{
+              y: [0, -2, 0],
             }}
-          />
-          
-          {/* ✅ Mobile Background (400px and below) - SLIDESHOW with Left to Right */}
-          {mobileImages.length > 0 && isMobile && imagesLoaded && (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentMobileIndex}
-                initial={{ x: '100%', opacity: 0 }}
-                animate={{ x: '0%', opacity: 1 }}
-                exit={{ x: '-100%', opacity: 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-                className="absolute inset-[-20px] max-[400px]:block hidden brightness-60"
-                style={{
-                  backgroundImage: `url('${mobileImages[currentMobileIndex]}')`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
-                }}
+            transition={{
+              duration: 1.4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="
+              relative
+              z-10
+
+              text-black
+              font-serif
+              font-bold
+              uppercase
+
+              tracking-[0.15em]
+
+              text-[10px]
+
+              min-[300px]:max-[400px]:text-[14px]
+              min-[401px]:max-[649px]:text-[13px]
+              min-[650px]:max-[767px]:text-[14px]
+              min-[768px]:max-[1023px]:text-[15px]
+              min-[1024px]:text-[20px]
+
+              min-[800px]:max-[1023px]:px-10
+              min-[650px]:max-[767px]:px-20
+              min-[401px]:max-[649px]:px-20
+              min-[300px]:max-[400px]:px-8
+            "
+          >
+            <div className="flex items-center gap-2">
+              <span>{banner.buttonText}</span>
+
+              <ArrowRight
+                size={18}
+                strokeWidth={2.5}
+                className="transition-transform duration-300 group-hover:translate-x-1"
               />
-            </AnimatePresence>
-          )}
-          
-          {/* ✅ Fallback Mobile - if no mobile images, use desktop with cover */}
-          {mobileImages.length === 0 && (
-            <motion.div
-              initial={{ scale: 1.1, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              className="absolute inset-0 bg-cover bg-center max-[400px]:block hidden brightness-50"
-              style={{
-                backgroundImage: `url('${banner.backgroundImage}')`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            />
-          )}
-          
-          {/* ✅ Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
-
-          {/* Gold Border Lines */}
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
-
-          {/* ✅ Mobile Image Dots Indicator */}
-          {/* {mobileImages.length > 1 && isMobile && (
-            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 max-[400px]:flex hidden">
-              {mobileImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setCurrentMobileIndex(index);
-                    // Reset interval when manually clicked
-                    if (intervalRef.current) {
-                      clearInterval(intervalRef.current);
-                      intervalRef.current = setInterval(() => {
-                        setCurrentMobileIndex((prev) => (prev + 1) % mobileImages.length);
-                      }, 5000);
-                    }
-                  }}
-                  className={`h-1 rounded-full transition-all duration-300 ${
-                    currentMobileIndex === index 
-                      ? 'w-4 bg-[#C9A84C]' 
-                      : 'w-2 bg-white/40 hover:bg-white/60'
-                  }`}
-                />
-              ))}
             </div>
-          )} */}
+          </motion.span>
+        </span>
+      </Link>
+    </motion.div>
 
-          {/* Content */}
-          <div className="relative h-full flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 px-4">
-            {/* SHOP NOW Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.9 }}
-              animate={{
-                opacity: 1,
-                y: [0, -8, 0],
-                scale: [1, 1.02, 1],
-              }}
-              transition={{
-                opacity: {
-                  duration: 0.8,
-                  ease: "easeOut",
-                },
-                y: {
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                },
-                scale: {
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                },
-              }}
-            >
-              <Link
-                href="/products"
-                className="
-                  group
-                  relative
-                  inline-block
-                  transition-all
-                  duration-300
-                  hover:scale-105
-
-                  max-[400px]:bottom-[0px]
-                  min-[400px]:max-[650px]:bottom-[125px]
-                  min-[650px]:max-[767px]:bottom-[110px]
-                  min-[768px]:max-[799px]:bottom-[90px]
-                  min-[800px]:max-[1023px]:bottom-[80px]
-                  min-[1024px]:max-[1099px]:bottom-[70px]
-                  min-[1100px]:max-[1199px]:bottom-[60px]
-                  min-[1200px]:max-[1299px]:bottom-[50px]
-                  min-[1300px]:max-[1359px]:bottom-[37px]
-                  min-[1360px]:right-[2px]
-                  min-[1360px]:bottom-[23px]
-                "
-              >
-                {/* Glow */}
-                <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#A8893A] blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500" />
-
-                {/* Button */}
-                <span
-                  className="
-                    relative
-                    flex
-                    items-center
-                    justify-center
-
-                    px-6 py-2.5
-                    sm:px-8 sm:py-3
-                    md:px-10 md:py-3.5
-                    lg:px-14 lg:py-4.5
-
-                    bg-[#C9A84C]
-                    border-2
-                    border-[#C9A84C]
-
-                    
-
-                    overflow-hidden
-
-                    transition-all
-                    duration-500
-
-                    hover:bg-[#B8963E]
-                    hover:border-[#B8963E]
-
-                    shadow-[0_10px_30px_rgba(201,168,76,0.35)]
-                    group-hover:shadow-[0_15px_50px_rgba(201,168,76,0.7)]
-                  "
-                >
-                  <motion.span
-                    animate={{
-                      y: [0, -2, 0],
-                    }}
-                    transition={{
-                      duration: 1.4,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                    className="
-                      relative
-                      z-10
-
-                      text-black
-                      font-serif
-                      font-bold
-                      uppercase
-
-                      tracking-[0.15em]
-
-                      text-[10px]
-
-                      min-[300px]:max-[400px]:text-[14px]
-                      min-[401px]:max-[649px]:text-[13px]
-                      min-[650px]:max-[767px]:text-[14px]
-                      min-[768px]:max-[1023px]:text-[15px]
-                      min-[1024px]:text-[20px]
-
-                      min-[800px]:max-[1023px]:px-10
-                      min-[650px]:max-[767px]:px-20
-                      min-[401px]:max-[649px]:px-20
-                      min-[300px]:max-[400px]:px-8
-                    "
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>{banner.buttonText}</span>
-
-                      <ArrowRight
-                        size={18}
-                        strokeWidth={2.5}
-                        className="transition-transform duration-300 group-hover:translate-x-1"
-                      />
-                    </div>
-                  </motion.span>
-                </span>
-              </Link>
-            </motion.div>
-
-            {/* Decorative Bottom Line */}
-            <motion.div
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: "80px" }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="h-[1px] mx-auto mt-4 sm:mt-6 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"
-              style={{ width: 'clamp(60px, 20vw, 120px)' }}
-            />
-          </div>
-        </section>
+    {/* Decorative Bottom Line */}
+    <motion.div
+      initial={{ opacity: 0, width: 0 }}
+      animate={{ opacity: 1, width: "80px" }}
+      transition={{ duration: 0.8, delay: 0.6 }}
+      className="h-[1px] mx-auto mt-4 sm:mt-6 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"
+      style={{ width: "clamp(60px, 20vw, 120px)" }}
+    />
+  </div>
+</section>
 
         {/* Featured Products */}
         <section className="py-12 sm:py-16 px-4 relative bg-white">
@@ -5646,14 +5601,14 @@ export default function Home() {
                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#C9A84C]" />
               </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4 text-gray-900">
-                {products.filter(p => p.isFeatured === true).length > 0 
-                  ? '⭐ Featured Products' 
-                  : '✨ Our Products'}
+                {products.filter((p) => p.isFeatured === true).length > 0
+                  ? "⭐ Featured Products"
+                  : "✨ Our Products"}
               </h2>
               <p className="text-sm sm:text-base text-gray-600 max-w-lg mx-auto font-light tracking-wide px-4">
-                {products.filter(p => p.isFeatured === true).length > 0
-                  ? 'Handpicked selections just for you'
-                  : 'Discover our curated collection of premium beauty products'}
+                {products.filter((p) => p.isFeatured === true).length > 0
+                  ? "Handpicked selections just for you"
+                  : "Discover our curated collection of premium beauty products"}
               </p>
             </motion.div>
 
@@ -5676,7 +5631,7 @@ export default function Home() {
                 {displayProducts.map((product, index) => {
                   const inCart = isProductInCart(product.id);
                   const discountPercent = getDiscountPercentage(product);
-                  
+
                   return (
                     <motion.div
                       key={product.id}
@@ -5692,7 +5647,8 @@ export default function Home() {
                           alt={product.name}
                           className="w-full h-full object-contain p-2"
                           onError={(e) => {
-                            e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e8e3dc" width="300" height="300"/%3E%3C/svg%3E';
+                            e.currentTarget.src =
+                              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e8e3dc" width="300" height="300"/%3E%3C/svg%3E';
                           }}
                         />
                         {product.isFeatured && (
@@ -5716,7 +5672,7 @@ export default function Home() {
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
                           <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C9A84C]">
                             {formatPrice(getFinalPrice(product))}
@@ -5742,7 +5698,9 @@ export default function Home() {
                               onClick={() => handleAddToCart(product)}
                               className="flex-1 bg-[#C9A84C] text-white py-1 sm:py-2 rounded-lg font-semibold hover:bg-[#8B7355] transition-all cursor-pointer text-[8px] sm:text-xs"
                             >
-                              <span className="hidden xs:inline">Add to Cart</span>
+                              <span className="hidden xs:inline">
+                                Add to Cart
+                              </span>
                               <span className="xs:hidden">Add</span>
                             </button>
                           )}
@@ -5761,7 +5719,9 @@ export default function Home() {
             ) : (
               <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
                 <p className="text-gray-600 mb-4">No products available yet</p>
-                <p className="text-sm text-gray-500">Admin needs to add products first</p>
+                <p className="text-sm text-gray-500">
+                  Admin needs to add products first
+                </p>
               </div>
             )}
 
@@ -5783,10 +5743,14 @@ export default function Home() {
           <div className="max-w-7xl mx-auto text-center">
             <div className="flex justify-center items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
-              <span className="text-[#C9A84C] text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase font-serif">M&M Scents & Glow</span>
+              <span className="text-[#C9A84C] text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase font-serif">
+                M&M Scents & Glow
+              </span>
               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
             </div>
-            <p className="text-gray-600 text-[10px] sm:text-sm">&copy; 2024 M&M Scents. All rights reserved.</p>
+            <p className="text-gray-600 text-[10px] sm:text-sm">
+              &copy; 2026 M&M Scents. All rights reserved.
+            </p>
           </div>
         </footer>
       </div>
