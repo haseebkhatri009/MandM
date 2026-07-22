@@ -218,9 +218,6 @@
 //   );
 // }
 
-
-
-
 //with eye icon see or hide password
 
 // 'use client';
@@ -454,10 +451,6 @@
 //     </div>
 //   );
 // }
-
-
-
-
 
 //with user auth /login to /
 
@@ -723,16 +716,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
 // 'use client';
 
 // import { useState, useEffect } from 'react';
@@ -754,7 +737,7 @@
 //   const [showPassword, setShowPassword] = useState(false);
 //   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 //   const [isPhoneLogin, setIsPhoneLogin] = useState(false);
-  
+
 //   const { user, login, loginWithPhone, loginWithGoogle } = useAuth();
 //   const router = useRouter();
 
@@ -770,7 +753,7 @@
 //     const { name, value } = e.target;
 //     const cleanValue = value.replace(/\s/g, '');
 //     setFormData(prev => ({ ...prev, [name]: cleanValue }));
-    
+
 //     if (name === 'emailOrPhone') {
 //       if (/^\d{11}$/.test(cleanValue)) {
 //         setIsPhoneLogin(true);
@@ -1043,15 +1026,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
 //reset password modal
 
 // 'use client';
@@ -1075,7 +1049,7 @@
 //   const [showPassword, setShowPassword] = useState(false);
 //   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 //   const [isPhoneLogin, setIsPhoneLogin] = useState(false);
-  
+
 //   // Forgot Password States
 //   const [showForgotModal, setShowForgotModal] = useState(false);
 //   const [resetMethod, setResetMethod] = useState<'email' | 'phone'>('email');
@@ -1084,7 +1058,7 @@
 //   const [resetLoading, setResetLoading] = useState(false);
 //   const [resetSuccess, setResetSuccess] = useState(false);
 //   const [resetError, setResetError] = useState('');
-  
+
 //   const { user, login, loginWithPhone, loginWithGoogle, resetPassword } = useAuth();
 //   const router = useRouter();
 
@@ -1100,7 +1074,7 @@
 //     const { name, value } = e.target;
 //     const cleanValue = value.replace(/\s/g, '');
 //     setFormData(prev => ({ ...prev, [name]: cleanValue }));
-    
+
 //     if (name === 'emailOrPhone') {
 //       if (/^\d{11}$/.test(cleanValue)) {
 //         setIsPhoneLogin(true);
@@ -1647,11 +1621,6 @@
 //   );
 // }
 
-
-
-
-
-
 //password change modal
 // 'use client';
 
@@ -1665,17 +1634,17 @@
 // import Navbar from '@/components/Navbar';
 
 // export default function LoginPage() {
-//   const { 
-//     user, 
-//     login, 
-//     loginWithPhone, 
-//     loginWithGoogle, 
-//     resetPassword, 
-//     checkAndUpdateRTDBPassword, 
+//   const {
+//     user,
+//     login,
+//     loginWithPhone,
+//     loginWithGoogle,
+//     resetPassword,
+//     checkAndUpdateRTDBPassword,
 //     updateRTDBPassword,
 //     changePasswordWithOld
 //   } = useAuth();
-  
+
 //   const router = useRouter();
 //   const [formData, setFormData] = useState({
 //     emailOrPhone: '',
@@ -1687,7 +1656,7 @@
 //   const [showPassword, setShowPassword] = useState(false);
 //   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 //   const [isPhoneLogin, setIsPhoneLogin] = useState(false);
-  
+
 //   // Forgot Password States
 //   const [showForgotModal, setShowForgotModal] = useState(false);
 //   const [resetMethod, setResetMethod] = useState<'email' | 'phone'>('email');
@@ -1734,7 +1703,7 @@
 //     const { name, value } = e.target;
 //     const cleanValue = value.replace(/\s/g, '');
 //     setFormData(prev => ({ ...prev, [name]: cleanValue }));
-    
+
 //     if (name === 'emailOrPhone') {
 //       if (/^\d{11}$/.test(cleanValue)) {
 //         setIsPhoneLogin(true);
@@ -1806,30 +1775,30 @@
 //   //         setResetLoading(false);
 //   //         return;
 //   //       }
-        
+
 //   //       // ✅ Step 1: Send reset email
 //   //       await resetPassword(resetEmail);
-        
+
 //   //       // ✅ Step 2: Immediately set passwordReset flag in RTDB
 //   //       try {
 //   //         const db = getDatabase();
 //   //         const usersRef = ref(db, 'users');
 //   //         const snapshot = await get(usersRef);
-          
+
 //   //         if (snapshot.exists()) {
 //   //           const data = snapshot.val();
 //   //           let userUid = null;
-            
+
 //   //           Object.keys(data).forEach((key) => {
 //   //             const userData = data[key];
 //   //             const userEmail = userData.email || '';
 //   //             const phoneEmail = `${userData.phone || ''}@phone.auth`;
-              
+
 //   //             if (userEmail === resetEmail || userEmail === `${resetEmail}@phone.auth` || phoneEmail === resetEmail) {
 //   //               userUid = key;
 //   //             }
 //   //           });
-            
+
 //   //           if (userUid) {
 //   //             await update(ref(db, `users/${userUid}`), {
 //   //               passwordReset: true,
@@ -1842,7 +1811,7 @@
 //   //       } catch (err) {
 //   //         console.error('Error setting passwordReset flag:', err);
 //   //       }
-        
+
 //   //       setResetSuccess(true);
 //   //       setTimeout(() => {
 //   //         setShowForgotModal(false);
@@ -1865,8 +1834,6 @@
 //   //   }
 //   // };
 
-
-
 // const handleResetPassword = async (e: React.FormEvent) => {
 //   e.preventDefault();
 //   setResetError('');
@@ -1880,31 +1847,31 @@
 //         setResetLoading(false);
 //         return;
 //       }
-      
+
 //       // ✅ Step 1: Send reset email
 //       await resetPassword(resetEmail);
 //       console.log('✅ Email sent successfully to:', resetEmail);
-      
+
 //       // ✅ Step 2: JAB EMAIL SEND HO JAYE TOH RTDB UPDATE KARO
 //       const db = getDatabase();
 //       const usersRef = ref(db, 'users');
 //       const snapshot = await get(usersRef);
-      
+
 //       if (snapshot.exists()) {
 //         const data = snapshot.val();
 //         let userUid = null;
-        
+
 //         // Find user by email
 //         Object.keys(data).forEach((key) => {
 //           const userData = data[key];
 //           const userEmail = userData.email || '';
 //           const phoneEmail = `${userData.phone || ''}@phone.auth`;
-          
+
 //           if (userEmail === resetEmail || userEmail === `${resetEmail}@phone.auth` || phoneEmail === resetEmail) {
 //             userUid = key;
 //           }
 //         });
-        
+
 //         if (userUid) {
 //           // ✅ SIRF YAHI KAAM KARNA HAI - passwordReset: true
 //           await update(ref(db, `users/${userUid}`), {
@@ -1917,7 +1884,7 @@
 //           console.warn('⚠️ User NOT found in RTDB for email:', resetEmail);
 //         }
 //       }
-      
+
 //       setResetSuccess(true);
 //       setTimeout(() => {
 //         setShowForgotModal(false);
@@ -1925,7 +1892,7 @@
 //         setResetEmail('');
 //         setResetPhone('');
 //       }, 3000);
-      
+
 //     } else {
 //       setResetError('Phone password reset is not available. Please use email.');
 //       setResetLoading(false);
@@ -1940,9 +1907,6 @@
 //     setResetLoading(false);
 //   }
 // };
-
-
-
 
 //   // ✅ Handle Password Update - Sets flag to false
 //   const handlePasswordUpdate = async (e: React.FormEvent) => {
@@ -1982,7 +1946,7 @@
 
 //       // ✅ Change password in Firebase Auth AND RTDB
 //       await changePasswordWithOld(oldPassword, newPassword);
-      
+
 //       // ✅ Explicitly set passwordReset to false
 //       const db = getDatabase();
 //       const userRef = ref(db, `users/${user.uid}`);
@@ -1991,14 +1955,14 @@
 //         updatedAt: new Date().toISOString()
 //       });
 //       console.log('✅ passwordReset flag set to FALSE');
-      
+
 //       setUpdateSuccess(true);
-      
+
 //       setTimeout(() => {
 //         setShowPasswordUpdateModal(false);
 //         router.push('/');
 //       }, 1500);
-      
+
 //     } catch (err: any) {
 //       console.error('Update password error:', err);
 //       setUpdateError(err.message || 'Failed to update password. Please try again.');
@@ -2557,20 +2521,20 @@
 //                 <button
 //                   type="submit"
 //                   disabled={
-//                     updateLoading || 
-//                     updateSuccess || 
-//                     !oldPassword || 
-//                     !newPassword || 
-//                     newPassword.length < 6 || 
+//                     updateLoading ||
+//                     updateSuccess ||
+//                     !oldPassword ||
+//                     !newPassword ||
+//                     newPassword.length < 6 ||
 //                     newPassword !== confirmPassword ||
 //                     oldPassword === newPassword
 //                   }
 //                   className={`w-full py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-//                     updateLoading || 
-//                     updateSuccess || 
-//                     !oldPassword || 
-//                     !newPassword || 
-//                     newPassword.length < 6 || 
+//                     updateLoading ||
+//                     updateSuccess ||
+//                     !oldPassword ||
+//                     !newPassword ||
+//                     newPassword.length < 6 ||
 //                     newPassword !== confirmPassword ||
 //                     oldPassword === newPassword
 //                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -2597,21 +2561,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ok code without phone password reset
 
 // 'use client';
@@ -2626,17 +2575,17 @@
 // import Navbar from '@/components/Navbar';
 
 // export default function LoginPage() {
-//   const { 
-//     user, 
-//     login, 
-//     loginWithPhone, 
-//     loginWithGoogle, 
-//     resetPassword, 
-//     checkAndUpdateRTDBPassword, 
+//   const {
+//     user,
+//     login,
+//     loginWithPhone,
+//     loginWithGoogle,
+//     resetPassword,
+//     checkAndUpdateRTDBPassword,
 //     updateRTDBPassword,
 //     changePasswordWithOld
 //   } = useAuth();
-  
+
 //   const router = useRouter();
 //   const [formData, setFormData] = useState({
 //     emailOrPhone: '',
@@ -2648,7 +2597,7 @@
 //   const [showPassword, setShowPassword] = useState(false);
 //   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 //   const [isPhoneLogin, setIsPhoneLogin] = useState(false);
-  
+
 //   // Forgot Password States
 //   const [showForgotModal, setShowForgotModal] = useState(false);
 //   const [resetMethod, setResetMethod] = useState<'email' | 'phone'>('email');
@@ -2695,7 +2644,7 @@
 //     const { name, value } = e.target;
 //     const cleanValue = value.replace(/\s/g, '');
 //     setFormData(prev => ({ ...prev, [name]: cleanValue }));
-    
+
 //     if (name === 'emailOrPhone') {
 //       if (/^\d{11}$/.test(cleanValue)) {
 //         setIsPhoneLogin(true);
@@ -2767,32 +2716,32 @@
 //           setResetLoading(false);
 //           return;
 //         }
-        
+
 //         // ✅ Step 1: Send reset email
 //         await resetPassword(resetEmail);
 //         console.log('✅ Email sent successfully to:', resetEmail);
-        
+
 //         // ✅ Step 2: Find existing user and update passwordReset flag
 //         const db = getDatabase();
 //         const usersRef = ref(db, 'users');
 //         const snapshot = await get(usersRef);
-        
+
 //         if (snapshot.exists()) {
 //           const data = snapshot.val();
 //           let userUid = null;
-          
+
 //           // Find existing user by email (case sensitive)
 //           Object.keys(data).forEach((key) => {
 //             const userData = data[key];
 //             const userEmail = userData.email || '';
 //             const phoneEmail = `${userData.phone || ''}@phone.auth`;
-            
+
 //             // Check both email and phone email
 //             if (userEmail === resetEmail || userEmail === `${resetEmail}@phone.auth` || phoneEmail === resetEmail) {
 //               userUid = key;
 //             }
 //           });
-          
+
 //           if (userUid) {
 //             // ✅ UPDATE existing user - NO duplicate creation
 //             await update(ref(db, `users/${userUid}`), {
@@ -2805,7 +2754,7 @@
 //             console.warn('⚠️ User NOT found in RTDB for email:', resetEmail);
 //           }
 //         }
-        
+
 //         setResetSuccess(true);
 //         setTimeout(() => {
 //           setShowForgotModal(false);
@@ -2813,7 +2762,7 @@
 //           setResetEmail('');
 //           setResetPhone('');
 //         }, 3000);
-        
+
 //       } else {
 //         setResetError('Phone password reset is not available. Please use email.');
 //         setResetLoading(false);
@@ -2867,7 +2816,7 @@
 
 //       // ✅ Change password in Firebase Auth AND RTDB
 //       await changePasswordWithOld(oldPassword, newPassword);
-      
+
 //       // ✅ Explicitly set passwordReset to false
 //       const db = getDatabase();
 //       const userRef = ref(db, `users/${user.uid}`);
@@ -2876,14 +2825,14 @@
 //         updatedAt: new Date().toISOString()
 //       });
 //       console.log('✅ passwordReset flag set to FALSE');
-      
+
 //       setUpdateSuccess(true);
-      
+
 //       setTimeout(() => {
 //         setShowPasswordUpdateModal(false);
 //         router.push('/');
 //       }, 1500);
-      
+
 //     } catch (err: any) {
 //       console.error('Update password error:', err);
 //       setUpdateError(err.message || 'Failed to update password. Please try again.');
@@ -3442,20 +3391,20 @@
 //                 <button
 //                   type="submit"
 //                   disabled={
-//                     updateLoading || 
-//                     updateSuccess || 
-//                     !oldPassword || 
-//                     !newPassword || 
-//                     newPassword.length < 6 || 
+//                     updateLoading ||
+//                     updateSuccess ||
+//                     !oldPassword ||
+//                     !newPassword ||
+//                     newPassword.length < 6 ||
 //                     newPassword !== confirmPassword ||
 //                     oldPassword === newPassword
 //                   }
 //                   className={`w-full py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-//                     updateLoading || 
-//                     updateSuccess || 
-//                     !oldPassword || 
-//                     !newPassword || 
-//                     newPassword.length < 6 || 
+//                     updateLoading ||
+//                     updateSuccess ||
+//                     !oldPassword ||
+//                     !newPassword ||
+//                     newPassword.length < 6 ||
 //                     newPassword !== confirmPassword ||
 //                     oldPassword === newPassword
 //                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -3482,8 +3431,6 @@
 //   );
 // }
 
-
-
 // ok code with email and phone both password reset
 
 // 'use client';
@@ -3498,17 +3445,17 @@
 // import Navbar from '@/components/Navbar';
 
 // export default function LoginPage() {
-//   const { 
-//     user, 
-//     login, 
-//     loginWithPhone, 
-//     loginWithGoogle, 
-//     resetPassword, 
-//     checkAndUpdateRTDBPassword, 
+//   const {
+//     user,
+//     login,
+//     loginWithPhone,
+//     loginWithGoogle,
+//     resetPassword,
+//     checkAndUpdateRTDBPassword,
 //     updateRTDBPassword,
 //     changePasswordWithOld
 //   } = useAuth();
-  
+
 //   const router = useRouter();
 //   const [formData, setFormData] = useState({
 //     emailOrPhone: '',
@@ -3520,7 +3467,7 @@
 //   const [showPassword, setShowPassword] = useState(false);
 //   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 //   const [isPhoneLogin, setIsPhoneLogin] = useState(false);
-  
+
 //   // Forgot Password States
 //   const [showForgotModal, setShowForgotModal] = useState(false);
 //   const [resetMethod, setResetMethod] = useState<'email' | 'phone'>('email');
@@ -3571,7 +3518,7 @@
 //     const { name, value } = e.target;
 //     const cleanValue = value.replace(/\s/g, '');
 //     setFormData(prev => ({ ...prev, [name]: cleanValue }));
-    
+
 //     if (name === 'emailOrPhone') {
 //       if (/^\d{11}$/.test(cleanValue)) {
 //         setIsPhoneLogin(true);
@@ -3672,10 +3619,10 @@
 
 //       // Open WhatsApp
 //       window.open(fullWhatsappUrl, '_blank');
-      
+
 //       setWhatsappMessageSent(true);
 //       setResetSuccess(true);
-      
+
 //       setTimeout(() => {
 //         setShowForgotModal(false);
 //         setResetSuccess(false);
@@ -3705,28 +3652,28 @@
 //           setResetLoading(false);
 //           return;
 //         }
-        
+
 //         await resetPassword(resetEmail);
 //         console.log('✅ Email sent successfully to:', resetEmail);
-        
+
 //         const db = getDatabase();
 //         const usersRef = ref(db, 'users');
 //         const snapshot = await get(usersRef);
-        
+
 //         if (snapshot.exists()) {
 //           const data = snapshot.val();
 //           let userUid = null;
-          
+
 //           Object.keys(data).forEach((key) => {
 //             const userData = data[key];
 //             const userEmail = userData.email || '';
 //             const phoneEmail = `${userData.phone || ''}@phone.auth`;
-            
+
 //             if (userEmail === resetEmail || userEmail === `${resetEmail}@phone.auth` || phoneEmail === resetEmail) {
 //               userUid = key;
 //             }
 //           });
-          
+
 //           if (userUid) {
 //             await update(ref(db, `users/${userUid}`), {
 //               passwordReset: true,
@@ -3738,7 +3685,7 @@
 //             console.warn('⚠️ User NOT found in RTDB for email:', resetEmail);
 //           }
 //         }
-        
+
 //         setResetSuccess(true);
 //         setTimeout(() => {
 //           setShowForgotModal(false);
@@ -3746,7 +3693,7 @@
 //           setResetEmail('');
 //           setResetPhone('');
 //         }, 3000);
-        
+
 //       } else {
 //         // Phone method - handled by handlePhoneReset
 //         await handlePhoneReset(e);
@@ -3799,7 +3746,7 @@
 //       }
 
 //       await changePasswordWithOld(oldPassword, newPassword);
-      
+
 //       const db = getDatabase();
 //       const userRef = ref(db, `users/${user.uid}`);
 //       await update(userRef, {
@@ -3807,14 +3754,14 @@
 //         updatedAt: new Date().toISOString()
 //       });
 //       console.log('✅ passwordReset flag set to FALSE');
-      
+
 //       setUpdateSuccess(true);
-      
+
 //       setTimeout(() => {
 //         setShowPasswordUpdateModal(false);
 //         router.push('/');
 //       }, 1500);
-      
+
 //     } catch (err: any) {
 //       console.error('Update password error:', err);
 //       setUpdateError(err.message || 'Failed to update password. Please try again.');
@@ -4442,20 +4389,20 @@
 //                 <button
 //                   type="submit"
 //                   disabled={
-//                     updateLoading || 
-//                     updateSuccess || 
-//                     !oldPassword || 
-//                     !newPassword || 
-//                     newPassword.length < 6 || 
+//                     updateLoading ||
+//                     updateSuccess ||
+//                     !oldPassword ||
+//                     !newPassword ||
+//                     newPassword.length < 6 ||
 //                     newPassword !== confirmPassword ||
 //                     oldPassword === newPassword
 //                   }
 //                   className={`w-full py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-//                     updateLoading || 
-//                     updateSuccess || 
-//                     !oldPassword || 
-//                     !newPassword || 
-//                     newPassword.length < 6 || 
+//                     updateLoading ||
+//                     updateSuccess ||
+//                     !oldPassword ||
+//                     !newPassword ||
+//                     newPassword.length < 6 ||
 //                     newPassword !== confirmPassword ||
 //                     oldPassword === newPassword
 //                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -4482,65 +4429,79 @@
 //   );
 // }
 
-'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, AlertCircle, Eye, EyeOff, Phone, Key, X, CheckCircle, Loader2, Send } from 'lucide-react';
-import { useAuth } from '@/lib/authContext';
-import { getDatabase, ref, get, update } from 'firebase/database';
-import Navbar from '@/components/Navbar';
-import toast, { Toaster } from 'react-hot-toast';
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Mail,
+  Lock,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Phone,
+  Key,
+  X,
+  CheckCircle,
+  Loader2,
+  Send,
+} from "lucide-react";
+import { useAuth } from "@/lib/authContext";
+import { getDatabase, ref, get, update } from "firebase/database";
+import Navbar from "@/components/Navbar";
+import toast, { Toaster } from "react-hot-toast";
 
 // ✅ Toast ID for tracking
 let cartToastId: string | null = null;
 
 export default function LoginPage() {
-  const { 
-    user, 
-    login, 
-    loginWithPhone, 
-    loginWithGoogle, 
-    resetPassword, 
-    checkAndUpdateRTDBPassword, 
+  const {
+    user,
+    login,
+    loginWithPhone,
+    loginWithGoogle,
+    resetPassword,
+    checkAndUpdateRTDBPassword,
     updateRTDBPassword,
-    changePasswordWithOld
+    changePasswordWithOld,
   } = useAuth();
-  
+
   const router = useRouter();
   const [formData, setFormData] = useState({
-    emailOrPhone: '',
-    password: ''
+    emailOrPhone: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isPhoneLogin, setIsPhoneLogin] = useState(false);
-  
+
   // Forgot Password States
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [resetMethod, setResetMethod] = useState<'email' | 'phone'>('email');
-  const [resetEmail, setResetEmail] = useState('');
-  const [resetPhone, setResetPhone] = useState('');
+  const [resetMethod, setResetMethod] = useState<"email" | "phone">("email");
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetPhone, setResetPhone] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
-  const [resetError, setResetError] = useState('');
+  const [resetError, setResetError] = useState("");
   const [whatsappMessageSent, setWhatsappMessageSent] = useState(false);
 
   // Password Update Modal States
   const [showPasswordUpdateModal, setShowPasswordUpdateModal] = useState(false);
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPasswordModal, setShowNewPasswordModal] = useState(false);
-  const [showConfirmPasswordModal, setShowConfirmPasswordModal] = useState(false);
+  const [showConfirmPasswordModal, setShowConfirmPasswordModal] =
+    useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
-  const [updateError, setUpdateError] = useState('');
+  const [updateError, setUpdateError] = useState("");
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
   // Redirect Success State
@@ -4548,26 +4509,26 @@ export default function LoginPage() {
   const [isRedirectFromReset, setIsRedirectFromReset] = useState(false);
 
   // Admin WhatsApp Number
-  const ADMIN_WHATSAPP = '923111111111';
+  const ADMIN_WHATSAPP = "923411293604";
 
   // ✅ Show toast if user came from cart page
   useEffect(() => {
-    const fromCart = new URLSearchParams(window.location.search).get('from');
-    
-    if (fromCart === 'cart') {
+    const fromCart = new URLSearchParams(window.location.search).get("from");
+
+    if (fromCart === "cart") {
       // ✅ Store toast ID
-      cartToastId = toast.error('🔒 Please login to view your cart', {
+      cartToastId = toast.error("🔒 Please login to view your cart", {
         duration: 4000,
-        position: 'top-right',
+        position: "top-right",
         style: {
-          background: '#EF4444',
-          color: '#fff',
-          padding: '16px 20px',
-          borderRadius: '12px',
-          fontSize: '15px',
-          cursor: 'pointer',
+          background: "#EF4444",
+          color: "#fff",
+          padding: "16px 20px",
+          borderRadius: "12px",
+          fontSize: "15px",
+          cursor: "pointer",
         },
-        icon: '🔒',
+        icon: "🔒",
         onClick: () => {
           toast.dismiss(cartToastId!);
           cartToastId = null;
@@ -4585,10 +4546,10 @@ export default function LoginPage() {
       }
     };
 
-    document.addEventListener('click', handleGlobalClick);
+    document.addEventListener("click", handleGlobalClick);
 
     return () => {
-      document.removeEventListener('click', handleGlobalClick);
+      document.removeEventListener("click", handleGlobalClick);
     };
   }, []);
 
@@ -4601,11 +4562,11 @@ export default function LoginPage() {
           if (needsUpdate) {
             setShowPasswordUpdateModal(true);
           } else {
-            router.push('/');
+            router.push("/");
           }
         } catch (error) {
-          console.error('Error checking RTDB:', error);
-          router.push('/');
+          console.error("Error checking RTDB:", error);
+          router.push("/");
         }
       };
       checkRTDB();
@@ -4615,19 +4576,19 @@ export default function LoginPage() {
 
   // ✅ Handle redirect from Firebase default page - DETECT AND SET FLAG
   useEffect(() => {
-    const mode = new URLSearchParams(window.location.search).get('mode');
-    const apiKey = new URLSearchParams(window.location.search).get('apiKey');
-    const oobCode = new URLSearchParams(window.location.search).get('oobCode');
-    
-    console.log('🔍 URL Params:', { mode, apiKey, oobCode });
-    
-    if (mode === 'resetPassword' || oobCode || apiKey) {
-      console.log('✅ Password reset redirect detected!');
+    const mode = new URLSearchParams(window.location.search).get("mode");
+    const apiKey = new URLSearchParams(window.location.search).get("apiKey");
+    const oobCode = new URLSearchParams(window.location.search).get("oobCode");
+
+    console.log("🔍 URL Params:", { mode, apiKey, oobCode });
+
+    if (mode === "resetPassword" || oobCode || apiKey) {
+      console.log("✅ Password reset redirect detected!");
       setRedirectSuccess(true);
       setIsRedirectFromReset(true);
-      
+
       setTimeout(() => {
-        window.history.replaceState({}, '', '/login');
+        window.history.replaceState({}, "", "/login");
       }, 4000);
     }
   }, []);
@@ -4636,37 +4597,37 @@ export default function LoginPage() {
   useEffect(() => {
     const checkResetFlag = async () => {
       if (user && isRedirectFromReset) {
-        console.log('🔍 Checking reset flag for user:', user.uid);
+        console.log("🔍 Checking reset flag for user:", user.uid);
         try {
           const db = getDatabase();
           const userRef = ref(db, `users/${user.uid}`);
           const snapshot = await get(userRef);
-          
+
           if (snapshot.exists()) {
             const userData = snapshot.val();
-            console.log('🔍 User data after login:', userData);
-            
+            console.log("🔍 User data after login:", userData);
+
             if (userData.passwordReset === true) {
-              console.log('✅ passwordReset flag found! Opening modal...');
+              console.log("✅ passwordReset flag found! Opening modal...");
               setShowPasswordUpdateModal(true);
               setIsRedirectFromReset(false);
             }
           }
         } catch (error) {
-          console.error('Error checking reset flag:', error);
+          console.error("Error checking reset flag:", error);
         }
       }
     };
-    
+
     checkResetFlag();
   }, [user, isRedirectFromReset]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const cleanValue = value.replace(/\s/g, '');
-    setFormData(prev => ({ ...prev, [name]: cleanValue }));
-    
-    if (name === 'emailOrPhone') {
+    const cleanValue = value.replace(/\s/g, "");
+    setFormData((prev) => ({ ...prev, [name]: cleanValue }));
+
+    if (name === "emailOrPhone") {
       if (/^\d{11}$/.test(cleanValue)) {
         setIsPhoneLogin(true);
       } else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanValue)) {
@@ -4679,17 +4640,17 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       if (!formData.emailOrPhone || !formData.password) {
-        setError('Please fill in all fields');
+        setError("Please fill in all fields");
         setLoading(false);
         return;
       }
 
-      const cleanEmailOrPhone = formData.emailOrPhone.replace(/\s/g, '');
+      const cleanEmailOrPhone = formData.emailOrPhone.replace(/\s/g, "");
       const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmailOrPhone);
       const isPhone = /^\d{11}$/.test(cleanEmailOrPhone);
 
@@ -4698,26 +4659,25 @@ export default function LoginPage() {
       } else if (isEmail) {
         await login(cleanEmailOrPhone, formData.password);
       } else {
-        setError('Please enter a valid email or 11-digit phone number');
+        setError("Please enter a valid email or 11-digit phone number");
         setLoading(false);
         return;
       }
-
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
-    setError('');
+    setError("");
     setGoogleLoading(true);
 
     try {
       await loginWithGoogle();
     } catch (err: any) {
-      setError(err.message || 'Google login failed. Please try again.');
+      setError(err.message || "Google login failed. Please try again.");
     } finally {
       setGoogleLoading(false);
     }
@@ -4726,14 +4686,14 @@ export default function LoginPage() {
   // Handle Phone Reset via WhatsApp
   const handlePhoneReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    setResetError('');
+    setResetError("");
     setWhatsappMessageSent(false);
     setResetLoading(true);
 
     try {
-      const cleanPhone = resetPhone.replace(/\s/g, '');
+      const cleanPhone = resetPhone.replace(/\s/g, "");
       if (!/^\d{11}$/.test(cleanPhone)) {
-        setResetError('Please enter a valid 11-digit phone number');
+        setResetError("Please enter a valid 11-digit phone number");
         setResetLoading(false);
         return;
       }
@@ -4757,21 +4717,20 @@ Please check the user's identity and reset their password from the admin panel.`
       const encodedMessage = encodeURIComponent(message);
       const fullWhatsappUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodedMessage}`;
 
-      window.open(fullWhatsappUrl, '_blank');
-      
+      window.open(fullWhatsappUrl, "_blank");
+
       setWhatsappMessageSent(true);
       setResetSuccess(true);
-      
+
       setTimeout(() => {
         setShowForgotModal(false);
         setResetSuccess(false);
         setWhatsappMessageSent(false);
-        setResetPhone('');
+        setResetPhone("");
       }, 4000);
-
     } catch (err: any) {
-      console.error('Phone reset error:', err);
-      setResetError('Failed to send WhatsApp message. Please try again.');
+      console.error("Phone reset error:", err);
+      setResetError("Failed to send WhatsApp message. Please try again.");
     } finally {
       setResetLoading(false);
     }
@@ -4780,67 +4739,72 @@ Please check the user's identity and reset their password from the admin panel.`
   // Updated Reset Password - Email
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setResetError('');
+    setResetError("");
     setResetSuccess(false);
     setResetLoading(true);
 
     try {
-      if (resetMethod === 'email') {
+      if (resetMethod === "email") {
         if (!resetEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail)) {
-          setResetError('Please enter a valid email address');
+          setResetError("Please enter a valid email address");
           setResetLoading(false);
           return;
         }
-        
+
         await resetPassword(resetEmail);
-        console.log('✅ Email sent successfully to:', resetEmail);
-        
+        console.log("✅ Email sent successfully to:", resetEmail);
+
         const db = getDatabase();
-        const usersRef = ref(db, 'users');
+        const usersRef = ref(db, "users");
         const snapshot = await get(usersRef);
-        
+
         if (snapshot.exists()) {
           const data = snapshot.val();
           let userUid = null;
-          
+
           Object.keys(data).forEach((key) => {
             const userData = data[key];
-            const userEmail = userData.email || '';
-            const phoneEmail = `${userData.phone || ''}@phone.auth`;
-            
-            if (userEmail === resetEmail || userEmail === `${resetEmail}@phone.auth` || phoneEmail === resetEmail) {
+            const userEmail = userData.email || "";
+            const phoneEmail = `${userData.phone || ""}@phone.auth`;
+
+            if (
+              userEmail === resetEmail ||
+              userEmail === `${resetEmail}@phone.auth` ||
+              phoneEmail === resetEmail
+            ) {
               userUid = key;
             }
           });
-          
+
           if (userUid) {
             await update(ref(db, `users/${userUid}`), {
               passwordReset: true,
               passwordResetAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
+              updatedAt: new Date().toISOString(),
             });
-            console.log('✅ passwordReset set to TRUE for user:', userUid);
+            console.log("✅ passwordReset set to TRUE for user:", userUid);
           } else {
-            console.warn('⚠️ User NOT found in RTDB for email:', resetEmail);
+            console.warn("⚠️ User NOT found in RTDB for email:", resetEmail);
           }
         }
-        
+
         setResetSuccess(true);
         setTimeout(() => {
           setShowForgotModal(false);
           setResetSuccess(false);
-          setResetEmail('');
-          setResetPhone('');
+          setResetEmail("");
+          setResetPhone("");
         }, 3000);
-        
       } else {
         await handlePhoneReset(e);
       }
     } catch (err: any) {
-      if (err.code === 'auth/user-not-found') {
-        setResetError('No account found with this email address');
+      if (err.code === "auth/user-not-found") {
+        setResetError("No account found with this email address");
       } else {
-        setResetError(err.message || 'Failed to send reset email. Please try again.');
+        setResetError(
+          err.message || "Failed to send reset email. Please try again.",
+        );
       }
     } finally {
       setResetLoading(false);
@@ -4850,59 +4814,60 @@ Please check the user's identity and reset their password from the admin panel.`
   // Handle Password Update
   const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setUpdateError('');
+    setUpdateError("");
     setUpdateSuccess(false);
     setUpdateLoading(true);
 
     if (!oldPassword || !newPassword || !confirmPassword) {
-      setUpdateError('Please fill in all fields');
+      setUpdateError("Please fill in all fields");
       setUpdateLoading(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setUpdateError('New passwords do not match');
+      setUpdateError("New passwords do not match");
       setUpdateLoading(false);
       return;
     }
 
     if (newPassword.length < 6) {
-      setUpdateError('Password must be at least 6 characters');
+      setUpdateError("Password must be at least 6 characters");
       setUpdateLoading(false);
       return;
     }
 
     if (oldPassword === newPassword) {
-      setUpdateError('New password must be different from current password');
+      setUpdateError("New password must be different from current password");
       setUpdateLoading(false);
       return;
     }
 
     try {
       if (!user) {
-        throw new Error('No user logged in');
+        throw new Error("No user logged in");
       }
 
       await changePasswordWithOld(oldPassword, newPassword);
-      
+
       const db = getDatabase();
       const userRef = ref(db, `users/${user.uid}`);
       await update(userRef, {
         passwordReset: false,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       });
-      console.log('✅ passwordReset flag set to FALSE');
-      
+      console.log("✅ passwordReset flag set to FALSE");
+
       setUpdateSuccess(true);
-      
+
       setTimeout(() => {
         setShowPasswordUpdateModal(false);
-        router.push('/');
+        router.push("/");
       }, 1500);
-      
     } catch (err: any) {
-      console.error('Update password error:', err);
-      setUpdateError(err.message || 'Failed to update password. Please try again.');
+      console.error("Update password error:", err);
+      setUpdateError(
+        err.message || "Failed to update password. Please try again.",
+      );
     } finally {
       setUpdateLoading(false);
     }
@@ -4933,16 +4898,16 @@ Please check the user's identity and reset their password from the admin panel.`
       <Navbar />
 
       {/* Toaster Component */}
-      <Toaster 
+      <Toaster
         position="top-right"
         toastOptions={{
           duration: 4000,
           style: {
-            background: '#333',
-            color: '#fff',
-            padding: '16px',
-            borderRadius: '12px',
-            cursor: 'pointer',
+            background: "#333",
+            color: "#fff",
+            padding: "16px",
+            borderRadius: "12px",
+            cursor: "pointer",
           },
         }}
       />
@@ -4979,8 +4944,12 @@ Please check the user's identity and reset their password from the admin panel.`
               >
                 <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-green-700 font-semibold">✅ Password reset successfully!</p>
-                  <p className="text-green-600 text-sm mt-1">Please login with your new password.</p>
+                  <p className="text-green-700 font-semibold">
+                    ✅ Password reset successfully!
+                  </p>
+                  <p className="text-green-600 text-sm mt-1">
+                    Please login with your new password.
+                  </p>
                 </div>
               </motion.div>
             )}
@@ -5024,12 +4993,14 @@ Please check the user's identity and reset their password from the admin panel.`
                 </div>
                 {isPhoneLogin && formData.emailOrPhone && (
                   <p className="mt-1 text-xs text-green-600">
-                    📱 Signing in with phone: <span className="font-bold">{formData.emailOrPhone}</span>
+                    📱 Signing in with phone:{" "}
+                    <span className="font-bold">{formData.emailOrPhone}</span>
                   </p>
                 )}
                 {!isPhoneLogin && formData.emailOrPhone && (
                   <p className="mt-1 text-xs text-green-600">
-                    📧 Signing in with email: <span className="font-bold">{formData.emailOrPhone}</span>
+                    📧 Signing in with email:{" "}
+                    <span className="font-bold">{formData.emailOrPhone}</span>
                   </p>
                 )}
               </motion.div>
@@ -5045,7 +5016,7 @@ Please check the user's identity and reset their password from the admin panel.`
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
@@ -5057,7 +5028,11 @@ Please check the user's identity and reset their password from the admin panel.`
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </motion.div>
@@ -5070,7 +5045,7 @@ Please check the user's identity and reset their password from the admin panel.`
                 disabled={loading}
                 className="w-full bg-primary text-white py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? "Signing in..." : "Sign In"}
               </motion.button>
 
               <motion.div
@@ -5083,10 +5058,10 @@ Please check the user's identity and reset their password from the admin panel.`
                   type="button"
                   onClick={() => {
                     setShowForgotModal(true);
-                    setResetError('');
+                    setResetError("");
                     setResetSuccess(false);
-                    setResetEmail('');
-                    setResetPhone('');
+                    setResetEmail("");
+                    setResetPhone("");
                     setWhatsappMessageSent(false);
                   }}
                   className="text-sm text-primary hover:text-accent hover:underline transition-colors font-medium"
@@ -5106,13 +5081,31 @@ Please check the user's identity and reset their password from the admin panel.`
               disabled={googleLoading}
               className="w-full bg-white border-2 border-border text-foreground py-2 rounded-lg font-semibold hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#EA4335"
+                />
               </svg>
-              {googleLoading ? 'Signing in...' : 'Continue with Google'}
+              {googleLoading ? "Signing in..." : "Continue with Google"}
             </motion.button>
 
             {/* Divider */}
@@ -5137,7 +5130,10 @@ Please check the user's identity and reset their password from the admin panel.`
               <p className="text-muted-foreground text-sm mb-2">
                 Don&apos;t have an account?
               </p>
-              <Link href="/signup" className="text-primary font-semibold hover:underline transition-all">
+              <Link
+                href="/signup"
+                className="text-primary font-semibold hover:underline transition-all"
+              >
                 Create one now
               </Link>
             </motion.div>
@@ -5150,7 +5146,10 @@ Please check the user's identity and reset their password from the admin panel.`
             transition={{ delay: 0.7 }}
             className="text-center mt-4"
           >
-            <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
+            <Link
+              href="/"
+              className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+            >
               ← Back to home
             </Link>
           </motion.div>
@@ -5168,7 +5167,7 @@ Please check the user's identity and reset their password from the admin panel.`
             onClick={() => {
               if (!resetLoading) {
                 setShowForgotModal(false);
-                setResetError('');
+                setResetError("");
                 setResetSuccess(false);
                 setWhatsappMessageSent(false);
               }
@@ -5195,7 +5194,7 @@ Please check the user's identity and reset their password from the admin panel.`
                   onClick={() => {
                     if (!resetLoading) {
                       setShowForgotModal(false);
-                      setResetError('');
+                      setResetError("");
                       setResetSuccess(false);
                       setWhatsappMessageSent(false);
                     }
@@ -5210,15 +5209,15 @@ Please check the user's identity and reset their password from the admin panel.`
                 <button
                   type="button"
                   onClick={() => {
-                    setResetMethod('email');
-                    setResetError('');
+                    setResetMethod("email");
+                    setResetError("");
                     setResetSuccess(false);
                     setWhatsappMessageSent(false);
                   }}
                   className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                    resetMethod === 'email'
-                      ? 'bg-primary text-white shadow-lg'
-                      : 'bg-secondary text-foreground hover:bg-muted border border-border'
+                    resetMethod === "email"
+                      ? "bg-primary text-white shadow-lg"
+                      : "bg-secondary text-foreground hover:bg-muted border border-border"
                   }`}
                 >
                   <Mail size={16} />
@@ -5227,15 +5226,15 @@ Please check the user's identity and reset their password from the admin panel.`
                 <button
                   type="button"
                   onClick={() => {
-                    setResetMethod('phone');
-                    setResetError('');
+                    setResetMethod("phone");
+                    setResetError("");
                     setResetSuccess(false);
                     setWhatsappMessageSent(false);
                   }}
                   className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                    resetMethod === 'phone'
-                      ? 'bg-primary text-white shadow-lg'
-                      : 'bg-secondary text-foreground hover:bg-muted border border-border'
+                    resetMethod === "phone"
+                      ? "bg-primary text-white shadow-lg"
+                      : "bg-secondary text-foreground hover:bg-muted border border-border"
                   }`}
                 >
                   <Phone size={16} />
@@ -5243,8 +5242,14 @@ Please check the user's identity and reset their password from the admin panel.`
                 </button>
               </div>
 
-              <form onSubmit={resetMethod === 'email' ? handleResetPassword : handlePhoneReset}>
-                {resetMethod === 'email' ? (
+              <form
+                onSubmit={
+                  resetMethod === "email"
+                    ? handleResetPassword
+                    : handlePhoneReset
+                }
+              >
+                {resetMethod === "email" ? (
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
@@ -5255,7 +5260,7 @@ Please check the user's identity and reset their password from the admin panel.`
                         value={resetEmail}
                         onChange={(e) => {
                           setResetEmail(e.target.value);
-                          setResetError('');
+                          setResetError("");
                           setResetSuccess(false);
                         }}
                         className="w-full px-4 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
@@ -5297,11 +5302,11 @@ Please check the user's identity and reset their password from the admin panel.`
                       disabled={resetLoading || resetSuccess}
                       className={`w-full py-2 rounded-lg font-semibold transition-all ${
                         resetLoading || resetSuccess
-                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : 'bg-primary text-white hover:opacity-90'
+                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          : "bg-primary text-white hover:opacity-90"
                       }`}
                     >
-                      {resetLoading ? 'Sending...' : 'Send Reset Link'}
+                      {resetLoading ? "Sending..." : "Send Reset Link"}
                     </button>
                   </div>
                 ) : (
@@ -5314,7 +5319,8 @@ Please check the user's identity and reset their password from the admin panel.`
                             Phone Reset via WhatsApp
                           </p>
                           <p className="text-blue-700 text-sm mt-1">
-                            Enter your phone number and we'll send a reset request to admin via WhatsApp.
+                            Enter your phone number and we'll send a reset
+                            request to admin via WhatsApp.
                           </p>
                         </div>
                       </div>
@@ -5328,9 +5334,9 @@ Please check the user's identity and reset their password from the admin panel.`
                         type="tel"
                         value={resetPhone}
                         onChange={(e) => {
-                          const clean = e.target.value.replace(/\D/g, '');
+                          const clean = e.target.value.replace(/\D/g, "");
                           setResetPhone(clean);
-                          setResetError('');
+                          setResetError("");
                           setWhatsappMessageSent(false);
                         }}
                         className="w-full px-4 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
@@ -5361,17 +5367,22 @@ Please check the user's identity and reset their password from the admin panel.`
                         className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm flex items-center gap-2"
                       >
                         <CheckCircle className="w-4 h-4 text-green-500" />
-                        <span>WhatsApp message sent to admin! They will contact you soon.</span>
+                        <span>
+                          WhatsApp message sent to admin! They will contact you
+                          soon.
+                        </span>
                       </motion.div>
                     )}
 
                     <button
                       type="submit"
-                      disabled={resetLoading || resetSuccess || resetPhone.length !== 11}
+                      disabled={
+                        resetLoading || resetSuccess || resetPhone.length !== 11
+                      }
                       className={`w-full py-2 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
                         resetLoading || resetSuccess || resetPhone.length !== 11
-                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : 'bg-green-500 text-white hover:bg-green-600'
+                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          : "bg-green-500 text-white hover:bg-green-600"
                       }`}
                     >
                       {resetLoading ? (
@@ -5400,7 +5411,7 @@ Please check the user's identity and reset their password from the admin panel.`
                   onClick={() => {
                     if (!resetLoading) {
                       setShowForgotModal(false);
-                      setResetError('');
+                      setResetError("");
                       setResetSuccess(false);
                       setWhatsappMessageSent(false);
                     }
@@ -5451,7 +5462,7 @@ Please check the user's identity and reset their password from the admin panel.`
                   </label>
                   <div className="relative">
                     <input
-                      type={showOldPassword ? 'text' : 'password'}
+                      type={showOldPassword ? "text" : "password"}
                       value={oldPassword}
                       onChange={(e) => setOldPassword(e.target.value)}
                       className="w-full px-4 pr-12 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
@@ -5464,7 +5475,11 @@ Please check the user's identity and reset their password from the admin panel.`
                       onClick={() => setShowOldPassword(!showOldPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      {showOldPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showOldPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -5476,7 +5491,7 @@ Please check the user's identity and reset their password from the admin panel.`
                   </label>
                   <div className="relative">
                     <input
-                      type={showNewPasswordModal ? 'text' : 'password'}
+                      type={showNewPasswordModal ? "text" : "password"}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       className="w-full px-4 pr-12 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
@@ -5487,10 +5502,16 @@ Please check the user's identity and reset their password from the admin panel.`
                     />
                     <button
                       type="button"
-                      onClick={() => setShowNewPasswordModal(!showNewPasswordModal)}
+                      onClick={() =>
+                        setShowNewPasswordModal(!showNewPasswordModal)
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      {showNewPasswordModal ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showNewPasswordModal ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -5502,7 +5523,7 @@ Please check the user's identity and reset their password from the admin panel.`
                   </label>
                   <div className="relative">
                     <input
-                      type={showConfirmPasswordModal ? 'text' : 'password'}
+                      type={showConfirmPasswordModal ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className="w-full px-4 pr-12 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
@@ -5512,23 +5533,43 @@ Please check the user's identity and reset their password from the admin panel.`
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPasswordModal(!showConfirmPasswordModal)}
+                      onClick={() =>
+                        setShowConfirmPasswordModal(!showConfirmPasswordModal)
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      {showConfirmPasswordModal ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showConfirmPasswordModal ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
 
                 {/* Password Requirements */}
                 <div className="text-xs text-muted-foreground space-y-1">
-                  <p className={newPassword.length >= 6 ? 'text-green-600' : ''}>
+                  <p
+                    className={newPassword.length >= 6 ? "text-green-600" : ""}
+                  >
                     ✓ At least 6 characters
                   </p>
-                  <p className={newPassword === confirmPassword && newPassword.length > 0 ? 'text-green-600' : ''}>
+                  <p
+                    className={
+                      newPassword === confirmPassword && newPassword.length > 0
+                        ? "text-green-600"
+                        : ""
+                    }
+                  >
                     ✓ Passwords match
                   </p>
-                  <p className={oldPassword && newPassword && oldPassword !== newPassword ? 'text-green-600' : ''}>
+                  <p
+                    className={
+                      oldPassword && newPassword && oldPassword !== newPassword
+                        ? "text-green-600"
+                        : ""
+                    }
+                  >
                     ✓ Different from current password
                   </p>
                 </div>
@@ -5557,24 +5598,24 @@ Please check the user's identity and reset their password from the admin panel.`
                 <button
                   type="submit"
                   disabled={
-                    updateLoading || 
-                    updateSuccess || 
-                    !oldPassword || 
-                    !newPassword || 
-                    newPassword.length < 6 || 
+                    updateLoading ||
+                    updateSuccess ||
+                    !oldPassword ||
+                    !newPassword ||
+                    newPassword.length < 6 ||
                     newPassword !== confirmPassword ||
                     oldPassword === newPassword
                   }
                   className={`w-full py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                    updateLoading || 
-                    updateSuccess || 
-                    !oldPassword || 
-                    !newPassword || 
-                    newPassword.length < 6 || 
+                    updateLoading ||
+                    updateSuccess ||
+                    !oldPassword ||
+                    !newPassword ||
+                    newPassword.length < 6 ||
                     newPassword !== confirmPassword ||
                     oldPassword === newPassword
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-primary text-white hover:bg-primary/90 hover:shadow-lg'
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-primary text-white hover:bg-primary/90 hover:shadow-lg"
                   }`}
                 >
                   {updateLoading ? (
@@ -5583,9 +5624,9 @@ Please check the user's identity and reset their password from the admin panel.`
                       Updating...
                     </>
                   ) : updateSuccess ? (
-                    'Done ✓'
+                    "Done ✓"
                   ) : (
-                    'Update Password'
+                    "Update Password"
                   )}
                 </button>
               </form>
