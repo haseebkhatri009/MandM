@@ -3771,10 +3771,11 @@ import { rtdb, auth } from '@/lib/firebase';
 import { ref, onValue, get, update, set } from 'firebase/database';
 import { 
   Package, ShoppingCart, TrendingUp, Settings, Clock, 
-  CheckCircle, Users, X, Key, Eye, EyeOff, Loader2, User, Mail, Phone, Calendar, RefreshCw, Shield 
+  CheckCircle, Users, X, Key, Eye, EyeOff, Loader2, User, Mail, Phone, Calendar, RefreshCw, Shield , MessageCircle 
 } from 'lucide-react';
 import Link from 'next/link';
 import Swal from 'sweetalert2';
+
 
 interface DashboardStats {
   totalProducts: number;
@@ -4208,7 +4209,7 @@ export default function AdminDashboard() {
               </motion.div>
 
               {/* Quick Actions */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
@@ -4289,7 +4290,109 @@ export default function AdminDashboard() {
                   </div>
                   <p className="text-xs text-purple-100">Click to view users list</p>
                 </motion.button>
-              </motion.div>
+              </motion.div> */}
+              {/* Quick Actions */}
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.6 }}
+  className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6"  
+>
+  <Link
+    href="/admin/products"
+    className="bg-card rounded-lg shadow-lg p-6 border border-border hover:shadow-xl hover:border-primary transition-all group cursor-pointer"
+  >
+    <div className="flex items-start justify-between mb-4">
+      <div>
+        <h3 className="font-semibold text-foreground mb-1">Manage Products</h3>
+        <p className="text-sm text-muted-foreground">Add, edit or delete</p>
+      </div>
+      <Package className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+    </div>
+    <p className="text-xs text-muted-foreground">{stats.totalProducts} products</p>
+  </Link>
+
+  <Link
+    href="/admin/orders"
+    className="bg-card rounded-lg shadow-lg p-6 border border-border hover:shadow-xl hover:border-primary transition-all group cursor-pointer"
+  >
+    <div className="flex items-start justify-between mb-4">
+      <div>
+        <h3 className="font-semibold text-foreground mb-1">Manage Orders</h3>
+        <p className="text-sm text-muted-foreground">View & update</p>
+      </div>
+      <ShoppingCart className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+    </div>
+    <p className="text-xs text-muted-foreground text-yellow-600 font-semibold">
+      {stats.pendingOrders} pending
+    </p>
+  </Link>
+
+  <Link
+    href="/admin/settings"
+    className="bg-card rounded-lg shadow-lg p-6 border border-border hover:shadow-xl hover:border-primary transition-all group cursor-pointer"
+  >
+    <div className="flex items-start justify-between mb-4">
+      <div>
+        <h3 className="font-semibold text-foreground mb-1">Store Settings</h3>
+        <p className="text-sm text-muted-foreground">Banner & charges</p>
+      </div>
+      <Settings className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+    </div>
+    <p className="text-xs text-muted-foreground">Customize store</p>
+  </Link>
+
+  <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
+    <div className="flex items-start justify-between mb-4">
+      <div>
+        <h3 className="font-semibold text-foreground mb-1">Quick Stats</h3>
+        <p className="text-sm text-muted-foreground">Summary view</p>
+      </div>
+      <TrendingUp className="w-6 h-6 text-primary" />
+    </div>
+    <div className="text-xs space-y-1 text-muted-foreground">
+      <p>✓ {stats.totalOrders} total orders</p>
+      <p>✓ {stats.confirmedOrders} confirmed</p>
+      <p>✓ {stats.pendingOrders} pending</p>
+      <p>✓ {stats.totalProducts} products</p>
+    </div>
+  </div>
+
+  {/* ✅ SUPPORT CHAT BUTTON - YEH ADD KAREIN */}
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.6 }}
+    className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg p-6 border border-green-400 hover:shadow-xl transition-all group cursor-pointer"
+  >
+    <Link href="/admin/support" className="block">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h3 className="font-semibold text-white mb-1">💬 Support Chat</h3>
+          <p className="text-sm text-green-100">View & reply to users</p>
+        </div>
+        <MessageCircle className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+      </div>
+      <p className="text-xs text-green-100">Customer messages</p>
+    </Link>
+  </motion.div>
+
+  <motion.button
+    onClick={handleViewUsers}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 border border-purple-400 hover:shadow-xl transition-all group cursor-pointer"
+  >
+    <div className="flex items-start justify-between mb-4">
+      <div>
+        <h3 className="font-semibold text-white mb-1">All Users</h3>
+        <p className="text-sm text-purple-100">View all registered users</p>
+      </div>
+      <Users className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+    </div>
+    <p className="text-xs text-purple-100">Click to view users list</p>
+  </motion.button>
+</motion.div>
             </>
           )}
         </div>

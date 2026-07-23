@@ -5010,6 +5010,7 @@ import Navbar from "@/components/Navbar";
 import { CartItem, useCart } from "@/lib/cartContext";
 import { useAuth } from "@/lib/authContext";
 import toast, { Toaster } from "react-hot-toast";
+import SupportChat from '@/components/SupportChat';
 
 interface Product {
   id: string;
@@ -5361,7 +5362,7 @@ export default function Home() {
           },
         }}
       />
-
+ <SupportChat />
       {/* Watermark */}
       <motion.div
         className="fixed inset-0 pointer-events-none opacity-[0.06] z-15 flex items-center justify-center"
