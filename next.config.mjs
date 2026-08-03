@@ -7,8 +7,11 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  allowedDevOrigins: ['192.168.10.60'],
-  images: {
+allowedDevOrigins: [
+  '192.168.10.60',
+  '192.168.0.57',
+  '192.168.100.6'
+],  images: {
     unoptimized: true,
   },
   turbopack: {},

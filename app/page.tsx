@@ -4997,20 +4997,3212 @@
 //   );
 // }
 
-//mobile mode issue solved
+//mobile mode issue solved without varient badge
+// "use client";
+
+// import { useEffect, useState, useRef } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import Link from "next/link";
+// import { ArrowRight, CheckCircle, Sparkles } from "lucide-react";
+// import { rtdb } from "@/lib/firebase";
+// import { ref, onValue } from "firebase/database";
+// import Navbar from "@/components/Navbar";
+// import { CartItem, useCart } from "@/lib/cartContext";
+// import { useAuth } from "@/lib/authContext";
+// import toast, { Toaster } from "react-hot-toast";
+// import SupportChat from '@/components/SupportChat';
+
+// interface Product {
+//   id: string;
+//   name: string;
+//   price: number;
+//   discount?: number;
+//   image: string;
+//   category: string;
+//   isFeatured?: boolean;
+// }
+
+// interface BannerData {
+//   heading: string;
+//   subheading: string;
+//   buttonText: string;
+//   backgroundImage: string;
+//   backgroundImageMobile?: string;
+//   backgroundImageMobile2?: string;
+//   backgroundImageMobile3?: string;
+//   backgroundImageMobile4?: string;
+//   backgroundImageMobile5?: string;
+//   marqueeText?: string;
+//   minOrderForFreeDelivery?: number;
+//   deliveryCharges?: number;
+// }
+
+// export default function Home() {
+//   const [products, setProducts] = useState<Product[]>([]);
+//   const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
+//   const [banner, setBanner] = useState<BannerData>({
+//     heading: "",
+//     subheading: "",
+//     buttonText: "SHOP NOW",
+//     backgroundImage: "https://i.ibb.co/MkhVcztQ/theme.jpg",
+//     backgroundImageMobile: "",
+//     backgroundImageMobile2: "",
+//     backgroundImageMobile3: "",
+//     backgroundImageMobile4: "",
+//     backgroundImageMobile5: "",
+//     marqueeText: "",
+//     minOrderForFreeDelivery: 0,
+//     deliveryCharges: 0,
+//   });
+//   const [loading, setLoading] = useState(true);
+//   const [currentMobileIndex, setCurrentMobileIndex] = useState(0);
+//   const [isMobile, setIsMobile] = useState(false);
+//   const [imagesLoaded, setImagesLoaded] = useState(false);
+//   const { addToCart, cartItems } = useCart();
+//   const { user } = useAuth();
+//   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+//   // Get all mobile images in array
+//   const getMobileImages = () => {
+//     const images = [];
+//     if (banner.backgroundImageMobile) images.push(banner.backgroundImageMobile);
+//     if (banner.backgroundImageMobile2)
+//       images.push(banner.backgroundImageMobile2);
+//     if (banner.backgroundImageMobile3)
+//       images.push(banner.backgroundImageMobile3);
+//     if (banner.backgroundImageMobile4)
+//       images.push(banner.backgroundImageMobile4);
+//     if (banner.backgroundImageMobile5)
+//       images.push(banner.backgroundImageMobile5);
+//     return images;
+//   };
+
+//   const mobileImages = getMobileImages();
+
+//   // Preload images
+//   useEffect(() => {
+//     if (mobileImages.length === 0) {
+//       setImagesLoaded(true);
+//       return;
+//     }
+
+//     let loadedCount = 0;
+//     mobileImages.forEach((src) => {
+//       const img = new Image();
+//       img.src = src;
+//       img.onload = () => {
+//         loadedCount++;
+//         if (loadedCount === mobileImages.length) {
+//           setImagesLoaded(true);
+//         }
+//       };
+//       img.onerror = () => {
+//         loadedCount++;
+//         if (loadedCount === mobileImages.length) {
+//           setImagesLoaded(true);
+//         }
+//       };
+//     });
+//   }, [mobileImages]);
+
+//   // Check if mobile
+//   useEffect(() => {
+//     const checkMobile = () => {
+//       setIsMobile(window.innerWidth <= 400);
+//     };
+//     checkMobile();
+//     window.addEventListener("resize", checkMobile);
+//     return () => window.removeEventListener("resize", checkMobile);
+//   }, []);
+
+//   // Auto-slide effect for mobile images - 5 seconds
+//   useEffect(() => {
+//     if (mobileImages.length <= 1 || !isMobile) return;
+
+//     // Clear any existing interval
+//     if (intervalRef.current) {
+//       clearInterval(intervalRef.current);
+//     }
+
+//     intervalRef.current = setInterval(() => {
+//       setCurrentMobileIndex((prev) => (prev + 1) % mobileImages.length);
+//     }, 5000);
+
+//     return () => {
+//       if (intervalRef.current) {
+//         clearInterval(intervalRef.current);
+//       }
+//     };
+//   }, [mobileImages.length, isMobile]);
+
+//   const isProductInCart = (productId: string) => {
+//     return cartItems.some((item) => item.id === productId);
+//   };
+
+//   const formatPrice = (price: number) => {
+//     return new Intl.NumberFormat("ur-PK", {
+//       style: "currency",
+//       currency: "PKR",
+//       minimumFractionDigits: 0,
+//       maximumFractionDigits: 0,
+//     }).format(price);
+//   };
+
+//   const hasValidDiscount = (product: Product) => {
+//     return (
+//       product.discount !== undefined &&
+//       product.discount !== null &&
+//       product.discount > 0 &&
+//       product.discount < product.price
+//     );
+//   };
+
+//   const getDiscountPercentage = (product: Product) => {
+//     if (!hasValidDiscount(product)) return 0;
+//     return Math.round((product.discount! / product.price) * 100);
+//   };
+
+//   const getFinalPrice = (product: Product) => {
+//     if (hasValidDiscount(product)) {
+//       return product.price - product.discount!;
+//     }
+//     return product.price;
+//   };
+
+//   const shuffleArray = (array: Product[]) => {
+//     const shuffled = [...array];
+//     for (let i = shuffled.length - 1; i > 0; i--) {
+//       const j = Math.floor(Math.random() * (i + 1));
+//       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+//     }
+//     return shuffled;
+//   };
+
+//   useEffect(() => {
+//     try {
+//       const bannerRef = ref(rtdb, "admin_settings/banner");
+//       const unsubscribeBanner = onValue(bannerRef, (snapshot) => {
+//         if (snapshot.exists()) {
+//           const data = snapshot.val();
+//           setBanner({
+//             heading: data.heading || "",
+//             subheading: data.subheading || "",
+//             buttonText: data.buttonText || "SHOP NOW",
+//             backgroundImage:
+//               data.backgroundImage ||
+//               "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-JcYvSSgzZgAPnalbf3iR7aptCoX1JC.jpg",
+//             backgroundImageMobile: data.backgroundImageMobile || "",
+//             backgroundImageMobile2: data.backgroundImageMobile2 || "",
+//             backgroundImageMobile3: data.backgroundImageMobile3 || "",
+//             backgroundImageMobile4: data.backgroundImageMobile4 || "",
+//             backgroundImageMobile5: data.backgroundImageMobile5 || "",
+//             marqueeText: data.marqueeText || "",
+//             minOrderForFreeDelivery: data.minOrderForFreeDelivery || 0,
+//             deliveryCharges: data.deliveryCharges || 0,
+//           });
+//         }
+//       });
+
+//       const productsRef = ref(rtdb, "products");
+//       const unsubscribeProducts = onValue(productsRef, (snapshot) => {
+//         if (snapshot.exists()) {
+//           const productsData: Product[] = [];
+//           const data = snapshot.val();
+
+//           Object.keys(data).forEach((key) => {
+//             productsData.push({
+//               id: key,
+//               ...data[key],
+//             } as Product);
+//           });
+
+//           setProducts(productsData);
+
+//           const featuredProducts = productsData.filter(
+//             (p) => p.isFeatured === true,
+//           );
+
+//           if (featuredProducts.length > 0) {
+//             setDisplayProducts(featuredProducts.slice(0, 4));
+//           } else {
+//             const shuffled = shuffleArray(productsData);
+//             setDisplayProducts(shuffled.slice(0, 4));
+//           }
+//         }
+//         setLoading(false);
+//       });
+
+//       return () => {
+//         unsubscribeBanner();
+//         unsubscribeProducts();
+//       };
+//     } catch (error) {
+//       console.log("[v0] Error fetching data:", error);
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   const handleAddToCart = (product: Product) => {
+//     if (!user) {
+//       toast.error("Please login first to add items to cart", {
+//         duration: 3000,
+//         position: "top-right",
+//         style: {
+//           background: "#EF4444",
+//           color: "#fff",
+//           padding: "16px",
+//           borderRadius: "12px",
+//         },
+//         icon: "🔒",
+//       });
+//       setTimeout(() => {
+//         window.location.href = "/login";
+//       }, 1500);
+//       return;
+//     }
+
+//     if (isProductInCart(product.id)) {
+//       toast.error(`${product.name} is already in your cart!`, {
+//         duration: 3000,
+//         position: "top-right",
+//         style: {
+//           background: "#F59E0B",
+//           color: "#fff",
+//           padding: "16px",
+//           borderRadius: "12px",
+//         },
+//         icon: "⚠️",
+//       });
+//       return;
+//     }
+
+//     const cartItem: CartItem = {
+//       id: product.id,
+//       name: product.name,
+//       price: product.price,
+//       discount: product.discount,
+//       image: product.image,
+//       quantity: 1,
+//       category: product.category,
+//     };
+
+//     addToCart(cartItem);
+
+//     toast.success(`${product.name} added to cart!`, {
+//       duration: 3000,
+//       position: "top-right",
+//       style: {
+//         background: "#10B981",
+//         color: "#fff",
+//         padding: "16px",
+//         borderRadius: "12px",
+//       },
+//       icon: "🛒",
+//     });
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-black relative">
+//       {/* Marquee Bar */}
+//       {banner.marqueeText && (
+//         <div className="bg-black py-2.5 overflow-hidden border-b border-white/10 sticky top-0 z-50 shadow-md">
+//           <div className="max-w-7xl mx-auto relative">
+//             <div className="overflow-hidden">
+//               <motion.div
+//                 animate={{ x: ["100%", "-100%"] }}
+//                 transition={{
+//                   duration: 20,
+//                   repeat: Infinity,
+//                   ease: "linear",
+//                 }}
+//                 className="flex whitespace-nowrap"
+//               >
+//                 {[...Array(2)].map((_, index) => (
+//                   <span
+//                     key={index}
+//                     className="text-white font-medium text-sm md:text-base tracking-wide flex items-center gap-8 mx-4"
+//                   >
+//                     <span className="flex items-center gap-3">
+//                       <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
+//                       {banner.marqueeText}
+//                       <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
+
+//                       {banner.minOrderForFreeDelivery > 0 && (
+//                         <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
+//                           🎯 Free delivery above{" "}
+//                           {formatPrice(banner.minOrderForFreeDelivery)}
+//                         </span>
+//                       )}
+
+//                       {banner.deliveryCharges === 0 && (
+//                         <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
+//                           🎉 Free Delivery
+//                         </span>
+//                       )}
+//                     </span>
+//                   </span>
+//                 ))}
+//               </motion.div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <Navbar />
+
+//       <Toaster
+//         position="top-right"
+//         toastOptions={{
+//           duration: 3000,
+//           style: {
+//             background: "#333",
+//             color: "#fff",
+//             padding: "16px",
+//             borderRadius: "12px",
+//           },
+//         }}
+//       />
+//  <SupportChat />
+//       {/* Watermark */}
+//       <motion.div
+//         className="fixed inset-0 pointer-events-none opacity-[0.06] z-15 flex items-center justify-center"
+//         animate={{
+//           scale: [1, 1.05, 1],
+//           opacity: [0.05, 0.08, 0.05],
+//         }}
+//         transition={{
+//           duration: 20,
+//           repeat: Infinity,
+//           ease: "easeInOut",
+//         }}
+//       >
+//         <div className="relative w-[80%] max-w-4xl">
+//           <img
+//             src="https://i.ibb.co/7NLfzpHj/LOGO-removebg-preview.png"
+//             alt="M&M Watermark"
+//             className="w-full h-auto object-contain"
+//           />
+//           <div className="absolute inset-0 flex items-center justify-center">
+//             <div className="text-center font-serif text-[#8B7355] opacity-30">
+//               <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+//                 GLOW WITH BEAUTY,
+//               </div>
+//               <div className="text-xl md:text-3xl font-bold tracking-[0.2em]">
+//                 M&M
+//               </div>
+//               <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+//                 STAY WITH SCENT
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </motion.div>
+
+//       {/* Main Content */}
+//       <div className="relative">
+//         {/* Hero Banner */}
+//         <section className="relative w-full h-[calc(100vh-64px)] max-h-[600px] overflow-hidden z-15 bg-black">
+//   {/* ✅ Desktop Background - Sirf desktop pe */}
+//   <motion.div
+//     initial={{ scale: 1.1, opacity: 0 }}
+//     animate={{ scale: 1, opacity: 1 }}
+//     transition={{ duration: 0.8 }}
+//     className="absolute inset-0 bg-cover bg-center brightness-50 max-[400px]:hidden"
+//     style={{
+//       backgroundImage: `url('${banner.backgroundImage}')`,
+//       backgroundSize: "cover",
+//       backgroundPosition: "center 40%",
+//     }}
+//   />
+
+//   {/* ✅ Mobile Background - Images slide with NO BLACK */}
+//   {mobileImages.length > 0 && isMobile && imagesLoaded && (
+//     <div className="absolute inset-[-20px] max-[400px]:block hidden overflow-hidden">
+//       <AnimatePresence initial={false}>
+//         <motion.div
+//           key={currentMobileIndex}
+//           initial={{ x: "100%" }}
+//           animate={{ x: "0%" }}
+//           exit={{ x: "-100%" }}
+//           transition={{ duration: 0.8, ease: "easeInOut" }}
+//           className="absolute inset-0 brightness-60"
+//           style={{
+//             backgroundImage: `url('${mobileImages[currentMobileIndex]}')`,
+//             backgroundSize: "cover",
+//             backgroundPosition: "center",
+//             backgroundRepeat: "no-repeat",
+//           }}
+//         />
+//       </AnimatePresence>
+//     </div>
+//   )}
+
+//   {/* ✅ Gradient Overlay */}
+//   <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
+
+//   {/* Gold Border Lines */}
+//   <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+//   <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+
+//   {/* Content */}
+//   <div className="relative h-full flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 px-4">
+//     {/* SHOP NOW Button */}
+//     <motion.div
+//       initial={{ opacity: 0, y: 40, scale: 0.9 }}
+//       animate={{
+//         opacity: 1,
+//         y: [0, -8, 0],
+//         scale: [1, 1.02, 1],
+//       }}
+//       transition={{
+//         opacity: {
+//           duration: 0.8,
+//           ease: "easeOut",
+//         },
+//         y: {
+//           duration: 2.5,
+//           repeat: Infinity,
+//           ease: "easeInOut",
+//         },
+//         scale: {
+//           duration: 2.5,
+//           repeat: Infinity,
+//           ease: "easeInOut",
+//         },
+//       }}
+//     >
+//       <Link
+//         href="/products"
+//         className="
+//           group
+//           relative
+//           inline-block
+//           transition-all
+//           duration-300
+//           hover:scale-105
+
+//           max-[400px]:bottom-[0px]
+//           min-[400px]:max-[650px]:bottom-[125px]
+//           min-[650px]:max-[767px]:bottom-[110px]
+//           min-[768px]:max-[799px]:bottom-[90px]
+//           min-[800px]:max-[1023px]:bottom-[80px]
+//           min-[1024px]:max-[1099px]:bottom-[70px]
+//           min-[1100px]:max-[1199px]:bottom-[60px]
+//           min-[1200px]:max-[1299px]:bottom-[50px]
+//           min-[1300px]:max-[1359px]:bottom-[37px]
+//           min-[1360px]:right-[2px]
+//           min-[1360px]:bottom-[23px]
+//         "
+//       >
+//         {/* Glow */}
+//         <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#A8893A] blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500" />
+
+//         {/* Button */}
+//         <span
+//           className="
+//             relative
+//             flex
+//             items-center
+//             justify-center
+
+//             px-6 py-2.5
+//             sm:px-8 sm:py-3
+//             md:px-10 md:py-3.5
+//             lg:px-14 lg:py-4.5
+
+//             bg-[#C9A84C]
+//             border-2
+//             border-[#C9A84C]
+
+//             overflow-hidden
+
+//             transition-all
+//             duration-500
+
+//             hover:bg-[#B8963E]
+//             hover:border-[#B8963E]
+
+//             shadow-[0_10px_30px_rgba(201,168,76,0.35)]
+//             group-hover:shadow-[0_15px_50px_rgba(201,168,76,0.7)]
+//           "
+//         >
+//           <motion.span
+//             animate={{
+//               y: [0, -2, 0],
+//             }}
+//             transition={{
+//               duration: 1.4,
+//               repeat: Infinity,
+//               ease: "easeInOut",
+//             }}
+//             className="
+//               relative
+//               z-10
+
+//               text-black
+//               font-serif
+//               font-bold
+//               uppercase
+
+//               tracking-[0.15em]
+
+//               text-[10px]
+
+//               min-[300px]:max-[400px]:text-[14px]
+//               min-[401px]:max-[649px]:text-[13px]
+//               min-[650px]:max-[767px]:text-[14px]
+//               min-[768px]:max-[1023px]:text-[15px]
+//               min-[1024px]:text-[20px]
+
+//               min-[800px]:max-[1023px]:px-10
+//               min-[650px]:max-[767px]:px-20
+//               min-[401px]:max-[649px]:px-20
+//               min-[300px]:max-[400px]:px-8
+//             "
+//           >
+//             <div className="flex items-center gap-2">
+//               <span>{banner.buttonText}</span>
+
+//               <ArrowRight
+//                 size={18}
+//                 strokeWidth={2.5}
+//                 className="transition-transform duration-300 group-hover:translate-x-1"
+//               />
+//             </div>
+//           </motion.span>
+//         </span>
+//       </Link>
+//     </motion.div>
+
+//     {/* Decorative Bottom Line */}
+//     <motion.div
+//       initial={{ opacity: 0, width: 0 }}
+//       animate={{ opacity: 1, width: "80px" }}
+//       transition={{ duration: 0.8, delay: 0.6 }}
+//       className="h-[1px] mx-auto mt-4 sm:mt-6 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"
+//       style={{ width: "clamp(60px, 20vw, 120px)" }}
+//     />
+//   </div>
+// </section>
+
+//         {/* Featured Products */}
+//         <section className="py-12 sm:py-16 px-4 relative bg-white">
+//           <div className="max-w-7xl mx-auto">
+//             <motion.div
+//               initial={{ opacity: 0, y: 20 }}
+//               whileInView={{ opacity: 1, y: 0 }}
+//               transition={{ duration: 0.6 }}
+//               className="text-center mb-8 sm:mb-12"
+//             >
+//               <div className="flex justify-center items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+//                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-[#C9A84C]" />
+//                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#C9A84C]" />
+//                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#C9A84C]" />
+//               </div>
+//               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4 text-gray-900">
+//                 {products.filter((p) => p.isFeatured === true).length > 0
+//                   ? "⭐ Featured Products"
+//                   : "✨ Our Products"}
+//               </h2>
+//               <p className="text-sm sm:text-base text-gray-600 max-w-lg mx-auto font-light tracking-wide px-4">
+//                 {products.filter((p) => p.isFeatured === true).length > 0
+//                   ? "Handpicked selections just for you"
+//                   : "Discover our curated collection of premium beauty products"}
+//               </p>
+//             </motion.div>
+
+//             {loading ? (
+//               <div className="text-center py-12">
+//                 <motion.div
+//                   animate={{ rotate: 360 }}
+//                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+//                   className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-[#C9A84C] border-t-transparent rounded-full mx-auto mb-4"
+//                 />
+//                 <p className="text-gray-600">Loading products...</p>
+//               </div>
+//             ) : displayProducts.length > 0 ? (
+//               <motion.div
+//                 initial={{ opacity: 0 }}
+//                 whileInView={{ opacity: 1 }}
+//                 transition={{ duration: 0.6 }}
+//                 className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+//               >
+//                 {displayProducts.map((product, index) => {
+//                   const inCart = isProductInCart(product.id);
+//                   const discountPercent = getDiscountPercentage(product);
+
+//                   return (
+//                     <motion.div
+//                       key={product.id}
+//                       initial={{ opacity: 0, y: 20 }}
+//                       whileInView={{ opacity: 1, y: 0 }}
+//                       transition={{ delay: index * 0.1 }}
+//                       className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all group border border-gray-100 hover:border-[#C9A84C]/30"
+//                     >
+//                       <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+//                         <motion.img
+//                           whileHover={{ scale: 1.05 }}
+//                           src={product.image}
+//                           alt={product.name}
+//                           className="w-full h-full object-contain p-2"
+//                           onError={(e) => {
+//                             e.currentTarget.src =
+//                               'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e8e3dc" width="300" height="300"/%3E%3C/svg%3E';
+//                           }}
+//                         />
+//                         {product.isFeatured && (
+//                           <div className="absolute top-2 left-2 bg-gradient-to-r from-[#C9A84C] to-[#8B7355] text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg">
+//                             ⭐ Featured
+//                           </div>
+//                         )}
+//                       </div>
+
+//                       <div className="p-2 sm:p-3 md:p-4">
+//                         <p className="text-[8px] sm:text-xs text-[#C9A84C] mb-0.5 sm:mb-1 uppercase tracking-widest font-bold truncate">
+//                           {product.category}
+//                         </p>
+//                         <div className="flex items-center flex-wrap gap-1 mb-1 sm:mb-2">
+//                           <h3 className="font-serif font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm md:text-base">
+//                             {product.name}
+//                           </h3>
+//                           {/* {hasValidDiscount(product) && (
+//                             <span className="inline-block bg-[#C9A84C] text-white px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold whitespace-nowrap">
+//                               -{discountPercent}%
+//                             </span>
+//                           )} */}
+//                         </div>
+
+//                         <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
+//                           <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C9A84C]">
+//                             {formatPrice(getFinalPrice(product))}
+//                           </span>
+//                           {hasValidDiscount(product) && (
+//                             <span className="text-[8px] sm:text-xs text-gray-500 line-through">
+//                               {formatPrice(product.price)}
+//                             </span>
+//                           )}
+//                         </div>
+
+//                         <div className="flex gap-1 sm:gap-2">
+//                           {inCart ? (
+//                             <button
+//                               disabled
+//                               className="flex-1 bg-green-500 text-white py-1 sm:py-2 rounded-lg font-semibold flex items-center justify-center gap-1 text-[8px] sm:text-xs cursor-default opacity-80"
+//                             >
+//                               <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+//                               <span className="hidden xs:inline">In Cart</span>
+//                             </button>
+//                           ) : (
+//                             <button
+//                               onClick={() => handleAddToCart(product)}
+//                               className="flex-1 bg-[#c9a87f] text-white py-1 sm:py-2 rounded-lg font-semibold hover:bg-[#8B7355] transition-all cursor-pointer text-[8px] sm:text-xs"
+//                             >
+//                               <span className="hidden xs:inline">
+//                                 Add to Cart
+//                               </span>
+//                               <span className="xs:hidden">Add</span>
+//                             </button>
+//                           )}
+//                           <Link
+//                             href={`/product/${product.id}`}
+//                             className="flex-1 bg-gray-100 text-gray-900 py-1 sm:py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-center border border-gray-200 text-[8px] sm:text-xs"
+//                           >
+//                             View
+//                           </Link>
+//                         </div>
+//                       </div>
+//                     </motion.div>
+//                   );
+//                 })}
+//               </motion.div>
+//             ) : (
+//               <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+//                 <p className="text-gray-600 mb-4">No products available yet</p>
+//                 <p className="text-sm text-gray-500">
+//                   Admin needs to add products first
+//                 </p>
+//               </div>
+//             )}
+
+//             {products.length > 0 && (
+//               <div className="text-center mt-8 sm:mt-12">
+//                 <Link
+//                   href="/products"
+//                   className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#c9a87f] text-white rounded-lg font-semibold hover:bg-[#8B7355] transition-all text-sm sm:text-base"
+//                 >
+//                   View All Products
+//                   <ArrowRight size={16} className="sm:w-5 sm:h-5" />
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+//         </section>
+
+//         <footer className="bg-white py-6 sm:py-8 px-4 border-t border-gray-200">
+//           <div className="max-w-7xl mx-auto text-center">
+//             <div className="flex justify-center items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+//               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
+//               <span className="text-[#C9A84C] text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase font-serif">
+//                 M&M Scents & Glow
+//               </span>
+//               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
+//             </div>
+//             <p className="text-gray-600 text-[10px] sm:text-sm">
+//               &copy; 2026 M&M Scents. All rights reserved.
+//             </p>
+//           </div>
+//         </footer>
+//       </div>
+//     </div>
+//   );
+// }
+
+//with varient badge and without deal
+
+// "use client";
+
+// import { useEffect, useState, useRef } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import Link from "next/link";
+// import { ArrowRight, CheckCircle, Sparkles } from "lucide-react";
+// import { rtdb } from "@/lib/firebase";
+// import { ref, onValue } from "firebase/database";
+// import Navbar from "@/components/Navbar";
+// import { CartItem, useCart } from "@/lib/cartContext";
+// import { useAuth } from "@/lib/authContext";
+// import toast, { Toaster } from "react-hot-toast";
+// import SupportChat from '@/components/SupportChat';
+
+// interface Product {
+//   id: string;
+//   name: string;
+//   price: number;
+//   discount?: number;
+//   image: string;
+//   category: string;
+//   isFeatured?: boolean;
+//   hasFlavors?: boolean;
+//   flavors?: Array<{ id: string; name: string; price: number; discount?: number; stock: number; image?: string; }>;
+// }
+
+// interface BannerData {
+//   heading: string;
+//   subheading: string;
+//   buttonText: string;
+//   backgroundImage: string;
+//   backgroundImageMobile?: string;
+//   backgroundImageMobile2?: string;
+//   backgroundImageMobile3?: string;
+//   backgroundImageMobile4?: string;
+//   backgroundImageMobile5?: string;
+//   marqueeText?: string;
+//   minOrderForFreeDelivery?: number;
+//   deliveryCharges?: number;
+// }
+
+// export default function Home() {
+//   const [products, setProducts] = useState<Product[]>([]);
+//   const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
+//   const [banner, setBanner] = useState<BannerData>({
+//     heading: "",
+//     subheading: "",
+//     buttonText: "SHOP NOW",
+//     backgroundImage: "https://i.ibb.co/MkhVcztQ/theme.jpg",
+//     backgroundImageMobile: "",
+//     backgroundImageMobile2: "",
+//     backgroundImageMobile3: "",
+//     backgroundImageMobile4: "",
+//     backgroundImageMobile5: "",
+//     marqueeText: "",
+//     minOrderForFreeDelivery: 0,
+//     deliveryCharges: 0,
+//   });
+//   const [loading, setLoading] = useState(true);
+//   const [currentMobileIndex, setCurrentMobileIndex] = useState(0);
+//   const [isMobile, setIsMobile] = useState(false);
+//   const [imagesLoaded, setImagesLoaded] = useState(false);
+//   const { addToCart, cartItems } = useCart();
+//   const { user } = useAuth();
+//   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+//   // Get all mobile images in array
+//   const getMobileImages = () => {
+//     const images = [];
+//     if (banner.backgroundImageMobile) images.push(banner.backgroundImageMobile);
+//     if (banner.backgroundImageMobile2)
+//       images.push(banner.backgroundImageMobile2);
+//     if (banner.backgroundImageMobile3)
+//       images.push(banner.backgroundImageMobile3);
+//     if (banner.backgroundImageMobile4)
+//       images.push(banner.backgroundImageMobile4);
+//     if (banner.backgroundImageMobile5)
+//       images.push(banner.backgroundImageMobile5);
+//     return images;
+//   };
+
+//   const mobileImages = getMobileImages();
+
+//   // Preload images
+//   useEffect(() => {
+//     if (mobileImages.length === 0) {
+//       setImagesLoaded(true);
+//       return;
+//     }
+
+//     let loadedCount = 0;
+//     mobileImages.forEach((src) => {
+//       const img = new Image();
+//       img.src = src;
+//       img.onload = () => {
+//         loadedCount++;
+//         if (loadedCount === mobileImages.length) {
+//           setImagesLoaded(true);
+//         }
+//       };
+//       img.onerror = () => {
+//         loadedCount++;
+//         if (loadedCount === mobileImages.length) {
+//           setImagesLoaded(true);
+//         }
+//       };
+//     });
+//   }, [mobileImages]);
+
+//   // Check if mobile
+//   useEffect(() => {
+//     const checkMobile = () => {
+//       setIsMobile(window.innerWidth <= 400);
+//     };
+//     checkMobile();
+//     window.addEventListener("resize", checkMobile);
+//     return () => window.removeEventListener("resize", checkMobile);
+//   }, []);
+
+//   // Auto-slide effect for mobile images - 5 seconds
+//   useEffect(() => {
+//     if (mobileImages.length <= 1 || !isMobile) return;
+
+//     if (intervalRef.current) {
+//       clearInterval(intervalRef.current);
+//     }
+
+//     intervalRef.current = setInterval(() => {
+//       setCurrentMobileIndex((prev) => (prev + 1) % mobileImages.length);
+//     }, 5000);
+
+//     return () => {
+//       if (intervalRef.current) {
+//         clearInterval(intervalRef.current);
+//       }
+//     };
+//   }, [mobileImages.length, isMobile]);
+
+//   const isProductInCart = (productId: string) => {
+//     return cartItems.some((item) => item.id === productId);
+//   };
+
+//   const formatPrice = (price: number) => {
+//     return new Intl.NumberFormat("ur-PK", {
+//       style: "currency",
+//       currency: "PKR",
+//       minimumFractionDigits: 0,
+//       maximumFractionDigits: 0,
+//     }).format(price);
+//   };
+
+//   const hasValidDiscount = (product: Product) => {
+//     return (
+//       product.discount !== undefined &&
+//       product.discount !== null &&
+//       product.discount > 0 &&
+//       product.discount < product.price
+//     );
+//   };
+
+//   const getDiscountPercentage = (product: Product) => {
+//     if (!hasValidDiscount(product)) return 0;
+//     return Math.round((product.discount! / product.price) * 100);
+//   };
+
+//   const getFinalPrice = (product: Product) => {
+//     if (hasValidDiscount(product)) {
+//       return product.price - product.discount!;
+//     }
+//     return product.price;
+//   };
+
+//   const shuffleArray = (array: Product[]) => {
+//     const shuffled = [...array];
+//     for (let i = shuffled.length - 1; i > 0; i--) {
+//       const j = Math.floor(Math.random() * (i + 1));
+//       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+//     }
+//     return shuffled;
+//   };
+
+//   useEffect(() => {
+//     try {
+//       const bannerRef = ref(rtdb, "admin_settings/banner");
+//       const unsubscribeBanner = onValue(bannerRef, (snapshot) => {
+//         if (snapshot.exists()) {
+//           const data = snapshot.val();
+//           setBanner({
+//             heading: data.heading || "",
+//             subheading: data.subheading || "",
+//             buttonText: data.buttonText || "SHOP NOW",
+//             backgroundImage:
+//               data.backgroundImage ||
+//               "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-JcYvSSgzZgAPnalbf3iR7aptCoX1JC.jpg",
+//             backgroundImageMobile: data.backgroundImageMobile || "",
+//             backgroundImageMobile2: data.backgroundImageMobile2 || "",
+//             backgroundImageMobile3: data.backgroundImageMobile3 || "",
+//             backgroundImageMobile4: data.backgroundImageMobile4 || "",
+//             backgroundImageMobile5: data.backgroundImageMobile5 || "",
+//             marqueeText: data.marqueeText || "",
+//             minOrderForFreeDelivery: data.minOrderForFreeDelivery || 0,
+//             deliveryCharges: data.deliveryCharges || 0,
+//           });
+//         }
+//       });
+
+//       const productsRef = ref(rtdb, "products");
+//       const unsubscribeProducts = onValue(productsRef, (snapshot) => {
+//         if (snapshot.exists()) {
+//           const productsData: Product[] = [];
+//           const data = snapshot.val();
+
+//           Object.keys(data).forEach((key) => {
+//             productsData.push({
+//               id: key,
+//               ...data[key],
+//             } as Product);
+//           });
+
+//           setProducts(productsData);
+
+//           const featuredProducts = productsData.filter(
+//             (p) => p.isFeatured === true,
+//           );
+
+//           if (featuredProducts.length > 0) {
+//             setDisplayProducts(featuredProducts.slice(0, 4));
+//           } else {
+//             const shuffled = shuffleArray(productsData);
+//             setDisplayProducts(shuffled.slice(0, 4));
+//           }
+//         }
+//         setLoading(false);
+//       });
+
+//       return () => {
+//         unsubscribeBanner();
+//         unsubscribeProducts();
+//       };
+//     } catch (error) {
+//       console.log("[v0] Error fetching data:", error);
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   const handleAddToCart = (product: Product) => {
+//     if (!user) {
+//       toast.error("Please login first to add items to cart", {
+//         duration: 3000,
+//         position: "top-right",
+//         style: {
+//           background: "#EF4444",
+//           color: "#fff",
+//           padding: "16px",
+//           borderRadius: "12px",
+//         },
+//         icon: "🔒",
+//       });
+//       setTimeout(() => {
+//         window.location.href = "/login";
+//       }, 1500);
+//       return;
+//     }
+
+//     if (isProductInCart(product.id)) {
+//       toast.error(`${product.name} is already in your cart!`, {
+//         duration: 3000,
+//         position: "top-right",
+//         style: {
+//           background: "#F59E0B",
+//           color: "#fff",
+//           padding: "16px",
+//           borderRadius: "12px",
+//         },
+//         icon: "⚠️",
+//       });
+//       return;
+//     }
+
+//     const cartItem: CartItem = {
+//       id: product.id,
+//       name: product.name,
+//       price: product.price,
+//       discount: product.discount,
+//       image: product.image,
+//       quantity: 1,
+//       category: product.category,
+//     };
+
+//     addToCart(cartItem);
+
+//     toast.success(`${product.name} added to cart!`, {
+//       duration: 3000,
+//       position: "top-right",
+//       style: {
+//         background: "#10B981",
+//         color: "#fff",
+//         padding: "16px",
+//         borderRadius: "12px",
+//       },
+//       icon: "🛒",
+//     });
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-black relative">
+//       {/* Marquee Bar */}
+//       {banner.marqueeText && (
+//         <div className="bg-black py-2.5 overflow-hidden border-b border-white/10 sticky top-0 z-50 shadow-md">
+//           <div className="max-w-7xl mx-auto relative">
+//             <div className="overflow-hidden">
+//               <motion.div
+//                 animate={{ x: ["100%", "-100%"] }}
+//                 transition={{
+//                   duration: 20,
+//                   repeat: Infinity,
+//                   ease: "linear",
+//                 }}
+//                 className="flex whitespace-nowrap"
+//               >
+//                 {[...Array(2)].map((_, index) => (
+//                   <span
+//                     key={index}
+//                     className="text-white font-medium text-sm md:text-base tracking-wide flex items-center gap-8 mx-4"
+//                   >
+//                     <span className="flex items-center gap-3">
+//                       <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
+//                       {banner.marqueeText}
+//                       <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
+
+//                       {banner.minOrderForFreeDelivery > 0 && (
+//                         <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
+//                           🎯 Free delivery above{" "}
+//                           {formatPrice(banner.minOrderForFreeDelivery)}
+//                         </span>
+//                       )}
+
+//                       {banner.deliveryCharges === 0 && (
+//                         <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
+//                           🎉 Free Delivery
+//                         </span>
+//                       )}
+//                     </span>
+//                   </span>
+//                 ))}
+//               </motion.div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <Navbar />
+
+//       <Toaster
+//         position="top-right"
+//         toastOptions={{
+//           duration: 3000,
+//           style: {
+//             background: "#333",
+//             color: "#fff",
+//             padding: "16px",
+//             borderRadius: "12px",
+//           },
+//         }}
+//       />
+//       <SupportChat />
+
+//       {/* Watermark */}
+//       <motion.div
+//         className="fixed inset-0 pointer-events-none opacity-[0.06] z-15 flex items-center justify-center"
+//         animate={{
+//           scale: [1, 1.05, 1],
+//           opacity: [0.05, 0.08, 0.05],
+//         }}
+//         transition={{
+//           duration: 20,
+//           repeat: Infinity,
+//           ease: "easeInOut",
+//         }}
+//       >
+//         <div className="relative w-[80%] max-w-4xl">
+//           <img
+//             src="https://i.ibb.co/7NLfzpHj/LOGO-removebg-preview.png"
+//             alt="M&M Watermark"
+//             className="w-full h-auto object-contain"
+//           />
+//           <div className="absolute inset-0 flex items-center justify-center">
+//             <div className="text-center font-serif text-[#8B7355] opacity-30">
+//               <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+//                 GLOW WITH BEAUTY,
+//               </div>
+//               <div className="text-xl md:text-3xl font-bold tracking-[0.2em]">
+//                 M&M
+//               </div>
+//               <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+//                 STAY WITH SCENT
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </motion.div>
+
+//       {/* Main Content */}
+//       <div className="relative">
+//         {/* Hero Banner */}
+//         <section className="relative w-full h-[calc(100vh-64px)] max-h-[600px] overflow-hidden z-15 bg-black">
+//           {/* Desktop Background */}
+//           <motion.div
+//             initial={{ scale: 1.1, opacity: 0 }}
+//             animate={{ scale: 1, opacity: 1 }}
+//             transition={{ duration: 0.8 }}
+//             className="absolute inset-0 bg-cover bg-center brightness-50 max-[400px]:hidden"
+//             style={{
+//               backgroundImage: `url('${banner.backgroundImage}')`,
+//               backgroundSize: "cover",
+//               backgroundPosition: "center 40%",
+//             }}
+//           />
+
+//           {/* Mobile Background */}
+//           {mobileImages.length > 0 && isMobile && imagesLoaded && (
+//             <div className="absolute inset-[-20px] max-[400px]:block hidden overflow-hidden">
+//               <AnimatePresence initial={false}>
+//                 <motion.div
+//                   key={currentMobileIndex}
+//                   initial={{ x: "100%" }}
+//                   animate={{ x: "0%" }}
+//                   exit={{ x: "-100%" }}
+//                   transition={{ duration: 0.8, ease: "easeInOut" }}
+//                   className="absolute inset-0 brightness-60"
+//                   style={{
+//                     backgroundImage: `url('${mobileImages[currentMobileIndex]}')`,
+//                     backgroundSize: "cover",
+//                     backgroundPosition: "center",
+//                     backgroundRepeat: "no-repeat",
+//                   }}
+//                 />
+//               </AnimatePresence>
+//             </div>
+//           )}
+
+//           {/* Gradient Overlay */}
+//           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
+
+//           {/* Gold Border Lines */}
+//           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+//           <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+
+//           {/* Content */}
+//           <div className="relative h-full flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 px-4">
+//             <motion.div
+//               initial={{ opacity: 0, y: 40, scale: 0.9 }}
+//               animate={{
+//                 opacity: 1,
+//                 y: [0, -8, 0],
+//                 scale: [1, 1.02, 1],
+//               }}
+//               transition={{
+//                 opacity: {
+//                   duration: 0.8,
+//                   ease: "easeOut",
+//                 },
+//                 y: {
+//                   duration: 2.5,
+//                   repeat: Infinity,
+//                   ease: "easeInOut",
+//                 },
+//                 scale: {
+//                   duration: 2.5,
+//                   repeat: Infinity,
+//                   ease: "easeInOut",
+//                 },
+//               }}
+//             >
+//               <Link
+//                 href="/products"
+//                 className="
+//                   group
+//                   relative
+//                   inline-block
+//                   transition-all
+//                   duration-300
+//                   hover:scale-105
+
+//                   max-[400px]:bottom-[0px]
+//                   min-[400px]:max-[650px]:bottom-[125px]
+//                   min-[650px]:max-[767px]:bottom-[110px]
+//                   min-[768px]:max-[799px]:bottom-[90px]
+//                   min-[800px]:max-[1023px]:bottom-[80px]
+//                   min-[1024px]:max-[1099px]:bottom-[70px]
+//                   min-[1100px]:max-[1199px]:bottom-[60px]
+//                   min-[1200px]:max-[1299px]:bottom-[50px]
+//                   min-[1300px]:max-[1359px]:bottom-[37px]
+//                   min-[1360px]:right-[2px]
+//                   min-[1360px]:bottom-[23px]
+//                 "
+//               >
+//                 <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#A8893A] blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500" />
+
+//                 <span
+//                   className="
+//                     relative
+//                     flex
+//                     items-center
+//                     justify-center
+
+//                     px-6 py-2.5
+//                     sm:px-8 sm:py-3
+//                     md:px-10 md:py-3.5
+//                     lg:px-14 lg:py-4.5
+
+//                     bg-[#C9A84C]
+//                     border-2
+//                     border-[#C9A84C]
+
+//                     overflow-hidden
+
+//                     transition-all
+//                     duration-500
+
+//                     hover:bg-[#B8963E]
+//                     hover:border-[#B8963E]
+
+//                     shadow-[0_10px_30px_rgba(201,168,76,0.35)]
+//                     group-hover:shadow-[0_15px_50px_rgba(201,168,76,0.7)]
+//                   "
+//                 >
+//                   <motion.span
+//                     animate={{
+//                       y: [0, -2, 0],
+//                     }}
+//                     transition={{
+//                       duration: 1.4,
+//                       repeat: Infinity,
+//                       ease: "easeInOut",
+//                     }}
+//                     className="
+//                       relative
+//                       z-10
+
+//                       text-black
+//                       font-serif
+//                       font-bold
+//                       uppercase
+
+//                       tracking-[0.15em]
+
+//                       text-[10px]
+
+//                       min-[300px]:max-[400px]:text-[14px]
+//                       min-[401px]:max-[649px]:text-[13px]
+//                       min-[650px]:max-[767px]:text-[14px]
+//                       min-[768px]:max-[1023px]:text-[15px]
+//                       min-[1024px]:text-[20px]
+
+//                       min-[800px]:max-[1023px]:px-10
+//                       min-[650px]:max-[767px]:px-20
+//                       min-[401px]:max-[649px]:px-20
+//                       min-[300px]:max-[400px]:px-8
+//                     "
+//                   >
+//                     <div className="flex items-center gap-2">
+//                       <span>{banner.buttonText}</span>
+
+//                       <ArrowRight
+//                         size={18}
+//                         strokeWidth={2.5}
+//                         className="transition-transform duration-300 group-hover:translate-x-1"
+//                       />
+//                     </div>
+//                   </motion.span>
+//                 </span>
+//               </Link>
+//             </motion.div>
+
+//             <motion.div
+//               initial={{ opacity: 0, width: 0 }}
+//               animate={{ opacity: 1, width: "80px" }}
+//               transition={{ duration: 0.8, delay: 0.6 }}
+//               className="h-[1px] mx-auto mt-4 sm:mt-6 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"
+//               style={{ width: "clamp(60px, 20vw, 120px)" }}
+//             />
+//           </div>
+//         </section>
+
+//         {/* Featured Products */}
+//         <section className="py-12 sm:py-16 px-4 relative bg-white">
+//           <div className="max-w-7xl mx-auto">
+//             <motion.div
+//               initial={{ opacity: 0, y: 20 }}
+//               whileInView={{ opacity: 1, y: 0 }}
+//               transition={{ duration: 0.6 }}
+//               className="text-center mb-8 sm:mb-12"
+//             >
+//               <div className="flex justify-center items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+//                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-[#C9A84C]" />
+//                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#C9A84C]" />
+//                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#C9A84C]" />
+//               </div>
+//               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4 text-gray-900">
+//                 {products.filter((p) => p.isFeatured === true).length > 0
+//                   ? "⭐ Featured Products"
+//                   : "✨ Our Products"}
+//               </h2>
+//               <p className="text-sm sm:text-base text-gray-600 max-w-lg mx-auto font-light tracking-wide px-4">
+//                 {products.filter((p) => p.isFeatured === true).length > 0
+//                   ? "Handpicked selections just for you"
+//                   : "Discover our curated collection of premium beauty products"}
+//               </p>
+//             </motion.div>
+
+//             {loading ? (
+//               <div className="text-center py-12">
+//                 <motion.div
+//                   animate={{ rotate: 360 }}
+//                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+//                   className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-[#C9A84C] border-t-transparent rounded-full mx-auto mb-4"
+//                 />
+//                 <p className="text-gray-600">Loading products...</p>
+//               </div>
+//             ) : displayProducts.length > 0 ? (
+//               <motion.div
+//                 initial={{ opacity: 0 }}
+//                 whileInView={{ opacity: 1 }}
+//                 transition={{ duration: 0.6 }}
+//                 className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+//               >
+//                 {displayProducts.map((product, index) => {
+//                   const inCart = isProductInCart(product.id);
+//                   const hasVariants = product.hasFlavors && product.flavors && product.flavors.length > 0;
+
+//                   return (
+//                     <motion.div
+//                       key={product.id}
+//                       initial={{ opacity: 0, y: 20 }}
+//                       whileInView={{ opacity: 1, y: 0 }}
+//                       transition={{ delay: index * 0.1 }}
+//                       className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all group border border-gray-100 hover:border-[#C9A84C]/30"
+//                     >
+//                       <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+//                         <motion.img
+//                           whileHover={{ scale: 1.05 }}
+//                           src={product.image}
+//                           alt={product.name}
+//                           className="w-full h-full object-contain p-2"
+//                           onError={(e) => {
+//                             e.currentTarget.src =
+//                               'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e8e3dc" width="300" height="300"/%3E%3C/svg%3E';
+//                           }}
+//                         />
+//                         {product.isFeatured && (
+//                           <div className="absolute top-2 left-2 bg-gradient-to-r from-[#C9A84C] to-[#8B7355] text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg">
+//                             ⭐ Featured
+//                           </div>
+//                         )}
+//                         {/* ✅ VARIANT BADGE - ONLY THIS ADDED */}
+//                         {hasVariants && (
+//                           <div className="absolute bottom-2 left-2 bg-blue-500/90 text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg flex items-center gap-1">
+//                             <span>{product.flavors?.length || 0} Variants</span>
+//                           </div>
+//                         )}
+//                       </div>
+
+//                       <div className="p-2 sm:p-3 md:p-4">
+//                         <p className="text-[8px] sm:text-xs text-[#C9A84C] mb-0.5 sm:mb-1 uppercase tracking-widest font-bold truncate">
+//                           {product.category}
+//                         </p>
+//                         <div className="flex items-center flex-wrap gap-1 mb-1 sm:mb-2">
+//                           <h3 className="font-serif font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm md:text-base">
+//                             {product.name}
+//                           </h3>
+//                         </div>
+
+//                         <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
+//                           <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C9A84C]">
+//                             {formatPrice(getFinalPrice(product))}
+//                           </span>
+//                           {hasValidDiscount(product) && (
+//                             <span className="text-[8px] sm:text-xs text-gray-500 line-through">
+//                               {formatPrice(product.price)}
+//                             </span>
+//                           )}
+//                         </div>
+
+//                         <div className="flex gap-1 sm:gap-2">
+//                           {inCart ? (
+//                             <button
+//                               disabled
+//                               className="flex-1 bg-green-500 text-white py-1 sm:py-2 rounded-lg font-semibold flex items-center justify-center gap-1 text-[8px] sm:text-xs cursor-default opacity-80"
+//                             >
+//                               <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+//                               <span className="hidden xs:inline">In Cart</span>
+//                             </button>
+//                           ) : (
+//                             <button
+//                               onClick={() => handleAddToCart(product)}
+//                               className="flex-1 bg-[#c9a87f] text-white py-1 sm:py-2 rounded-lg font-semibold hover:bg-[#8B7355] transition-all cursor-pointer text-[8px] sm:text-xs"
+//                             >
+//                               <span className="hidden xs:inline">
+//                                 Add to Cart
+//                               </span>
+//                               <span className="xs:hidden">Add</span>
+//                             </button>
+//                           )}
+//                           <Link
+//                             href={`/product/${product.id}`}
+//                             className="flex-1 bg-gray-100 text-gray-900 py-1 sm:py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-center border border-gray-200 text-[8px] sm:text-xs"
+//                           >
+//                             View
+//                           </Link>
+//                         </div>
+//                       </div>
+//                     </motion.div>
+//                   );
+//                 })}
+//               </motion.div>
+//             ) : (
+//               <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+//                 <p className="text-gray-600 mb-4">No products available yet</p>
+//                 <p className="text-sm text-gray-500">
+//                   Admin needs to add products first
+//                 </p>
+//               </div>
+//             )}
+
+//             {products.length > 0 && (
+//               <div className="text-center mt-8 sm:mt-12">
+//                 <Link
+//                   href="/products"
+//                   className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#c9a87f] text-white rounded-lg font-semibold hover:bg-[#8B7355] transition-all text-sm sm:text-base"
+//                 >
+//                   View All Products
+//                   <ArrowRight size={16} className="sm:w-5 sm:h-5" />
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+//         </section>
+
+//         <footer className="bg-white py-6 sm:py-8 px-4 border-t border-gray-200">
+//           <div className="max-w-7xl mx-auto text-center">
+//             <div className="flex justify-center items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+//               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
+//               <span className="text-[#C9A84C] text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase font-serif">
+//                 M&M Scents & Glow
+//               </span>
+//               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
+//             </div>
+//             <p className="text-gray-600 text-[10px] sm:text-sm">
+//               &copy; 2026 M&M Scents. All rights reserved.
+//             </p>
+//           </div>
+//         </footer>
+//       </div>
+//     </div>
+//   );
+// }
+
+//with deal and without deal color
+
+// "use client";
+
+// import { useEffect, useState, useRef } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import Link from "next/link";
+// import { ArrowRight, CheckCircle, Sparkles, ShoppingCart } from "lucide-react";
+// import { rtdb } from "@/lib/firebase";
+// import { ref, onValue } from "firebase/database";
+// import Navbar from "@/components/Navbar";
+// import { CartItem, useCart } from "@/lib/cartContext";
+// import { useAuth } from "@/lib/authContext";
+// import toast, { Toaster } from "react-hot-toast";
+// import SupportChat from "@/components/SupportChat";
+
+// interface Product {
+//   id: string;
+//   name: string;
+//   price: number;
+//   discount?: number;
+//   image: string;
+//   category: string;
+//   isFeatured?: boolean;
+//   hasFlavors?: boolean;
+//   flavors?: Array<{
+//     id: string;
+//     name: string;
+//     price: number;
+//     discount?: number;
+//     stock: number;
+//     image?: string;
+//   }>;
+//   dealName?: string;
+// }
+
+// interface BannerData {
+//   heading: string;
+//   subheading: string;
+//   buttonText: string;
+//   backgroundImage: string;
+//   backgroundImageMobile?: string;
+//   backgroundImageMobile2?: string;
+//   backgroundImageMobile3?: string;
+//   backgroundImageMobile4?: string;
+//   backgroundImageMobile5?: string;
+//   marqueeText?: string;
+//   minOrderForFreeDelivery?: number;
+//   deliveryCharges?: number;
+// }
+
+// export default function Home() {
+//   const [products, setProducts] = useState<Product[]>([]);
+//   const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
+//   const [banner, setBanner] = useState<BannerData>({
+//     heading: "",
+//     subheading: "",
+//     buttonText: "SHOP NOW",
+//     backgroundImage: "https://i.ibb.co/MkhVcztQ/theme.jpg",
+//     backgroundImageMobile: "",
+//     backgroundImageMobile2: "",
+//     backgroundImageMobile3: "",
+//     backgroundImageMobile4: "",
+//     backgroundImageMobile5: "",
+//     marqueeText: "",
+//     minOrderForFreeDelivery: 0,
+//     deliveryCharges: 0,
+//   });
+//   const [loading, setLoading] = useState(true);
+//   const [currentMobileIndex, setCurrentMobileIndex] = useState(0);
+//   const [isMobile, setIsMobile] = useState(false);
+//   const [imagesLoaded, setImagesLoaded] = useState(false);
+//   const { addToCart, cartItems } = useCart();
+//   const { user } = useAuth();
+//   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+//   // Get all mobile images in array
+//   const getMobileImages = () => {
+//     const images = [];
+//     if (banner.backgroundImageMobile) images.push(banner.backgroundImageMobile);
+//     if (banner.backgroundImageMobile2)
+//       images.push(banner.backgroundImageMobile2);
+//     if (banner.backgroundImageMobile3)
+//       images.push(banner.backgroundImageMobile3);
+//     if (banner.backgroundImageMobile4)
+//       images.push(banner.backgroundImageMobile4);
+//     if (banner.backgroundImageMobile5)
+//       images.push(banner.backgroundImageMobile5);
+//     return images;
+//   };
+
+//   const mobileImages = getMobileImages();
+
+//   // Preload images
+//   useEffect(() => {
+//     if (mobileImages.length === 0) {
+//       setImagesLoaded(true);
+//       return;
+//     }
+
+//     let loadedCount = 0;
+//     mobileImages.forEach((src) => {
+//       const img = new Image();
+//       img.src = src;
+//       img.onload = () => {
+//         loadedCount++;
+//         if (loadedCount === mobileImages.length) {
+//           setImagesLoaded(true);
+//         }
+//       };
+//       img.onerror = () => {
+//         loadedCount++;
+//         if (loadedCount === mobileImages.length) {
+//           setImagesLoaded(true);
+//         }
+//       };
+//     });
+//   }, [mobileImages]);
+
+//   // Check if mobile
+//   useEffect(() => {
+//     const checkMobile = () => {
+//       setIsMobile(window.innerWidth <= 400);
+//     };
+//     checkMobile();
+//     window.addEventListener("resize", checkMobile);
+//     return () => window.removeEventListener("resize", checkMobile);
+//   }, []);
+
+//   // Auto-slide effect for mobile images - 5 seconds
+//   useEffect(() => {
+//     if (mobileImages.length <= 1 || !isMobile) return;
+
+//     if (intervalRef.current) {
+//       clearInterval(intervalRef.current);
+//     }
+
+//     intervalRef.current = setInterval(() => {
+//       setCurrentMobileIndex((prev) => (prev + 1) % mobileImages.length);
+//     }, 5000);
+
+//     return () => {
+//       if (intervalRef.current) {
+//         clearInterval(intervalRef.current);
+//       }
+//     };
+//   }, [mobileImages.length, isMobile]);
+
+//   const isProductInCart = (productId: string) => {
+//     return cartItems.some((item) => item.id === productId);
+//   };
+
+//   const formatPrice = (price: number) => {
+//     return new Intl.NumberFormat("ur-PK", {
+//       style: "currency",
+//       currency: "PKR",
+//       minimumFractionDigits: 0,
+//       maximumFractionDigits: 0,
+//     }).format(price);
+//   };
+
+//   const hasValidDiscount = (product: Product) => {
+//     return (
+//       product.discount !== undefined &&
+//       product.discount !== null &&
+//       product.discount > 0 &&
+//       product.discount < product.price
+//     );
+//   };
+
+//   const getDiscountPercentage = (product: Product) => {
+//     if (!hasValidDiscount(product)) return 0;
+//     return Math.round((product.discount! / product.price) * 100);
+//   };
+
+//   const getFinalPrice = (product: Product) => {
+//     if (hasValidDiscount(product)) {
+//       return product.price - product.discount!;
+//     }
+//     return product.price;
+//   };
+
+//   const shuffleArray = (array: Product[]) => {
+//     const shuffled = [...array];
+//     for (let i = shuffled.length - 1; i > 0; i--) {
+//       const j = Math.floor(Math.random() * (i + 1));
+//       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+//     }
+//     return shuffled;
+//   };
+
+//   useEffect(() => {
+//     try {
+//       const bannerRef = ref(rtdb, "admin_settings/banner");
+//       const unsubscribeBanner = onValue(bannerRef, (snapshot) => {
+//         if (snapshot.exists()) {
+//           const data = snapshot.val();
+//           setBanner({
+//             heading: data.heading || "",
+//             subheading: data.subheading || "",
+//             buttonText: data.buttonText || "SHOP NOW",
+//             backgroundImage:
+//               data.backgroundImage ||
+//               "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-JcYvSSgzZgAPnalbf3iR7aptCoX1JC.jpg",
+//             backgroundImageMobile: data.backgroundImageMobile || "",
+//             backgroundImageMobile2: data.backgroundImageMobile2 || "",
+//             backgroundImageMobile3: data.backgroundImageMobile3 || "",
+//             backgroundImageMobile4: data.backgroundImageMobile4 || "",
+//             backgroundImageMobile5: data.backgroundImageMobile5 || "",
+//             marqueeText: data.marqueeText || "",
+//             minOrderForFreeDelivery: data.minOrderForFreeDelivery || 0,
+//             deliveryCharges: data.deliveryCharges || 0,
+//           });
+//         }
+//       });
+
+//       const productsRef = ref(rtdb, "products");
+//       const unsubscribeProducts = onValue(productsRef, (snapshot) => {
+//         if (snapshot.exists()) {
+//           const productsData: Product[] = [];
+//           const data = snapshot.val();
+
+//           Object.keys(data).forEach((key) => {
+//             productsData.push({
+//               id: key,
+//               ...data[key],
+//             } as Product);
+//           });
+
+//           setProducts(productsData);
+
+//           const featuredProducts = productsData.filter(
+//             (p) => p.isFeatured === true,
+//           );
+
+//           if (featuredProducts.length > 0) {
+//             setDisplayProducts(featuredProducts.slice(0, 4));
+//           } else {
+//             const shuffled = shuffleArray(productsData);
+//             setDisplayProducts(shuffled.slice(0, 4));
+//           }
+//         }
+//         setLoading(false);
+//       });
+
+//       return () => {
+//         unsubscribeBanner();
+//         unsubscribeProducts();
+//       };
+//     } catch (error) {
+//       console.log("[v0] Error fetching data:", error);
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   const handleAddToCart = (product: Product) => {
+//     if (!user) {
+//       toast.error("Please login first to add items to cart", {
+//         duration: 3000,
+//         position: "top-right",
+//         style: {
+//           background: "#EF4444",
+//           color: "#fff",
+//           padding: "16px",
+//           borderRadius: "12px",
+//         },
+//         icon: "🔒",
+//       });
+//       setTimeout(() => {
+//         window.location.href = "/login";
+//       }, 1500);
+//       return;
+//     }
+
+//     if (isProductInCart(product.id)) {
+//       toast.error(`${product.name} is already in your cart!`, {
+//         duration: 3000,
+//         position: "top-right",
+//         style: {
+//           background: "#F59E0B",
+//           color: "#fff",
+//           padding: "16px",
+//           borderRadius: "12px",
+//         },
+//         icon: "⚠️",
+//       });
+//       return;
+//     }
+
+//     const cartItem: CartItem = {
+//       id: product.id,
+//       name: product.name,
+//       price: product.price,
+//       discount: product.discount,
+//       image: product.image,
+//       quantity: 1,
+//       category: product.category,
+//     };
+
+//     addToCart(cartItem);
+
+//     toast.success(`${product.name} added to cart!`, {
+//       duration: 3000,
+//       position: "top-right",
+//       style: {
+//         background: "#10B981",
+//         color: "#fff",
+//         padding: "16px",
+//         borderRadius: "12px",
+//       },
+//       icon: "🛒",
+//     });
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-black relative">
+//       {/* Marquee Bar */}
+//       {banner.marqueeText && (
+//         <div className="bg-black py-2.5 overflow-hidden border-b border-white/10 sticky top-0 z-50 shadow-md">
+//           <div className="max-w-7xl mx-auto relative">
+//             <div className="overflow-hidden">
+//               <motion.div
+//                 animate={{ x: ["100%", "-100%"] }}
+//                 transition={{
+//                   duration: 20,
+//                   repeat: Infinity,
+//                   ease: "linear",
+//                 }}
+//                 className="flex whitespace-nowrap"
+//               >
+//                 {[...Array(2)].map((_, index) => (
+//                   <span
+//                     key={index}
+//                     className="text-white font-medium text-sm md:text-base tracking-wide flex items-center gap-8 mx-4"
+//                   >
+//                     <span className="flex items-center gap-3">
+//                       <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
+//                       {banner.marqueeText}
+//                       <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
+
+//                       {banner.minOrderForFreeDelivery > 0 && (
+//                         <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
+//                           🎯 Free delivery above{" "}
+//                           {formatPrice(banner.minOrderForFreeDelivery)}
+//                         </span>
+//                       )}
+
+//                       {banner.deliveryCharges === 0 && (
+//                         <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
+//                           🎉 Free Delivery
+//                         </span>
+//                       )}
+//                     </span>
+//                   </span>
+//                 ))}
+//               </motion.div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <Navbar />
+
+//       <Toaster
+//         position="top-right"
+//         toastOptions={{
+//           duration: 3000,
+//           style: {
+//             background: "#333",
+//             color: "#fff",
+//             padding: "16px",
+//             borderRadius: "12px",
+//           },
+//         }}
+//       />
+//       <SupportChat />
+
+//       {/* Watermark */}
+//       <motion.div
+//         className="fixed inset-0 pointer-events-none opacity-[0.06] z-15 flex items-center justify-center"
+//         animate={{
+//           scale: [1, 1.05, 1],
+//           opacity: [0.05, 0.08, 0.05],
+//         }}
+//         transition={{
+//           duration: 20,
+//           repeat: Infinity,
+//           ease: "easeInOut",
+//         }}
+//       >
+//         <div className="relative w-[80%] max-w-4xl">
+//           <img
+//             src="https://i.ibb.co/7NLfzpHj/LOGO-removebg-preview.png"
+//             alt="M&M Watermark"
+//             className="w-full h-auto object-contain"
+//           />
+//           <div className="absolute inset-0 flex items-center justify-center">
+//             <div className="text-center font-serif text-[#8B7355] opacity-30">
+//               <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+//                 GLOW WITH BEAUTY,
+//               </div>
+//               <div className="text-xl md:text-3xl font-bold tracking-[0.2em]">
+//                 M&M
+//               </div>
+//               <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+//                 STAY WITH SCENT
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </motion.div>
+
+//       {/* Main Content */}
+//       <div className="relative">
+//         {/* Hero Banner */}
+//         <section className="relative w-full h-[calc(100vh-64px)] max-h-[600px] overflow-hidden z-15 bg-black">
+//           {/* Desktop Background */}
+//           <motion.div
+//             initial={{ scale: 1.1, opacity: 0 }}
+//             animate={{ scale: 1, opacity: 1 }}
+//             transition={{ duration: 0.8 }}
+//             className="absolute inset-0 bg-cover bg-center brightness-50 max-[400px]:hidden"
+//             style={{
+//               backgroundImage: `url('${banner.backgroundImage}')`,
+//               backgroundSize: "cover",
+//               backgroundPosition: "center 40%",
+//             }}
+//           />
+
+//           {/* Mobile Background */}
+//           {mobileImages.length > 0 && isMobile && imagesLoaded && (
+//             <div className="absolute inset-[-20px] max-[400px]:block hidden overflow-hidden">
+//               <AnimatePresence initial={false}>
+//                 <motion.div
+//                   key={currentMobileIndex}
+//                   initial={{ x: "100%" }}
+//                   animate={{ x: "0%" }}
+//                   exit={{ x: "-100%" }}
+//                   transition={{ duration: 0.8, ease: "easeInOut" }}
+//                   className="absolute inset-0 brightness-60"
+//                   style={{
+//                     backgroundImage: `url('${mobileImages[currentMobileIndex]}')`,
+//                     backgroundSize: "cover",
+//                     backgroundPosition: "center",
+//                     backgroundRepeat: "no-repeat",
+//                   }}
+//                 />
+//               </AnimatePresence>
+//             </div>
+//           )}
+
+//           {/* Gradient Overlay */}
+//           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
+
+//           {/* Gold Border Lines */}
+//           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+//           <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+
+//           {/* Content */}
+//           <div className="relative h-full flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 px-4">
+//             <motion.div
+//               initial={{ opacity: 0, y: 40, scale: 0.9 }}
+//               animate={{
+//                 opacity: 1,
+//                 y: [0, -8, 0],
+//                 scale: [1, 1.02, 1],
+//               }}
+//               transition={{
+//                 opacity: {
+//                   duration: 0.8,
+//                   ease: "easeOut",
+//                 },
+//                 y: {
+//                   duration: 2.5,
+//                   repeat: Infinity,
+//                   ease: "easeInOut",
+//                 },
+//                 scale: {
+//                   duration: 2.5,
+//                   repeat: Infinity,
+//                   ease: "easeInOut",
+//                 },
+//               }}
+//             >
+//               <Link
+//                 href="/products"
+//                 className="
+//                   group
+//                   relative
+//                   inline-block
+//                   transition-all
+//                   duration-300
+//                   hover:scale-105
+
+//                   max-[400px]:bottom-[0px]
+//                   min-[400px]:max-[650px]:bottom-[125px]
+//                   min-[650px]:max-[767px]:bottom-[110px]
+//                   min-[768px]:max-[799px]:bottom-[90px]
+//                   min-[800px]:max-[1023px]:bottom-[80px]
+//                   min-[1024px]:max-[1099px]:bottom-[70px]
+//                   min-[1100px]:max-[1199px]:bottom-[60px]
+//                   min-[1200px]:max-[1299px]:bottom-[50px]
+//                   min-[1300px]:max-[1359px]:bottom-[37px]
+//                   min-[1360px]:right-[2px]
+//                   min-[1360px]:bottom-[23px]
+//                 "
+//               >
+//                 <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#A8893A] blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500" />
+
+//                 <span
+//                   className="
+//                     relative
+//                     flex
+//                     items-center
+//                     justify-center
+
+//                     px-6 py-2.5
+//                     sm:px-8 sm:py-3
+//                     md:px-10 md:py-3.5
+//                     lg:px-14 lg:py-4.5
+
+//                     bg-[#C9A84C]
+//                     border-2
+//                     border-[#C9A84C]
+
+//                     overflow-hidden
+
+//                     transition-all
+//                     duration-500
+
+//                     hover:bg-[#B8963E]
+//                     hover:border-[#B8963E]
+
+//                     shadow-[0_10px_30px_rgba(201,168,76,0.35)]
+//                     group-hover:shadow-[0_15px_50px_rgba(201,168,76,0.7)]
+//                   "
+//                 >
+//                   <motion.span
+//                     animate={{
+//                       y: [0, -2, 0],
+//                     }}
+//                     transition={{
+//                       duration: 1.4,
+//                       repeat: Infinity,
+//                       ease: "easeInOut",
+//                     }}
+//                     className="
+//                       relative
+//                       z-10
+
+//                       text-black
+//                       font-serif
+//                       font-bold
+//                       uppercase
+
+//                       tracking-[0.15em]
+
+//                       text-[10px]
+
+//                       min-[300px]:max-[400px]:text-[14px]
+//                       min-[401px]:max-[649px]:text-[13px]
+//                       min-[650px]:max-[767px]:text-[14px]
+//                       min-[768px]:max-[1023px]:text-[15px]
+//                       min-[1024px]:text-[20px]
+
+//                       min-[800px]:max-[1023px]:px-10
+//                       min-[650px]:max-[767px]:px-20
+//                       min-[401px]:max-[649px]:px-20
+//                       min-[300px]:max-[400px]:px-8
+//                     "
+//                   >
+//                     <div className="flex items-center gap-2">
+//                       <span>{banner.buttonText}</span>
+
+//                       <ArrowRight
+//                         size={18}
+//                         strokeWidth={2.5}
+//                         className="transition-transform duration-300 group-hover:translate-x-1"
+//                       />
+//                     </div>
+//                   </motion.span>
+//                 </span>
+//               </Link>
+//             </motion.div>
+
+//             <motion.div
+//               initial={{ opacity: 0, width: 0 }}
+//               animate={{ opacity: 1, width: "80px" }}
+//               transition={{ duration: 0.8, delay: 0.6 }}
+//               className="h-[1px] mx-auto mt-4 sm:mt-6 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"
+//               style={{ width: "clamp(60px, 20vw, 120px)" }}
+//             />
+//           </div>
+//         </section>
+
+//         {/* Featured Products */}
+//         <section className="py-12 sm:py-16 px-4 relative bg-white">
+//           <div className="max-w-7xl mx-auto">
+//             <motion.div
+//               initial={{ opacity: 0, y: 20 }}
+//               whileInView={{ opacity: 1, y: 0 }}
+//               transition={{ duration: 0.6 }}
+//               className="text-center mb-8 sm:mb-12"
+//             >
+//               <div className="flex justify-center items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+//                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-[#C9A84C]" />
+//                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#C9A84C]" />
+//                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#C9A84C]" />
+//               </div>
+//               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4 text-gray-900">
+//                 {products.filter((p) => p.isFeatured === true).length > 0
+//                   ? "⭐ Featured Products"
+//                   : "✨ Our Products"}
+//               </h2>
+//               <p className="text-sm sm:text-base text-gray-600 max-w-lg mx-auto font-light tracking-wide px-4">
+//                 {products.filter((p) => p.isFeatured === true).length > 0
+//                   ? "Handpicked selections just for you"
+//                   : "Discover our curated collection of premium beauty products"}
+//               </p>
+//             </motion.div>
+
+//             {loading ? (
+//               <div className="text-center py-12">
+//                 <motion.div
+//                   animate={{ rotate: 360 }}
+//                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+//                   className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-[#C9A84C] border-t-transparent rounded-full mx-auto mb-4"
+//                 />
+//                 <p className="text-gray-600">Loading products...</p>
+//               </div>
+//             ) : displayProducts.length > 0 ? (
+//               <motion.div
+//                 initial={{ opacity: 0 }}
+//                 whileInView={{ opacity: 1 }}
+//                 transition={{ duration: 0.6 }}
+//                 className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+//               >
+//                 {displayProducts.map((product, index) => {
+//                   const inCart = isProductInCart(product.id);
+//                   const discountPercent = getDiscountPercentage(product);
+//                   const isDeal =
+//                     product.category === "Deal" && product.dealName;
+//                   const hasVariants =
+//                     product.hasFlavors &&
+//                     product.flavors &&
+//                     product.flavors.length > 0;
+
+//                   return (
+//                     <motion.div
+//                       key={product.id}
+//                       initial={{ opacity: 0, y: 20 }}
+//                       whileInView={{ opacity: 1, y: 0 }}
+//                       transition={{ delay: index * 0.1 }}
+//                       className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all group border border-gray-100 hover:border-[#C9A84C]/30"
+//                     >
+//                       {/* Product Image with Badges */}
+//                       <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+//                         {/* ✅ DEAL BADGE - Half in image, half out */}
+//                         {isDeal && (
+//                           <div className="absolute left-1/2 -translate-x-1/2 top-1 z-10 w-[85%] sm:w-[80%]">
+//                             <div className="relative">
+//                               <div
+//                                 className="
+//         bg-gradient-to-r from-orange-500 to-red-500 
+//         text-white text-[8px] sm:text-[10px] md:text-xs font-bold 
+//         px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 
+//         rounded-lg shadow-lg 
+//         flex items-center justify-center gap-0.5 sm:gap-1
+//         mx-auto w-full
+//         border-2 border-white/30
+//         animate-pulse
+//       "
+//                               >
+//                                 <span className="text-[6px] sm:text-[8px] md:text-[10px]">
+//                                   🔥
+//                                 </span>
+//                                 <span className="truncate font-bold tracking-wide text-[7px] sm:text-[9px] md:text-xs">
+//                                   {product.dealName}
+//                                 </span>
+//                                 <span className="text-[6px] sm:text-[8px] md:text-[10px]">
+//                                   🔥
+//                                 </span>
+//                               </div>
+//                               <div className="absolute -bottom-0.5 left-2 right-2 h-[1px] bg-gradient-to-r from-transparent via-orange-300 to-transparent opacity-50"></div>
+//                             </div>
+//                           </div>
+//                         )}
+
+//                         {/* ✅ FEATURED BADGE - ONLY if NOT a deal */}
+//                         {product.isFeatured && !isDeal && (
+//                           <div className="absolute top-2 left-2 bg-gradient-to-r from-[#C9A84C] to-[#8B7355] text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg z-10">
+//                             ⭐ Featured
+//                           </div>
+//                         )}
+
+//                         {/* Product Image */}
+//                         <motion.img
+//                           whileHover={{ scale: 1.05 }}
+//                           src={product.image}
+//                           alt={product.name}
+//                           className="w-full h-full object-contain p-2"
+//                           onError={(e) => {
+//                             e.currentTarget.src =
+//                               'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e8e3dc" width="300" height="300"/%3E%3C/svg%3E';
+//                           }}
+//                         />
+
+//                         {/* ✅ VARIANTS BADGE */}
+//                         {hasVariants && (
+//                           <div className="absolute bottom-2 left-2 bg-blue-500/90 text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg z-10 flex items-center gap-1">
+//                             <span>{product.flavors?.length || 0} Variants</span>
+//                           </div>
+//                         )}
+//                       </div>
+
+//                       {/* Product Info */}
+//                       <div className="p-2 sm:p-3 md:p-4">
+//                         <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+//                           <p
+//                             className={`text-[8px] max-[550px]: text-[10px] sm:text-xs uppercase tracking-widest font-bold truncate ${
+//                               isDeal
+//                                 ? "text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full"
+//                                 : "text-[#C9A84C]"
+//                             }`}
+//                           >
+//                             {isDeal ? `${product.category}` : product.category}
+//                           </p>
+//                         </div>
+
+//                         <div className="flex items-center flex-wrap gap-1 mb-1 sm:mb-2">
+// <h3 className="font-mono font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm md:text-base capitalize">
+//   {product.name}
+// </h3>
+//                           {/* {hasValidDiscount(product) && (
+//                             <span className="inline-block bg-[#C9A84C] text-white px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold whitespace-nowrap">
+//                               -{discountPercent}%
+//                             </span>
+//                           )} */}
+//                         </div>
+
+//                         <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
+//                           <span className="text-[10px] max-[550px]:text-[14px] sm:text-sm md:text-lg font-bold text-[#C9A84C]">
+//   {formatPrice(getFinalPrice(product))}
+// </span>
+//                           {hasValidDiscount(product) && (
+//                            <span className="text-[12px] min-[550px]:text-[14px] text-gray-500 line-through">
+//   {formatPrice(product.price)}
+// </span>
+//                           )}
+//                         </div>
+
+//                         <div className="flex gap-1 sm:gap-2">
+//                           {inCart ? (
+//                             <button
+//                               disabled
+//                               className="flex-1 bg-green-500 text-white py-1 sm:py-2 rounded-lg font-semibold flex items-center justify-center gap-1 text-[8px] sm:text-xs cursor-default opacity-80"
+//                             >
+//                               <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+//                               <span className="hidden xs:inline">In Cart</span>
+//                             </button>
+//                           ) : (
+//                             <button
+//   onClick={() => handleAddToCart(product)}
+//   className="flex-1 bg-[#c9a87f] text-white py-1 sm:py-2 rounded-lg font-semibold hover:bg-[#8B7355] transition-all cursor-pointer text-[8px] sm:text-xs flex items-center justify-center"
+// >
+//   {/* Desktop */}
+//   <span className="hidden min-[550px]:inline">
+//     Add to Cart
+//   </span>
+
+//   {/* Mobile */}
+//   <span className="min-[550px]:hidden flex items-center justify-center gap-1 text-[12px]">
+//     <ShoppingCart size={14} className="w-[14px] h-[14px]" />
+//     <span>Add</span>
+//   </span>
+// </button>
+//                           )}
+//                           <Link
+//                             href={`/product/${product.id}`}
+//                             className="flex-1 bg-gray-100 text-gray-900 py-1 sm:py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-center border border-gray-200 text-[12px] min-[550px]:text-xs"
+//                           >
+//                             View
+//                           </Link>
+//                         </div>
+//                       </div>
+//                     </motion.div>
+//                   );
+//                 })}
+//               </motion.div>
+//             ) : (
+//               <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+//                 <p className="text-gray-600 mb-4">No products available yet</p>
+//                 <p className="text-sm text-gray-500">
+//                   Admin needs to add products first
+//                 </p>
+//               </div>
+//             )}
+
+//             {products.length > 0 && (
+//               <div className="text-center mt-8 sm:mt-12">
+//                 <Link
+//                   href="/products"
+//                   className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#c9a87f] text-white rounded-lg font-semibold hover:bg-[#8B7355] transition-all text-sm sm:text-base"
+//                 >
+//                   View All Products
+//                   <ArrowRight size={16} className="sm:w-5 sm:h-5" />
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+//         </section>
+
+//         <footer className="bg-white py-6 sm:py-8 px-4 border-t border-gray-200">
+//           <div className="max-w-7xl mx-auto text-center">
+//             <div className="flex justify-center items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+//               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
+//               <span className="text-[#C9A84C] text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase font-serif">
+//                 M&M Scents & Glow
+//               </span>
+//               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
+//             </div>
+//             <p className="text-gray-600 text-[10px] sm:text-sm">
+//               &copy; 2026 M&M Scents. All rights reserved.
+//             </p>
+//           </div>
+//         </footer>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+//with deal color without mobile mode deal box height 
+
+// "use client";
+
+// import { useEffect, useState, useRef } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import Link from "next/link";
+// import { ArrowRight, CheckCircle, Sparkles, ShoppingCart } from "lucide-react";
+// import { rtdb } from "@/lib/firebase";
+// import { ref, onValue } from "firebase/database";
+// import Navbar from "@/components/Navbar";
+// import { CartItem, useCart } from "@/lib/cartContext";
+// import { useAuth } from "@/lib/authContext";
+// import toast, { Toaster } from "react-hot-toast";
+// import SupportChat from "@/components/SupportChat";
+
+// interface Product {
+//   id: string;
+//   name: string;
+//   price: number;
+//   discount?: number;
+//   image: string;
+//   category: string;
+//   isFeatured?: boolean;
+//   hasFlavors?: boolean;
+//   flavors?: Array<{
+//     id: string;
+//     name: string;
+//     price: number;
+//     discount?: number;
+//     stock: number;
+//     image?: string;
+//   }>;
+//   dealName?: string;
+//   dealColor?: string;
+// }
+
+// interface BannerData {
+//   heading: string;
+//   subheading: string;
+//   buttonText: string;
+//   backgroundImage: string;
+//   backgroundImageMobile?: string;
+//   backgroundImageMobile2?: string;
+//   backgroundImageMobile3?: string;
+//   backgroundImageMobile4?: string;
+//   backgroundImageMobile5?: string;
+//   marqueeText?: string;
+//   minOrderForFreeDelivery?: number;
+//   deliveryCharges?: number;
+// }
+
+// export default function Home() {
+//   const [products, setProducts] = useState<Product[]>([]);
+//   const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
+//   const [banner, setBanner] = useState<BannerData>({
+//     heading: "",
+//     subheading: "",
+//     buttonText: "SHOP NOW",
+//     backgroundImage: "https://i.ibb.co/MkhVcztQ/theme.jpg",
+//     backgroundImageMobile: "",
+//     backgroundImageMobile2: "",
+//     backgroundImageMobile3: "",
+//     backgroundImageMobile4: "",
+//     backgroundImageMobile5: "",
+//     marqueeText: "",
+//     minOrderForFreeDelivery: 0,
+//     deliveryCharges: 0,
+//   });
+//   const [loading, setLoading] = useState(true);
+//   const [currentMobileIndex, setCurrentMobileIndex] = useState(0);
+//   const [isMobile, setIsMobile] = useState(false);
+//   const [imagesLoaded, setImagesLoaded] = useState(false);
+//   const { addToCart, cartItems } = useCart();
+//   const { user } = useAuth();
+//   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+//   // Get all mobile images in array
+//   const getMobileImages = () => {
+//     const images = [];
+//     if (banner.backgroundImageMobile) images.push(banner.backgroundImageMobile);
+//     if (banner.backgroundImageMobile2)
+//       images.push(banner.backgroundImageMobile2);
+//     if (banner.backgroundImageMobile3)
+//       images.push(banner.backgroundImageMobile3);
+//     if (banner.backgroundImageMobile4)
+//       images.push(banner.backgroundImageMobile4);
+//     if (banner.backgroundImageMobile5)
+//       images.push(banner.backgroundImageMobile5);
+//     return images;
+//   };
+
+//   const mobileImages = getMobileImages();
+
+//   // Preload images
+//   useEffect(() => {
+//     if (mobileImages.length === 0) {
+//       setImagesLoaded(true);
+//       return;
+//     }
+
+//     let loadedCount = 0;
+//     mobileImages.forEach((src) => {
+//       const img = new Image();
+//       img.src = src;
+//       img.onload = () => {
+//         loadedCount++;
+//         if (loadedCount === mobileImages.length) {
+//           setImagesLoaded(true);
+//         }
+//       };
+//       img.onerror = () => {
+//         loadedCount++;
+//         if (loadedCount === mobileImages.length) {
+//           setImagesLoaded(true);
+//         }
+//       };
+//     });
+//   }, [mobileImages]);
+
+//   // Check if mobile
+//   useEffect(() => {
+//     const checkMobile = () => {
+//       setIsMobile(window.innerWidth <= 400);
+//     };
+//     checkMobile();
+//     window.addEventListener("resize", checkMobile);
+//     return () => window.removeEventListener("resize", checkMobile);
+//   }, []);
+
+//   // Auto-slide effect for mobile images - 5 seconds
+//   useEffect(() => {
+//     if (mobileImages.length <= 1 || !isMobile) return;
+
+//     if (intervalRef.current) {
+//       clearInterval(intervalRef.current);
+//     }
+
+//     intervalRef.current = setInterval(() => {
+//       setCurrentMobileIndex((prev) => (prev + 1) % mobileImages.length);
+//     }, 5000);
+
+//     return () => {
+//       if (intervalRef.current) {
+//         clearInterval(intervalRef.current);
+//       }
+//     };
+//   }, [mobileImages.length, isMobile]);
+
+//   const isProductInCart = (productId: string) => {
+//     return cartItems.some((item) => item.id === productId);
+//   };
+
+//   const formatPrice = (price: number) => {
+//     return new Intl.NumberFormat("ur-PK", {
+//       style: "currency",
+//       currency: "PKR",
+//       minimumFractionDigits: 0,
+//       maximumFractionDigits: 0,
+//     }).format(price);
+//   };
+
+//   const hasValidDiscount = (product: Product) => {
+//     return (
+//       product.discount !== undefined &&
+//       product.discount !== null &&
+//       product.discount > 0 &&
+//       product.discount < product.price
+//     );
+//   };
+
+//   const getDiscountPercentage = (product: Product) => {
+//     if (!hasValidDiscount(product)) return 0;
+//     return Math.round((product.discount! / product.price) * 100);
+//   };
+
+//   const getFinalPrice = (product: Product) => {
+//     if (hasValidDiscount(product)) {
+//       return product.price - product.discount!;
+//     }
+//     return product.price;
+//   };
+
+//   const shuffleArray = (array: Product[]) => {
+//     const shuffled = [...array];
+//     for (let i = shuffled.length - 1; i > 0; i--) {
+//       const j = Math.floor(Math.random() * (i + 1));
+//       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+//     }
+//     return shuffled;
+//   };
+
+//   useEffect(() => {
+//     try {
+//       const bannerRef = ref(rtdb, "admin_settings/banner");
+//       const unsubscribeBanner = onValue(bannerRef, (snapshot) => {
+//         if (snapshot.exists()) {
+//           const data = snapshot.val();
+//           setBanner({
+//             heading: data.heading || "",
+//             subheading: data.subheading || "",
+//             buttonText: data.buttonText || "SHOP NOW",
+//             backgroundImage:
+//               data.backgroundImage ||
+//               "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-JcYvSSgzZgAPnalbf3iR7aptCoX1JC.jpg",
+//             backgroundImageMobile: data.backgroundImageMobile || "",
+//             backgroundImageMobile2: data.backgroundImageMobile2 || "",
+//             backgroundImageMobile3: data.backgroundImageMobile3 || "",
+//             backgroundImageMobile4: data.backgroundImageMobile4 || "",
+//             backgroundImageMobile5: data.backgroundImageMobile5 || "",
+//             marqueeText: data.marqueeText || "",
+//             minOrderForFreeDelivery: data.minOrderForFreeDelivery || 0,
+//             deliveryCharges: data.deliveryCharges || 0,
+//           });
+//         }
+//       });
+
+//       const productsRef = ref(rtdb, "products");
+//       const unsubscribeProducts = onValue(productsRef, (snapshot) => {
+//         if (snapshot.exists()) {
+//           const productsData: Product[] = [];
+//           const data = snapshot.val();
+
+//           Object.keys(data).forEach((key) => {
+//             productsData.push({
+//               id: key,
+//               ...data[key],
+//             } as Product);
+//           });
+
+//           setProducts(productsData);
+
+//           const featuredProducts = productsData.filter(
+//             (p) => p.isFeatured === true,
+//           );
+
+//           if (featuredProducts.length > 0) {
+//             setDisplayProducts(featuredProducts.slice(0, 4));
+//           } else {
+//             const shuffled = shuffleArray(productsData);
+//             setDisplayProducts(shuffled.slice(0, 4));
+//           }
+//         }
+//         setLoading(false);
+//       });
+
+//       return () => {
+//         unsubscribeBanner();
+//         unsubscribeProducts();
+//       };
+//     } catch (error) {
+//       console.log("[v0] Error fetching data:", error);
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   const handleAddToCart = (product: Product) => {
+//     if (!user) {
+//       toast.error("Please login first to add items to cart", {
+//         duration: 3000,
+//         position: "top-right",
+//         style: {
+//           background: "#EF4444",
+//           color: "#fff",
+//           padding: "16px",
+//           borderRadius: "12px",
+//         },
+//         icon: "🔒",
+//       });
+//       setTimeout(() => {
+//         window.location.href = "/login";
+//       }, 1500);
+//       return;
+//     }
+
+//     if (isProductInCart(product.id)) {
+//       toast.error(`${product.name} is already in your cart!`, {
+//         duration: 3000,
+//         position: "top-right",
+//         style: {
+//           background: "#F59E0B",
+//           color: "#fff",
+//           padding: "16px",
+//           borderRadius: "12px",
+//         },
+//         icon: "⚠️",
+//       });
+//       return;
+//     }
+
+//     const cartItem: CartItem = {
+//       id: product.id,
+//       name: product.name,
+//       price: product.price,
+//       discount: product.discount,
+//       image: product.image,
+//       quantity: 1,
+//       category: product.category,
+//     };
+
+//     addToCart(cartItem);
+
+//     toast.success(`${product.name} added to cart!`, {
+//       duration: 3000,
+//       position: "top-right",
+//       style: {
+//         background: "#10B981",
+//         color: "#fff",
+//         padding: "16px",
+//         borderRadius: "12px",
+//       },
+//       icon: "🛒",
+//     });
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-black relative">
+//       {/* Marquee Bar */}
+//       {banner.marqueeText && (
+//         <div className="bg-black py-2.5 overflow-hidden border-b border-white/10 sticky top-0 z-50 shadow-md">
+//           <div className="max-w-7xl mx-auto relative">
+//             <div className="overflow-hidden">
+//               <motion.div
+//                 animate={{ x: ["100%", "-100%"] }}
+//                 transition={{
+//                   duration: 20,
+//                   repeat: Infinity,
+//                   ease: "linear",
+//                 }}
+//                 className="flex whitespace-nowrap"
+//               >
+//                 {[...Array(2)].map((_, index) => (
+//                   <span
+//                     key={index}
+//                     className="text-white font-medium text-sm md:text-base tracking-wide flex items-center gap-8 mx-4"
+//                   >
+//                     <span className="flex items-center gap-3">
+//                       <span className="inline-block w-2 h-2 rounded-full bg-white/70 animate-pulse"></span>
+//                       {banner.marqueeText}
+//                       <span className="inline-block w-1 h-1 rounded-full bg-white/50 mx-2"></span>
+
+//                       {banner.minOrderForFreeDelivery > 0 && (
+//                         <span className="bg-blue-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-blue-400">
+//                           🎯 Free delivery above{" "}
+//                           {formatPrice(banner.minOrderForFreeDelivery)}
+//                         </span>
+//                       )}
+
+//                       {banner.deliveryCharges === 0 && (
+//                         <span className="bg-green-500/20 px-2 py-0.5 rounded-full text-xs font-semibold text-green-400">
+//                           🎉 Free Delivery
+//                         </span>
+//                       )}
+//                     </span>
+//                   </span>
+//                 ))}
+//               </motion.div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <Navbar />
+
+//       <Toaster
+//         position="top-right"
+//         toastOptions={{
+//           duration: 3000,
+//           style: {
+//             background: "#333",
+//             color: "#fff",
+//             padding: "16px",
+//             borderRadius: "12px",
+//           },
+//         }}
+//       />
+//       <SupportChat />
+
+//       {/* Watermark */}
+//       <motion.div
+//         className="fixed inset-0 pointer-events-none opacity-[0.06] z-15 flex items-center justify-center"
+//         animate={{
+//           scale: [1, 1.05, 1],
+//           opacity: [0.05, 0.08, 0.05],
+//         }}
+//         transition={{
+//           duration: 20,
+//           repeat: Infinity,
+//           ease: "easeInOut",
+//         }}
+//       >
+//         <div className="relative w-[80%] max-w-4xl">
+//           <img
+//             src="https://i.ibb.co/7NLfzpHj/LOGO-removebg-preview.png"
+//             alt="M&M Watermark"
+//             className="w-full h-auto object-contain"
+//           />
+//           <div className="absolute inset-0 flex items-center justify-center">
+//             <div className="text-center font-serif text-[#8B7355] opacity-30">
+//               <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+//                 GLOW WITH BEAUTY,
+//               </div>
+//               <div className="text-xl md:text-3xl font-bold tracking-[0.2em]">
+//                 M&M
+//               </div>
+//               <div className="text-xs md:text-sm tracking-[0.3em] uppercase">
+//                 STAY WITH SCENT
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </motion.div>
+
+//       {/* Main Content */}
+//       <div className="relative">
+//         {/* Hero Banner */}
+//         <section className="relative w-full h-[calc(100vh-64px)] max-h-[600px] overflow-hidden z-15 bg-black">
+//           {/* Desktop Background */}
+//           <motion.div
+//             initial={{ scale: 1.1, opacity: 0 }}
+//             animate={{ scale: 1, opacity: 1 }}
+//             transition={{ duration: 0.8 }}
+//             className="absolute inset-0 bg-cover bg-center brightness-50 max-[400px]:hidden"
+//             style={{
+//               backgroundImage: `url('${banner.backgroundImage}')`,
+//               backgroundSize: "cover",
+//               backgroundPosition: "center 40%",
+//             }}
+//           />
+
+//           {/* Mobile Background */}
+//           {mobileImages.length > 0 && isMobile && imagesLoaded && (
+//             <div className="absolute inset-[-20px] max-[400px]:block hidden overflow-hidden">
+//               <AnimatePresence initial={false}>
+//                 <motion.div
+//                   key={currentMobileIndex}
+//                   initial={{ x: "100%" }}
+//                   animate={{ x: "0%" }}
+//                   exit={{ x: "-100%" }}
+//                   transition={{ duration: 0.8, ease: "easeInOut" }}
+//                   className="absolute inset-0 brightness-60"
+//                   style={{
+//                     backgroundImage: `url('${mobileImages[currentMobileIndex]}')`,
+//                     backgroundSize: "cover",
+//                     backgroundPosition: "center",
+//                     backgroundRepeat: "no-repeat",
+//                   }}
+//                 />
+//               </AnimatePresence>
+//             </div>
+//           )}
+
+//           {/* Gradient Overlay */}
+//           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
+
+//           {/* Gold Border Lines */}
+//           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+//           <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+
+//           {/* Content */}
+//           <div className="relative h-full flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 px-4">
+//             <motion.div
+//               initial={{ opacity: 0, y: 40, scale: 0.9 }}
+//               animate={{
+//                 opacity: 1,
+//                 y: [0, -8, 0],
+//                 scale: [1, 1.02, 1],
+//               }}
+//               transition={{
+//                 opacity: {
+//                   duration: 0.8,
+//                   ease: "easeOut",
+//                 },
+//                 y: {
+//                   duration: 2.5,
+//                   repeat: Infinity,
+//                   ease: "easeInOut",
+//                 },
+//                 scale: {
+//                   duration: 2.5,
+//                   repeat: Infinity,
+//                   ease: "easeInOut",
+//                 },
+//               }}
+//             >
+//               <Link
+//                 href="/products"
+//                 className="
+//                   group
+//                   relative
+//                   inline-block
+//                   transition-all
+//                   duration-300
+//                   hover:scale-105
+
+//                   max-[400px]:bottom-[0px]
+//                   min-[400px]:max-[650px]:bottom-[125px]
+//                   min-[650px]:max-[767px]:bottom-[110px]
+//                   min-[768px]:max-[799px]:bottom-[90px]
+//                   min-[800px]:max-[1023px]:bottom-[80px]
+//                   min-[1024px]:max-[1099px]:bottom-[70px]
+//                   min-[1100px]:max-[1199px]:bottom-[60px]
+//                   min-[1200px]:max-[1299px]:bottom-[50px]
+//                   min-[1300px]:max-[1359px]:bottom-[37px]
+//                   min-[1360px]:right-[2px]
+//                   min-[1360px]:bottom-[23px]
+//                 "
+//               >
+//                 <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#A8893A] blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500" />
+
+//                 <span
+//                   className="
+//                     relative
+//                     flex
+//                     items-center
+//                     justify-center
+
+//                     px-6 py-2.5
+//                     sm:px-8 sm:py-3
+//                     md:px-10 md:py-3.5
+//                     lg:px-14 lg:py-4.5
+
+//                     bg-[#C9A84C]
+//                     border-2
+//                     border-[#C9A84C]
+
+//                     overflow-hidden
+
+//                     transition-all
+//                     duration-500
+
+//                     hover:bg-[#B8963E]
+//                     hover:border-[#B8963E]
+
+//                     shadow-[0_10px_30px_rgba(201,168,76,0.35)]
+//                     group-hover:shadow-[0_15px_50px_rgba(201,168,76,0.7)]
+//                   "
+//                 >
+//                   <motion.span
+//                     animate={{
+//                       y: [0, -2, 0],
+//                     }}
+//                     transition={{
+//                       duration: 1.4,
+//                       repeat: Infinity,
+//                       ease: "easeInOut",
+//                     }}
+//                     className="
+//                       relative
+//                       z-10
+
+//                       text-black
+//                       font-serif
+//                       font-bold
+//                       uppercase
+
+//                       tracking-[0.15em]
+
+//                       text-[10px]
+
+//                       min-[300px]:max-[400px]:text-[14px]
+//                       min-[401px]:max-[649px]:text-[13px]
+//                       min-[650px]:max-[767px]:text-[14px]
+//                       min-[768px]:max-[1023px]:text-[15px]
+//                       min-[1024px]:text-[20px]
+
+//                       min-[800px]:max-[1023px]:px-10
+//                       min-[650px]:max-[767px]:px-20
+//                       min-[401px]:max-[649px]:px-20
+//                       min-[300px]:max-[400px]:px-8
+//                     "
+//                   >
+//                     <div className="flex items-center gap-2">
+//                       <span>{banner.buttonText}</span>
+
+//                       <ArrowRight
+//                         size={18}
+//                         strokeWidth={2.5}
+//                         className="transition-transform duration-300 group-hover:translate-x-1"
+//                       />
+//                     </div>
+//                   </motion.span>
+//                 </span>
+//               </Link>
+//             </motion.div>
+
+//             <motion.div
+//               initial={{ opacity: 0, width: 0 }}
+//               animate={{ opacity: 1, width: "80px" }}
+//               transition={{ duration: 0.8, delay: 0.6 }}
+//               className="h-[1px] mx-auto mt-4 sm:mt-6 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"
+//               style={{ width: "clamp(60px, 20vw, 120px)" }}
+//             />
+//           </div>
+//         </section>
+
+//         {/* Featured Products */}
+//         <section className="py-12 sm:py-16 px-4 relative bg-white">
+//           <div className="max-w-7xl mx-auto">
+//             <motion.div
+//               initial={{ opacity: 0, y: 20 }}
+//               whileInView={{ opacity: 1, y: 0 }}
+//               transition={{ duration: 0.6 }}
+//               className="text-center mb-8 sm:mb-12"
+//             >
+//               <div className="flex justify-center items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+//                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-[#C9A84C]" />
+//                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#C9A84C]" />
+//                 <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#C9A84C]" />
+//               </div>
+//               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4 text-gray-900">
+//                 {products.filter((p) => p.isFeatured === true).length > 0
+//                   ? "⭐ Featured Products"
+//                   : "✨ Our Products"}
+//               </h2>
+//               <p className="text-sm sm:text-base text-gray-600 max-w-lg mx-auto font-light tracking-wide px-4">
+//                 {products.filter((p) => p.isFeatured === true).length > 0
+//                   ? "Handpicked selections just for you"
+//                   : "Discover our curated collection of premium beauty products"}
+//               </p>
+//             </motion.div>
+
+//             {loading ? (
+//               <div className="text-center py-12">
+//                 <motion.div
+//                   animate={{ rotate: 360 }}
+//                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+//                   className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-[#C9A84C] border-t-transparent rounded-full mx-auto mb-4"
+//                 />
+//                 <p className="text-gray-600">Loading products...</p>
+//               </div>
+//             ) : displayProducts.length > 0 ? (
+//               <motion.div
+//                 initial={{ opacity: 0 }}
+//                 whileInView={{ opacity: 1 }}
+//                 transition={{ duration: 0.6 }}
+//                 className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+//               >
+//                 {displayProducts.map((product, index) => {
+//                   const inCart = isProductInCart(product.id);
+//                   const discountPercent = getDiscountPercentage(product);
+//                   const isDeal =
+//                     product.category === "Deal" && product.dealName;
+//                   const dealColor = product.dealColor || "#FF6B35";
+//                   const hasVariants =
+//                     product.hasFlavors &&
+//                     product.flavors &&
+//                     product.flavors.length > 0;
+
+//                   return (
+//                     <motion.div
+//                       key={product.id}
+//                       initial={{ opacity: 0, y: 20 }}
+//                       whileInView={{ opacity: 1, y: 0 }}
+//                       transition={{ delay: index * 0.1 }}
+//                       className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all group border border-gray-100 hover:border-[#C9A84C]/30"
+//                     >
+//                       {/* Product Image with Badges */}
+//                       <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+//                         {/* ✅ DEAL BADGE - WITH ADMIN COLOR */}
+//                         {isDeal && (
+//                           <div className="absolute left-1/2 -translate-x-1/2 top-1 z-10 w-[85%] sm:w-[80%]">
+//                             <div className="relative">
+//                               <div
+//                                 className="
+//                                   text-white text-[8px] sm:text-[10px] md:text-xs font-bold 
+//                                   px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 
+//                                   rounded-lg shadow-lg 
+//                                   flex items-center justify-center gap-0.5 sm:gap-1
+//                                   mx-auto w-full
+//                                   border-2 border-white/30
+//                                   animate-pulse
+//                                 "
+//                                 style={{ backgroundColor: dealColor }}
+//                               >
+//                                 <span className="text-[6px] sm:text-[8px] md:text-[10px]">
+//                                   🔥
+//                                 </span>
+//                                 <span className="truncate font-bold tracking-wide text-[7px] sm:text-[9px] md:text-xs">
+//                                   {product.dealName}
+//                                 </span>
+//                                 <span className="text-[6px] sm:text-[8px] md:text-[10px]">
+//                                   🔥
+//                                 </span>
+//                               </div>
+//                               <div
+//                                 className="absolute -bottom-0.5 left-2 right-2 h-[1px] bg-gradient-to-r from-transparent via-orange-300 to-transparent opacity-50"
+//                                 style={{
+//                                   backgroundImage: `linear-gradient(to right, transparent, ${dealColor}80, transparent)`,
+//                                 }}
+//                               />
+//                             </div>
+//                           </div>
+//                         )}
+
+//                         {/* ✅ FEATURED BADGE - ONLY if NOT a deal */}
+//                         {product.isFeatured && !isDeal && (
+//                           <div className="absolute top-2 left-2 bg-gradient-to-r from-[#C9A84C] to-[#8B7355] text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg z-10">
+//                             ⭐ Featured
+//                           </div>
+//                         )}
+
+//                         {/* Product Image */}
+//                         <motion.img
+//                           whileHover={{ scale: 1.05 }}
+//                           src={product.image}
+//                           alt={product.name}
+//                           className="w-full h-full object-contain p-2"
+//                           onError={(e) => {
+//                             e.currentTarget.src =
+//                               'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e8e3dc" width="300" height="300"/%3E%3C/svg%3E';
+//                           }}
+//                         />
+
+//                         {/* ✅ VARIANTS BADGE */}
+//                         {hasVariants && (
+//                           <div className="absolute bottom-2 left-2 bg-blue-500/90 text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg z-10 flex items-center gap-1">
+//                             <span>{product.flavors?.length || 0} Variants</span>
+//                           </div>
+//                         )}
+//                       </div>
+
+//                       {/* Product Info */}
+//                       <div className="p-2 sm:p-3 md:p-4">
+//                         <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+//                           <p
+//                             className={`text-[8px] max-[550px]: text-[10px] sm:text-xs uppercase tracking-widest font-bold truncate ${
+//                               isDeal
+//                                 ? "text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full"
+//                                 : "text-[#C9A84C]"
+//                             }`}
+//                           >
+//                             {isDeal ? `${product.category}` : product.category}
+//                           </p>
+//                         </div>
+
+//                         <div className="flex items-center flex-wrap gap-1 mb-1 sm:mb-2">
+//                           <h3 className="font-mono font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm md:text-base capitalize">
+//                             {product.name}
+//                           </h3>
+//                         </div>
+
+//                         <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
+//                           <span className="text-[10px] max-[550px]:text-[14px] sm:text-sm md:text-lg font-bold text-[#C9A84C]">
+//                             {formatPrice(getFinalPrice(product))}
+//                           </span>
+//                           {hasValidDiscount(product) && (
+//                             <span className="text-[12px] min-[550px]:text-[14px] text-gray-500 line-through">
+//                               {formatPrice(product.price)}
+//                             </span>
+//                           )}
+//                         </div>
+
+//                         <div className="flex gap-1 sm:gap-2">
+//                           {inCart ? (
+//                             <button
+//                               disabled
+//                               className="flex-1 bg-green-500 text-white py-1 sm:py-2 rounded-lg font-semibold flex items-center justify-center gap-1 text-[8px] sm:text-xs cursor-default opacity-80"
+//                             >
+//                               <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+//                               <span className="hidden xs:inline">In Cart</span>
+//                             </button>
+//                           ) : (
+//                             <button
+//                               onClick={() => handleAddToCart(product)}
+//                               className="flex-1 bg-[#c9a87f] text-white py-1 sm:py-2 rounded-lg font-semibold hover:bg-[#8B7355] transition-all cursor-pointer text-[8px] sm:text-xs flex items-center justify-center"
+//                             >
+//                               {/* Desktop */}
+//                               <span className="hidden min-[550px]:inline">
+//                                 Add to Cart
+//                               </span>
+
+//                               {/* Mobile */}
+//                               <span className="min-[550px]:hidden flex items-center justify-center gap-1 text-[12px]">
+//                                 <ShoppingCart
+//                                   size={14}
+//                                   className="w-[14px] h-[14px]"
+//                                 />
+//                                 <span>Add</span>
+//                               </span>
+//                             </button>
+//                           )}
+//                           <Link
+//                             href={`/product/${product.id}`}
+//                             className="flex-1 bg-gray-100 text-gray-900 py-1 sm:py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-center border border-gray-200 text-[12px] min-[550px]:text-xs"
+//                           >
+//                             View
+//                           </Link>
+//                         </div>
+//                       </div>
+//                     </motion.div>
+//                   );
+//                 })}
+//               </motion.div>
+//             ) : (
+//               <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+//                 <p className="text-gray-600 mb-4">No products available yet</p>
+//                 <p className="text-sm text-gray-500">
+//                   Admin needs to add products first
+//                 </p>
+//               </div>
+//             )}
+
+//             {products.length > 0 && (
+//               <div className="text-center mt-8 sm:mt-12">
+//                 <Link
+//                   href="/products"
+//                   className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#c9a87f] text-white rounded-lg font-semibold hover:bg-[#8B7355] transition-all text-sm sm:text-base"
+//                 >
+//                   View All Products
+//                   <ArrowRight size={16} className="sm:w-5 sm:h-5" />
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+//         </section>
+
+//         <footer className="bg-white py-6 sm:py-8 px-4 border-t border-gray-200">
+//           <div className="max-w-7xl mx-auto text-center">
+//             <div className="flex justify-center items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+//               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
+//               <span className="text-[#C9A84C] text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase font-serif">
+//                 M&M Scents & Glow
+//               </span>
+//               <span className="w-6 sm:w-8 h-[1px] bg-[#C9A84C]/50" />
+//             </div>
+//             <p className="text-gray-600 text-[10px] sm:text-sm">
+//               &copy; 2026 M&M Scents. All rights reserved.
+//             </p>
+//           </div>
+//         </footer>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+//with deal box height
+
 "use client";
 
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, CheckCircle, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle, Sparkles, ShoppingCart } from "lucide-react";
 import { rtdb } from "@/lib/firebase";
 import { ref, onValue } from "firebase/database";
 import Navbar from "@/components/Navbar";
 import { CartItem, useCart } from "@/lib/cartContext";
 import { useAuth } from "@/lib/authContext";
 import toast, { Toaster } from "react-hot-toast";
-import SupportChat from '@/components/SupportChat';
+import SupportChat from "@/components/SupportChat";
 
 interface Product {
   id: string;
@@ -5020,6 +8212,17 @@ interface Product {
   image: string;
   category: string;
   isFeatured?: boolean;
+  hasFlavors?: boolean;
+  flavors?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    discount?: number;
+    stock: number;
+    image?: string;
+  }>;
+  dealName?: string;
+  dealColor?: string;
 }
 
 interface BannerData {
@@ -5119,7 +8322,6 @@ export default function Home() {
   useEffect(() => {
     if (mobileImages.length <= 1 || !isMobile) return;
 
-    // Clear any existing interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
@@ -5362,7 +8564,8 @@ export default function Home() {
           },
         }}
       />
- <SupportChat />
+      <SupportChat />
+
       {/* Watermark */}
       <motion.div
         className="fixed inset-0 pointer-events-none opacity-[0.06] z-15 flex items-center justify-center"
@@ -5402,190 +8605,184 @@ export default function Home() {
       <div className="relative">
         {/* Hero Banner */}
         <section className="relative w-full h-[calc(100vh-64px)] max-h-[600px] overflow-hidden z-15 bg-black">
-  {/* ✅ Desktop Background - Sirf desktop pe */}
-  <motion.div
-    initial={{ scale: 1.1, opacity: 0 }}
-    animate={{ scale: 1, opacity: 1 }}
-    transition={{ duration: 0.8 }}
-    className="absolute inset-0 bg-cover bg-center brightness-50 max-[400px]:hidden"
-    style={{
-      backgroundImage: `url('${banner.backgroundImage}')`,
-      backgroundSize: "cover",
-      backgroundPosition: "center 40%",
-    }}
-  />
-
-  {/* ✅ Mobile Background - Images slide with NO BLACK */}
-  {mobileImages.length > 0 && isMobile && imagesLoaded && (
-    <div className="absolute inset-[-20px] max-[400px]:block hidden overflow-hidden">
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={currentMobileIndex}
-          initial={{ x: "100%" }}
-          animate={{ x: "0%" }}
-          exit={{ x: "-100%" }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="absolute inset-0 brightness-60"
-          style={{
-            backgroundImage: `url('${mobileImages[currentMobileIndex]}')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
-      </AnimatePresence>
-    </div>
-  )}
-
-  {/* ✅ Gradient Overlay */}
-  <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
-
-  {/* Gold Border Lines */}
-  <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
-  <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
-
-  {/* Content */}
-  <div className="relative h-full flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 px-4">
-    {/* SHOP NOW Button */}
-    <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.9 }}
-      animate={{
-        opacity: 1,
-        y: [0, -8, 0],
-        scale: [1, 1.02, 1],
-      }}
-      transition={{
-        opacity: {
-          duration: 0.8,
-          ease: "easeOut",
-        },
-        y: {
-          duration: 2.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        },
-        scale: {
-          duration: 2.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        },
-      }}
-    >
-      <Link
-        href="/products"
-        className="
-          group
-          relative
-          inline-block
-          transition-all
-          duration-300
-          hover:scale-105
-
-          max-[400px]:bottom-[0px]
-          min-[400px]:max-[650px]:bottom-[125px]
-          min-[650px]:max-[767px]:bottom-[110px]
-          min-[768px]:max-[799px]:bottom-[90px]
-          min-[800px]:max-[1023px]:bottom-[80px]
-          min-[1024px]:max-[1099px]:bottom-[70px]
-          min-[1100px]:max-[1199px]:bottom-[60px]
-          min-[1200px]:max-[1299px]:bottom-[50px]
-          min-[1300px]:max-[1359px]:bottom-[37px]
-          min-[1360px]:right-[2px]
-          min-[1360px]:bottom-[23px]
-        "
-      >
-        {/* Glow */}
-        <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#A8893A] blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500" />
-
-        {/* Button */}
-        <span
-          className="
-            relative
-            flex
-            items-center
-            justify-center
-
-            px-6 py-2.5
-            sm:px-8 sm:py-3
-            md:px-10 md:py-3.5
-            lg:px-14 lg:py-4.5
-
-            bg-[#C9A84C]
-            border-2
-            border-[#C9A84C]
-
-            
-
-            overflow-hidden
-
-            transition-all
-            duration-500
-
-            hover:bg-[#B8963E]
-            hover:border-[#B8963E]
-
-            shadow-[0_10px_30px_rgba(201,168,76,0.35)]
-            group-hover:shadow-[0_15px_50px_rgba(201,168,76,0.7)]
-          "
-        >
-          <motion.span
-            animate={{
-              y: [0, -2, 0],
+          {/* Desktop Background */}
+          <motion.div
+            initial={{ scale: 1.1, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0 bg-cover bg-center brightness-50 max-[400px]:hidden"
+            style={{
+              backgroundImage: `url('${banner.backgroundImage}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center 40%",
             }}
-            transition={{
-              duration: 1.4,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="
-              relative
-              z-10
+          />
 
-              text-black
-              font-serif
-              font-bold
-              uppercase
-
-              tracking-[0.15em]
-
-              text-[10px]
-
-              min-[300px]:max-[400px]:text-[14px]
-              min-[401px]:max-[649px]:text-[13px]
-              min-[650px]:max-[767px]:text-[14px]
-              min-[768px]:max-[1023px]:text-[15px]
-              min-[1024px]:text-[20px]
-
-              min-[800px]:max-[1023px]:px-10
-              min-[650px]:max-[767px]:px-20
-              min-[401px]:max-[649px]:px-20
-              min-[300px]:max-[400px]:px-8
-            "
-          >
-            <div className="flex items-center gap-2">
-              <span>{banner.buttonText}</span>
-
-              <ArrowRight
-                size={18}
-                strokeWidth={2.5}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
+          {/* Mobile Background */}
+          {mobileImages.length > 0 && isMobile && imagesLoaded && (
+            <div className="absolute inset-[-20px] max-[400px]:block hidden overflow-hidden">
+              <AnimatePresence initial={false}>
+                <motion.div
+                  key={currentMobileIndex}
+                  initial={{ x: "100%" }}
+                  animate={{ x: "0%" }}
+                  exit={{ x: "-100%" }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  className="absolute inset-0 brightness-60"
+                  style={{
+                    backgroundImage: `url('${mobileImages[currentMobileIndex]}')`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+              </AnimatePresence>
             </div>
-          </motion.span>
-        </span>
-      </Link>
-    </motion.div>
+          )}
 
-    {/* Decorative Bottom Line */}
-    <motion.div
-      initial={{ opacity: 0, width: 0 }}
-      animate={{ opacity: 1, width: "80px" }}
-      transition={{ duration: 0.8, delay: 0.6 }}
-      className="h-[1px] mx-auto mt-4 sm:mt-6 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"
-      style={{ width: "clamp(60px, 20vw, 120px)" }}
-    />
-  </div>
-</section>
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
+
+          {/* Gold Border Lines */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent" />
+
+          {/* Content */}
+          <div className="relative h-full flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.9 }}
+              animate={{
+                opacity: 1,
+                y: [0, -8, 0],
+                scale: [1, 1.02, 1],
+              }}
+              transition={{
+                opacity: {
+                  duration: 0.8,
+                  ease: "easeOut",
+                },
+                y: {
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                },
+                scale: {
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                },
+              }}
+            >
+              <Link
+                href="/products"
+                className="
+                  group
+                  relative
+                  inline-block
+                  transition-all
+                  duration-300
+                  hover:scale-105
+
+                  max-[400px]:bottom-[0px]
+                  min-[400px]:max-[650px]:bottom-[125px]
+                  min-[650px]:max-[767px]:bottom-[110px]
+                  min-[768px]:max-[799px]:bottom-[90px]
+                  min-[800px]:max-[1023px]:bottom-[80px]
+                  min-[1024px]:max-[1099px]:bottom-[70px]
+                  min-[1100px]:max-[1199px]:bottom-[60px]
+                  min-[1200px]:max-[1299px]:bottom-[50px]
+                  min-[1300px]:max-[1359px]:bottom-[37px]
+                  min-[1360px]:right-[2px]
+                  min-[1360px]:bottom-[23px]
+                "
+              >
+                <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#A8893A] blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500" />
+
+                <span
+                  className="
+                    relative
+                    flex
+                    items-center
+                    justify-center
+
+                    px-6 py-2.5
+                    sm:px-8 sm:py-3
+                    md:px-10 md:py-3.5
+                    lg:px-14 lg:py-4.5
+
+                    bg-[#C9A84C]
+                    border-2
+                    border-[#C9A84C]
+
+                    overflow-hidden
+
+                    transition-all
+                    duration-500
+
+                    hover:bg-[#B8963E]
+                    hover:border-[#B8963E]
+
+                    shadow-[0_10px_30px_rgba(201,168,76,0.35)]
+                    group-hover:shadow-[0_15px_50px_rgba(201,168,76,0.7)]
+                  "
+                >
+                  <motion.span
+                    animate={{
+                      y: [0, -2, 0],
+                    }}
+                    transition={{
+                      duration: 1.4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="
+                      relative
+                      z-10
+
+                      text-black
+                      font-serif
+                      font-bold
+                      uppercase
+
+                      tracking-[0.15em]
+
+                      text-[10px]
+
+                      min-[300px]:max-[400px]:text-[14px]
+                      min-[401px]:max-[649px]:text-[13px]
+                      min-[650px]:max-[767px]:text-[14px]
+                      min-[768px]:max-[1023px]:text-[15px]
+                      min-[1024px]:text-[20px]
+
+                      min-[800px]:max-[1023px]:px-10
+                      min-[650px]:max-[767px]:px-20
+                      min-[401px]:max-[649px]:px-20
+                      min-[300px]:max-[400px]:px-8
+                    "
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>{banner.buttonText}</span>
+
+                      <ArrowRight
+                        size={18}
+                        strokeWidth={2.5}
+                        className="transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </div>
+                  </motion.span>
+                </span>
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "80px" }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="h-[1px] mx-auto mt-4 sm:mt-6 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"
+              style={{ width: "clamp(60px, 20vw, 120px)" }}
+            />
+          </div>
+        </section>
 
         {/* Featured Products */}
         <section className="py-12 sm:py-16 px-4 relative bg-white">
@@ -5632,6 +8829,13 @@ export default function Home() {
                 {displayProducts.map((product, index) => {
                   const inCart = isProductInCart(product.id);
                   const discountPercent = getDiscountPercentage(product);
+                  const isDeal =
+                    product.category === "Deal" && product.dealName;
+                  const dealColor = product.dealColor || "#FF6B35";
+                  const hasVariants =
+                    product.hasFlavors &&
+                    product.flavors &&
+                    product.flavors.length > 0;
 
                   return (
                     <motion.div
@@ -5641,7 +8845,54 @@ export default function Home() {
                       transition={{ delay: index * 0.1 }}
                       className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all group border border-gray-100 hover:border-[#C9A84C]/30"
                     >
+                      {/* Product Image with Badges */}
                       <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+                        {/* ✅ DEAL BADGE - WITH ADMIN COLOR & MOBILE HEIGHT FIX */}
+                        {isDeal && (
+                          <div className="absolute left-1/2 -translate-x-1/2 top-1 z-10 w-[85%] sm:w-[80%]">
+                            <div className="relative">
+                              <div
+                                className="
+                                  text-white text-[8px] sm:text-[10px] md:text-xs font-bold 
+                                  px-1.5 sm:px-2 md:px-3 
+                                  py-1.5 sm:py-1 md:py-1.5 
+                                  min-[450px]:py-0.5
+                                  rounded-lg shadow-lg 
+                                  flex items-center justify-center gap-0.5 sm:gap-1
+                                  mx-auto w-full
+                                  border-2 border-white/30
+                                  animate-pulse
+                                "
+                                style={{ backgroundColor: dealColor }}
+                              >
+                                <span className="text-[6px] sm:text-[8px] md:text-[10px]">
+                                  🔥
+                                </span>
+                                <span className="truncate font-bold tracking-wide text-[7px] sm:text-[9px] md:text-xs">
+                                  {product.dealName}
+                                </span>
+                                <span className="text-[6px] sm:text-[8px] md:text-[10px]">
+                                  🔥
+                                </span>
+                              </div>
+                              <div
+                                className="absolute -bottom-0.5 left-2 right-2 h-[1px] bg-gradient-to-r from-transparent via-orange-300 to-transparent opacity-50"
+                                style={{
+                                  backgroundImage: `linear-gradient(to right, transparent, ${dealColor}80, transparent)`,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* ✅ FEATURED BADGE - ONLY if NOT a deal */}
+                        {product.isFeatured && !isDeal && (
+                          <div className="absolute top-2 left-2 bg-gradient-to-r from-[#C9A84C] to-[#8B7355] text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg z-10">
+                            ⭐ Featured
+                          </div>
+                        )}
+
+                        {/* Product Image */}
                         <motion.img
                           whileHover={{ scale: 1.05 }}
                           src={product.image}
@@ -5652,34 +8903,41 @@ export default function Home() {
                               'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e8e3dc" width="300" height="300"/%3E%3C/svg%3E';
                           }}
                         />
-                        {product.isFeatured && (
-                          <div className="absolute top-2 left-2 bg-gradient-to-r from-[#C9A84C] to-[#8B7355] text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg">
-                            ⭐ Featured
+
+                        {/* ✅ VARIANTS BADGE */}
+                        {hasVariants && (
+                          <div className="absolute bottom-2 left-2 bg-blue-500/90 text-white text-[8px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg z-10 flex items-center gap-1">
+                            <span>{product.flavors?.length || 0} Variants</span>
                           </div>
                         )}
                       </div>
 
+                      {/* Product Info */}
                       <div className="p-2 sm:p-3 md:p-4">
-                        <p className="text-[8px] sm:text-xs text-[#C9A84C] mb-0.5 sm:mb-1 uppercase tracking-widest font-bold truncate">
-                          {product.category}
-                        </p>
+                        <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+                          <p
+                            className={`text-[8px] max-[550px]: text-[10px] sm:text-xs uppercase tracking-widest font-bold truncate ${
+                              isDeal
+                                ? "text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full"
+                                : "text-[#C9A84C]"
+                            }`}
+                          >
+                            {isDeal ? `${product.category}` : product.category}
+                          </p>
+                        </div>
+
                         <div className="flex items-center flex-wrap gap-1 mb-1 sm:mb-2">
-                          <h3 className="font-serif font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm md:text-base">
+                          <h3 className="font-mono font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm md:text-base capitalize">
                             {product.name}
                           </h3>
-                          {hasValidDiscount(product) && (
-                            <span className="inline-block bg-[#C9A84C] text-white px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold whitespace-nowrap">
-                              -{discountPercent}%
-                            </span>
-                          )}
                         </div>
 
                         <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
-                          <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C9A84C]">
+                          <span className="text-[10px] max-[550px]:text-[14px] sm:text-sm md:text-lg font-bold text-[#C9A84C]">
                             {formatPrice(getFinalPrice(product))}
                           </span>
                           {hasValidDiscount(product) && (
-                            <span className="text-[8px] sm:text-xs text-gray-500 line-through">
+                            <span className="text-[12px] min-[550px]:text-[14px] text-gray-500 line-through">
                               {formatPrice(product.price)}
                             </span>
                           )}
@@ -5697,17 +8955,26 @@ export default function Home() {
                           ) : (
                             <button
                               onClick={() => handleAddToCart(product)}
-                              className="flex-1 bg-[#C9A84C] text-white py-1 sm:py-2 rounded-lg font-semibold hover:bg-[#8B7355] transition-all cursor-pointer text-[8px] sm:text-xs"
+                              className="flex-1 bg-[#c9a87f] text-white py-1 sm:py-2 rounded-lg font-semibold hover:bg-[#8B7355] transition-all cursor-pointer text-[8px] sm:text-xs flex items-center justify-center"
                             >
-                              <span className="hidden xs:inline">
+                              {/* Desktop */}
+                              <span className="hidden min-[550px]:inline">
                                 Add to Cart
                               </span>
-                              <span className="xs:hidden">Add</span>
+
+                              {/* Mobile */}
+                              <span className="min-[550px]:hidden flex items-center justify-center gap-1 text-[12px]">
+                                <ShoppingCart
+                                  size={14}
+                                  className="w-[14px] h-[14px]"
+                                />
+                                <span>Add</span>
+                              </span>
                             </button>
                           )}
                           <Link
                             href={`/product/${product.id}`}
-                            className="flex-1 bg-gray-100 text-gray-900 py-1 sm:py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-center border border-gray-200 text-[8px] sm:text-xs"
+                            className="flex-1 bg-gray-100 text-gray-900 py-1 sm:py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-center border border-gray-200 text-[12px] min-[550px]:text-xs"
                           >
                             View
                           </Link>
@@ -5730,7 +8997,7 @@ export default function Home() {
               <div className="text-center mt-8 sm:mt-12">
                 <Link
                   href="/products"
-                  className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#C9A84C] text-white rounded-lg font-semibold hover:bg-[#8B7355] transition-all text-sm sm:text-base"
+                  className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#c9a87f] text-white rounded-lg font-semibold hover:bg-[#8B7355] transition-all text-sm sm:text-base"
                 >
                   View All Products
                   <ArrowRight size={16} className="sm:w-5 sm:h-5" />
