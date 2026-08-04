@@ -3717,7 +3717,7 @@ export default function CartPage() {
                               }`}
                             >
                               <Package size={14} />
-                              {hasFlavorSelected ? `✓ ${totalFlavorQty} items` : 'Select Flavors'}
+                              {hasFlavorSelected ? `✓ ${totalFlavorQty} items` : 'Select Varients'}
                             </button>
                           )}
                         </div>
@@ -3827,13 +3827,13 @@ export default function CartPage() {
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
               <div className="bg-white rounded-2xl max-w-md w-full max-h-[80vh] flex flex-col shadow-2xl">
                 <div className="p-4 border-b flex justify-between items-center">
-                  <h2 className="text-xl font-bold flex items-center gap-2"><Package className="w-5 h-5 text-primary" /> Select Flavors</h2>
+                  <h2 className="text-xl font-bold flex items-center gap-2"><Package className="w-5 h-5 text-primary" /> Select Varients</h2>
                   <button onClick={() => setIsFlavorModalOpen(false)} className="hover:bg-gray-100 p-1.5 rounded-full"><X className="w-6 h-6" /></button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Select flavors for <strong>{productDetails[selectedProductId]?.name}</strong>
+                    Select Varients for <strong>{productDetails[selectedProductId]?.name}</strong>
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Total Quantity: <span className="font-bold text-primary">{getTotalFlavorQuantityTemp()}</span>
@@ -3913,7 +3913,7 @@ export default function CartPage() {
                     ) : (
                       <>
                         <Check className="w-5 h-5" />
-                        Save Flavors
+                        Save Varients
                       </>
                     )}
                   </button>

@@ -9,7 +9,7 @@ const nextConfig = {
   },
 allowedDevOrigins: [
   '192.168.10.60',
-  '192.168.0.57',
+  '192.168.0.52',
   '192.168.100.6'
 ],  images: {
     unoptimized: true,
