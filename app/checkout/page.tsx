@@ -3489,7 +3489,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (!user) {
       toast.error('Please login to access checkout', {
-        duration: 3000,
+        duration: 1000,
         position: 'top-right',
         style: {
           background: '#EF4444',
@@ -3748,7 +3748,7 @@ export default function CheckoutPage() {
     // Check if adding this quantity exceeds max
     if (otherTotal + newQuantity > maxAllow) {
       toast.error(`Maximum ${maxAllow} wax items allowed for this deal!`, {
-        duration: 2000,
+        duration: 1000,
         position: 'top-right',
         icon: '⚠️'
       });
@@ -3813,6 +3813,26 @@ export default function CheckoutPage() {
     return getTotalWaxQuantityForProduct(productId);
   };
 
+  // ✅ Check if wax selections are complete (total must equal maxAllow)
+  const isWaxSelectionComplete = (productId: string) => {
+    const maxAllow = getMaxWaxForProduct(productId);
+    const totalSelected = getTotalWaxQuantity(productId);
+    return totalSelected === maxAllow;
+  };
+
+  // ✅ Check if any wax product has incomplete selections
+  const hasIncompleteWaxSelections = () => {
+    for (const item of cartItems) {
+      const product = productDetails[item.id];
+      if (product?.waxIncluded && product?.waxVariants && product.waxVariants.length > 0) {
+        if (!isWaxSelectionComplete(item.id)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   // If still checking auth, show loading
   if (isCheckingAuth) {
     return (
@@ -3839,7 +3859,7 @@ export default function CheckoutPage() {
         <Toaster 
           position="top-right"
           toastOptions={{
-            duration: 3000,
+            duration: 1000,
             style: {
               background: '#333',
               color: '#fff',
@@ -3870,7 +3890,7 @@ export default function CheckoutPage() {
         <Toaster 
           position="top-right"
           toastOptions={{
-            duration: 3000,
+            duration: 1000,
             style: {
               background: '#333',
               color: '#fff',
@@ -3933,25 +3953,21 @@ export default function CheckoutPage() {
       return;
     }
 
-    // ✅ Check if all wax products have selections
-    const unselectedWax: string[] = [];
+    // ✅ Check if all wax products have complete selections (must equal maxAllow)
     for (const item of cartItems) {
       const product = productDetails[item.id];
       if (product?.waxIncluded && product?.waxVariants && product.waxVariants.length > 0) {
-        const selection = waxSelections[item.id];
-        if (!selection || selection.length === 0) {
-          unselectedWax.push(item.name);
+        const maxAllow = getMaxWaxForProduct(item.id);
+        const totalSelected = getTotalWaxQuantity(item.id);
+        if (totalSelected !== maxAllow) {
+          toast.error(`Please select exactly ${maxAllow} wax items for "${item.name}" (currently ${totalSelected} selected)`, { 
+            duration: 3000, 
+            position: 'top-right', 
+            icon: '⚠️' 
+          });
+          return;
         }
       }
-    }
-
-    if (unselectedWax.length > 0) {
-      toast.error(`Please select wax variants for: ${unselectedWax.join(', ')}`, { 
-        duration: 4000, 
-        position: 'top-right', 
-        icon: '⚠️' 
-      });
-      return;
     }
 
     setLoading(true);
@@ -4081,7 +4097,7 @@ export default function CheckoutPage() {
       clearCart();
 
       toast.success('Order placed successfully!', {
-        duration: 3000,
+        duration: 1000,
         position: 'top-right',
         style: {
           background: '#10B981',
@@ -4099,7 +4115,7 @@ export default function CheckoutPage() {
       console.log('[v0] Error placing order:', err);
       setError('Failed to place order. Please try again.');
       toast.error('Failed to place order. Please try again.', {
-        duration: 3000,
+        duration: 1000,
         position: 'top-right',
         style: {
           background: '#EF4444',
@@ -4121,7 +4137,7 @@ export default function CheckoutPage() {
       <Toaster 
         position="top-right"
         toastOptions={{
-          duration: 3000,
+          duration: 1000,
           style: {
             background: '#333',
             color: '#fff',
@@ -4249,7 +4265,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  {/* ✅ Wax Variants Section - With Quantity per Variant */}
+                  {/* ✅ Wax Variants Section - Must select EXACTLY maxAllow items */}
                   {cartItems.some(item => {
                     const product = productDetails[item.id];
                     return product?.waxIncluded && product?.waxVariants && product.waxVariants.length > 0;
@@ -4259,13 +4275,12 @@ export default function CheckoutPage() {
                         <span>🕯️</span> Select Your Wax Variants
                       </h2>
                       <p className="text-sm text-gray-500 mb-4">
-                        Choose your preferred wax variants and quantities. 
-                        Maximum total quantity: <span className="font-bold text-purple-600">
+                        You must select exactly <span className="font-bold text-purple-600">
                           {Math.max(...cartItems.map(item => {
                             const product = productDetails[item.id];
                             return product?.totalAllowWax || 3;
                           }))}
-                        </span> items per product.
+                        </span> wax items per product. You cannot checkout with less or more.
                       </p>
                       <div className="space-y-4">
                         {cartItems.map((item) => {
@@ -4278,16 +4293,17 @@ export default function CheckoutPage() {
                           const maxAllow = getMaxWaxForProduct(item.id);
                           const totalSelected = getTotalWaxQuantity(item.id);
                           const remaining = maxAllow - totalSelected;
+                          const isComplete = totalSelected === maxAllow;
 
                           return (
-                            <div key={item.id} className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                            <div key={item.id} className={`p-4 rounded-lg border ${isComplete ? 'bg-green-50 border-green-300' : 'bg-purple-50 border-purple-200'}`}>
                               <div className="flex justify-between items-center mb-3">
                                 <p className="font-medium text-gray-800">{item.name}</p>
-                                <div className="text-xs text-purple-600">
-                                  Selected: <span className="font-bold">{totalSelected}</span> / {maxAllow}
-                                  {remaining > 0 && (
-                                    <span className="ml-2 text-green-600">({remaining} remaining)</span>
-                                  )}
+                                <div className={`text-xs font-semibold ${isComplete ? 'text-green-600' : 'text-purple-600'}`}>
+                                  {isComplete ? '✅ Complete' : '❌ Incomplete'}
+                                  <span className="ml-2">
+                                    {totalSelected} / {maxAllow}
+                                  </span>
                                 </div>
                               </div>
 
@@ -4352,12 +4368,16 @@ export default function CheckoutPage() {
                                 </div>
                               )}
 
-                              {selectedVariants.length === maxAllow && (
-                                <p className="text-sm text-green-600 mt-2">✅ All {maxAllow} slots filled</p>
+                              {isComplete && (
+                                <p className="text-sm text-green-600 mt-2">✅ All {maxAllow} slots filled - Ready to checkout!</p>
+                              )}
+
+                              {!isComplete && totalSelected > 0 && (
+                                <p className="text-sm text-orange-600 mt-2">⚠️ Need {remaining} more wax selection{remaining > 1 ? 's' : ''}</p>
                               )}
 
                               {selectedVariants.length === 0 && (
-                                <p className="text-sm text-gray-500">No variants selected yet</p>
+                                <p className="text-sm text-red-500 mt-2">⚠️ No variants selected yet. Please select {maxAllow} wax items.</p>
                               )}
                             </div>
                           );
@@ -4382,18 +4402,29 @@ export default function CheckoutPage() {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={loading}
-                    className="w-full px-6 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    disabled={loading || hasIncompleteWaxSelections()}
+                    className={`w-full px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
+                      loading || hasIncompleteWaxSelections()
+                        ? 'bg-gray-400 cursor-not-allowed text-gray-200'
+                        : 'bg-gradient-to-r from-primary to-accent text-white hover:shadow-lg'
+                    }`}
                   >
                     {loading ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
                         Processing...
                       </>
+                    ) : hasIncompleteWaxSelections() ? (
+                      'Complete Wax Selections First'
                     ) : (
                       `Place Order • ${formatPrice(grandTotal)}`
                     )}
                   </button>
+                  {hasIncompleteWaxSelections() && (
+                    <p className="text-sm text-red-500 text-center -mt-2">
+                      Please select exactly the required number of wax items for all products
+                    </p>
+                  )}
                 </form>
               </div>
             </motion.div>
