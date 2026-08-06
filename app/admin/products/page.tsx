@@ -11041,7 +11041,6 @@ export default function AdminProductsPage() {
     category: 'Perfume',
     description: '',
     image: '' as any,
-    additionalImages: [] as any[],
     isFeatured: false,
     flavors: [] as string[],
     dealName: '',
@@ -11051,8 +11050,10 @@ export default function AdminProductsPage() {
     dealItems: [] as string[]
   });
 
-  const [additionalImagePreviews, setAdditionalImagePreviews] = useState<string[]>([]);
-  const [existingAdditionalImages, setExistingAdditionalImages] = useState<string[]>([]);
+  // ✅ Simple state management
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
   useEffect(() => {
@@ -11110,53 +11111,41 @@ export default function AdminProductsPage() {
     }));
   };
 
-  const handleAdditionalImageChange = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleNewImageChange = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      const newPreviews = [...additionalImagePreviews];
+      const newPreviews = [...newImagePreviews];
       newPreviews[index] = reader.result as string;
-      setAdditionalImagePreviews(newPreviews);
+      setNewImagePreviews(newPreviews);
     };
     reader.readAsDataURL(file);
 
-    const newImages = [...formData.additionalImages];
-    newImages[index] = file;
-    setFormData(prev => ({
-      ...prev,
-      additionalImages: newImages
-    }));
+    const newImagesArray = [...newImages];
+    newImagesArray[index] = file;
+    setNewImages(newImagesArray);
   };
 
-  const addAdditionalImageSlot = () => {
-    setFormData(prev => ({
-      ...prev,
-      additionalImages: [...prev.additionalImages, null]
-    }));
-    setAdditionalImagePreviews(prev => [...prev, '']);
+  const addNewImageSlot = () => {
+    setNewImages(prev => [...prev, null as any]);
+    setNewImagePreviews(prev => [...prev, '']);
   };
 
-  const handleRemoveAdditionalImage = (index: number) => {
-    // Check if this is an existing image (string URL) or a new file
-    const imageToRemove = formData.additionalImages[index];
-    
-    // If it's a string (existing image URL), add to delete list
-    if (typeof imageToRemove === 'string' && imageToRemove && imageToRemove.startsWith('http')) {
-      setImagesToDelete(prev => [...prev, imageToRemove]);
-    }
+  const removeExistingImage = (url: string) => {
+    setImagesToDelete(prev => [...prev, url]);
+    setExistingImages(prev => prev.filter(img => img !== url));
+  };
 
-    const newPreviews = [...additionalImagePreviews];
+  const removeNewImage = (index: number) => {
+    const newPreviews = [...newImagePreviews];
     newPreviews.splice(index, 1);
-    setAdditionalImagePreviews(newPreviews);
+    setNewImagePreviews(newPreviews);
 
-    const newImages = [...formData.additionalImages];
-    newImages.splice(index, 1);
-    setFormData(prev => ({
-      ...prev,
-      additionalImages: newImages
-    }));
+    const newImagesArray = [...newImages];
+    newImagesArray.splice(index, 1);
+    setNewImages(newImagesArray);
   };
 
   const addFlavor = () => {
@@ -11303,20 +11292,19 @@ export default function AdminProductsPage() {
       }
 
       // ✅ Get existing images that are NOT marked for deletion
-      const keptExistingImages = existingAdditionalImages.filter(url => !imagesToDelete.includes(url));
+      const keptExistingImages = existingImages.filter(url => !imagesToDelete.includes(url));
       
-      // ✅ Get new uploaded images (only Files, not strings)
-      const newUploadedImages: string[] = [];
-      for (const img of formData.additionalImages) {
+      // ✅ Upload new images
+      const uploadedNewImages: string[] = [];
+      for (const img of newImages) {
         if (img instanceof File) {
           const url = await uploadToImgBB(img);
-          newUploadedImages.push(url);
+          uploadedNewImages.push(url);
         }
-        // Skip string URLs - they're already in keptExistingImages
       }
 
-      // ✅ Final combined array: kept existing + new uploads
-      const finalAdditionalImages = [...keptExistingImages, ...newUploadedImages];
+      // ✅ Final combined: kept existing + new uploads
+      const finalAdditionalImages = [...keptExistingImages, ...uploadedNewImages];
 
       const flavorNames = formData.flavors.filter(f => f.trim() !== '');
       const waxVariantNames = formData.waxVariants.filter(v => v.trim() !== '');
@@ -11364,7 +11352,6 @@ export default function AdminProductsPage() {
       if (finalAdditionalImages.length > 0) {
         productData.additionalImages = finalAdditionalImages;
       } else {
-        // If no images, don't send the field or send empty array
         productData.additionalImages = [];
       }
 
@@ -11399,12 +11386,11 @@ export default function AdminProductsPage() {
     setImagePreview(product.image || '');
 
     const additionalImages = product.additionalImages || [];
-    setExistingAdditionalImages([...additionalImages]);
+    setExistingImages([...additionalImages]);
     setImagesToDelete([]);
-    setAdditionalImagePreviews(additionalImages.map(() => ''));
+    setNewImages([]);
+    setNewImagePreviews([]);
 
-    // ✅ Set formData.additionalImages to store ONLY existing image URLs (as strings)
-    // These will be displayed as existing images
     setFormData({
       name: product.name,
       price: product.price?.toString() || '',
@@ -11413,7 +11399,6 @@ export default function AdminProductsPage() {
       category: product.category,
       description: product.description || '',
       image: product.image || '',
-      additionalImages: [...additionalImages], // Store URLs as strings
       isFeatured: product.isFeatured || false,
       flavors: product.flavors || [],
       dealName: product.dealName || '',
@@ -11466,7 +11451,6 @@ export default function AdminProductsPage() {
       category: 'Perfume',
       description: '',
       image: '',
-      additionalImages: [],
       isFeatured: false,
       flavors: [],
       dealName: '',
@@ -11476,8 +11460,9 @@ export default function AdminProductsPage() {
       dealItems: []
     });
     setImagePreview('');
-    setAdditionalImagePreviews([]);
-    setExistingAdditionalImages([]);
+    setExistingImages([]);
+    setNewImages([]);
+    setNewImagePreviews([]);
     setImagesToDelete([]);
     setCustomCategory('');
     setShowCustomCategory(false);
@@ -11486,12 +11471,9 @@ export default function AdminProductsPage() {
   };
 
   useEffect(() => {
-    if (showForm && formData.additionalImages.length === 0 && !editingId) {
-      setFormData(prev => ({
-        ...prev,
-        additionalImages: [null]
-      }));
-      setAdditionalImagePreviews(['']);
+    if (showForm && newImages.length === 0 && !editingId) {
+      setNewImages([null as any]);
+      setNewImagePreviews(['']);
     }
   }, [showForm, editingId]);
 
@@ -12075,70 +12057,94 @@ export default function AdminProductsPage() {
                   <label className="block text-sm font-semibold text-primary">Additional Images</label>
                   <button
                     type="button"
-                    onClick={addAdditionalImageSlot}
+                    onClick={addNewImageSlot}
                     className="flex items-center gap-1 text-xs bg-primary text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
                   >
                     <Plus className="w-3 h-3" />
                     Add Image
                   </button>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {formData.additionalImages.map((img, index) => {
-                    // Check if this is an existing image URL or a new file
-                    const isExisting = typeof img === 'string' && img.startsWith('http');
-                    const previewUrl = isExisting ? img : additionalImagePreviews[index] || '';
-                    const isDeleted = isExisting && imagesToDelete.includes(img);
-
-                    return (
-                      <div key={index} className="relative">
-                        <div className={`border-2 border-dashed border-border rounded-lg p-3 text-center hover:border-primary transition-colors cursor-pointer ${
-                          previewUrl && !isDeleted ? 'border-primary' : ''
-                        } ${isDeleted ? 'opacity-50' : ''}`}
-                          onClick={() => document.getElementById(`additionalImageInput${index}`)?.click()}
-                        >
-                          <Upload className="mx-auto mb-1 text-muted-foreground" size={16} />
-                          <p className="text-xs text-muted-foreground">Image {index + 1}</p>
+                
+                {/* ✅ Display Existing Images */}
+                {existingImages.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-xs text-muted-foreground mb-2">Existing Images:</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {existingImages.map((url, index) => (
+                        <div key={`existing-${index}`} className="relative">
+                          <div className="border-2 border-green-300 rounded-lg p-2 bg-green-50">
+                            <div className="relative w-full h-16 rounded-lg overflow-hidden border border-green-200">
+                              <img
+                                src={url}
+                                alt={`Existing ${index + 1}`}
+                                className="w-full h-full object-contain"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeExistingImage(url)}
+                                className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 transition-colors"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <input
-                          id={`additionalImageInput${index}`}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleAdditionalImageChange(e, index)}
-                          className="hidden"
-                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-                        {previewUrl && !isDeleted && (
-                          <div className="mt-1 relative w-full h-16 rounded-lg overflow-hidden border border-border">
-                            <img
-                              src={previewUrl}
-                              alt={`Preview ${index + 1}`}
-                              className="w-full h-full object-contain"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveAdditionalImage(index)}
-                              className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 transition-colors"
-                            >
-                              <X size={12} />
-                            </button>
+                {/* ✅ Display New Images */}
+                {newImages.length > 0 && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-2">New Images:</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {newImages.map((img, index) => (
+                        <div key={`new-${index}`} className="relative">
+                          <div className={`border-2 border-dashed border-border rounded-lg p-2 text-center hover:border-primary transition-colors cursor-pointer ${
+                            newImagePreviews[index] ? 'border-primary' : ''
+                          }`}
+                            onClick={() => document.getElementById(`newImageInput${index}`)?.click()}
+                          >
+                            <Upload className="mx-auto mb-1 text-muted-foreground" size={16} />
+                            <p className="text-xs text-muted-foreground">New {index + 1}</p>
                           </div>
-                        )}
+                          <input
+                            id={`newImageInput${index}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleNewImageChange(e, index)}
+                            className="hidden"
+                          />
 
-                        {isDeleted && (
-                          <div className="mt-1 relative w-full h-16 rounded-lg overflow-hidden border border-red-300 bg-red-50 flex items-center justify-center">
-                            <p className="text-xs text-red-500 font-medium">Will be deleted</p>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                          {newImagePreviews[index] && (
+                            <div className="mt-1 relative w-full h-16 rounded-lg overflow-hidden border border-border">
+                              <img
+                                src={newImagePreviews[index]}
+                                alt={`New Preview ${index + 1}`}
+                                className="w-full h-full object-contain"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeNewImage(index)}
+                                className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 transition-colors"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <p className="text-xs text-muted-foreground mt-2">
                   💡 Click "Add Image" to add more images (unlimited)
                 </p>
                 {imagesToDelete.length > 0 && (
                   <p className="text-xs text-red-500 mt-1">
-                    ⚠️ {imagesToDelete.length} image(s) marked for deletion
+                    ⚠️ {imagesToDelete.length} image(s) will be removed
                   </p>
                 )}
               </div>
