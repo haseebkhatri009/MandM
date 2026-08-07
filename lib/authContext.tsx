@@ -3591,6 +3591,698 @@
 
 
 
+// 'use client';
+
+// import React, { createContext, useContext, useEffect, useState } from 'react';
+// import { 
+//   onAuthStateChanged, 
+//   signOut, 
+//   User,
+//   createUserWithEmailAndPassword,
+//   signInWithEmailAndPassword,
+//   signInWithPopup,
+//   GoogleAuthProvider,
+//   updateProfile,
+//   sendPasswordResetEmail,
+//   updatePassword,
+//   reauthenticateWithCredential,
+//   EmailAuthProvider,
+//   confirmPasswordReset,
+//   verifyPasswordResetCode,
+// } from 'firebase/auth';
+// import { auth, rtdb } from './firebase';
+// import { ref, get, set, query, orderByChild, equalTo, update } from 'firebase/database';
+
+// interface UserData {
+//   uid: string;
+//   name: string;
+//   email: string;
+//   phone: string;
+//   password: string;
+//   isAdmin: boolean;
+//   isPhone: boolean;
+//   isEmail: boolean;
+//   createdAt: string;
+//   loginMethod: 'email' | 'phone' | 'google';
+//   passwordReset?: boolean;
+//   passwordResetAt?: string;
+// }
+
+// interface AuthContextType {
+//   user: User | null;
+//   userData: UserData | null;
+//   loading: boolean;
+//   signup: (email: string, password: string, name: string) => Promise<void>;
+//   signupWithPhone: (phone: string, password: string, name: string) => Promise<void>;
+//   login: (email: string, password: string) => Promise<void>;
+//   loginWithPhone: (phone: string, password: string) => Promise<void>;
+//   loginWithGoogle: () => Promise<void>;
+//   logout: () => Promise<void>;
+//   isAdmin: boolean;
+//   resetPassword: (email: string) => Promise<void>;
+//   confirmResetPassword: (code: string, newPassword: string) => Promise<void>;
+//   verifyResetCode: (code: string) => Promise<string>;
+//   changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
+//   changePasswordWithOld: (oldPassword: string, newPassword: string) => Promise<void>;
+//   updateRTDBPasswordAfterReset: (email: string) => Promise<void>;
+//   checkAndUpdateRTDBPassword: (user: User) => Promise<boolean>;
+//   updateRTDBPassword: (uid: string, newPassword: string) => Promise<void>;
+// }
+
+// const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// // ✅ TWO ADMIN EMAILS
+// const ADMIN_EMAILS = [
+//   'abdulhaseebkhatri123@gmail.com',
+//   'haseebkhatri2005@gmail.com'
+// ];
+
+// export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+//   const [user, setUser] = useState<User | null>(null);
+//   const [userData, setUserData] = useState<UserData | null>(null);
+//   const [loading, setLoading] = useState(true);
+
+//   // ✅ Check if email is admin
+//   const isAdminEmail = (email: string | null) => {
+//     if (!email) return false;
+//     return ADMIN_EMAILS.includes(email.toLowerCase());
+//   };
+
+//   useEffect(() => {
+//     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+//       setUser(currentUser);
+      
+//       if (currentUser) {
+//         try {
+//           const userRef = ref(rtdb, `users/${currentUser.uid}`);
+//           const snapshot = await get(userRef);
+          
+//           if (snapshot.exists()) {
+//             const userData = snapshot.val() as UserData;
+//             setUserData(userData);
+//           } else {
+//             const isAdminUser = isAdminEmail(currentUser.email);
+//             const isPhoneUser = currentUser.email?.endsWith('@phone.auth') || false;
+//             const cleanPhone = isPhoneUser ? currentUser.email?.replace('@phone.auth', '') || '' : '';
+            
+//             const defaultUserData: UserData = {
+//               uid: currentUser.uid,
+//               name: currentUser.displayName || '',
+//               email: currentUser.email || '',
+//               phone: cleanPhone || '',
+//               password: '',
+//               isAdmin: isAdminUser,
+//               isPhone: isPhoneUser,
+//               isEmail: !isPhoneUser && !!currentUser.email,
+//               createdAt: new Date().toISOString(),
+//               loginMethod: isPhoneUser ? 'phone' : (currentUser.email ? 'email' : 'google'),
+//               passwordReset: false,
+//             };
+            
+//             await set(userRef, defaultUserData);
+//             setUserData(defaultUserData);
+//           }
+//         } catch (error) {
+//           console.log('[v0] Error fetching user data:', error);
+//         }
+//       } else {
+//         setUserData(null);
+//       }
+      
+//       setLoading(false);
+//     });
+
+//     return unsubscribe;
+//   }, []);
+
+//   // ============== SIGNUP FUNCTIONS ==============
+
+//   const signup = async (email: string, password: string, name: string) => {
+//     try {
+//       // ✅ Try to check email, but if permission denied, continue anyway
+//       try {
+//         const usersRef = ref(rtdb, 'users');
+//         const emailQuery = query(usersRef, orderByChild('email'), equalTo(email));
+//         const snapshot = await get(emailQuery);
+        
+//         if (snapshot.exists()) {
+//           throw new Error('Email already registered');
+//         }
+//       } catch (checkError: any) {
+//         // ✅ If permission denied, just continue (Firebase Auth will handle duplicate emails)
+//         if (checkError.code === 'PERMISSION_DENIED' || 
+//             checkError.message?.includes('permission_denied') ||
+//             checkError.message?.includes('Permission denied')) {
+//           console.log('⚠️ Permission denied while checking email, continuing with signup...');
+//           // Continue with signup - Firebase Auth will handle duplicate emails
+//         } else {
+//           // If it's a real error (like email already exists), throw it
+//           throw checkError;
+//         }
+//       }
+
+//       // ✅ Create user with Firebase Auth
+//       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+//       await updateProfile(userCredential.user, { displayName: name });
+      
+//       const newUserData: UserData = {
+//         uid: userCredential.user.uid,
+//         name: name,
+//         email: email,
+//         phone: '',
+//         password: password,
+//         isAdmin: isAdminEmail(email),
+//         isPhone: false,
+//         isEmail: true,
+//         createdAt: new Date().toISOString(),
+//         loginMethod: 'email',
+//         passwordReset: false,
+//       };
+      
+//       await set(ref(rtdb, `users/${userCredential.user.uid}`), newUserData);
+//       setUserData(newUserData);
+//     } catch (error: any) {
+//       console.error('Signup error:', error);
+      
+//       // ✅ Handle Firebase Auth errors
+//       if (error.code === 'auth/email-already-in-use') {
+//         throw new Error('Email already registered');
+//       } else if (error.code === 'auth/weak-password') {
+//         throw new Error('Password is too weak. Minimum 6 characters.');
+//       } else if (error.code === 'auth/invalid-email') {
+//         throw new Error('Invalid email address');
+//       }
+      
+//       throw error;
+//     }
+//   };
+
+//   const signupWithPhone = async (phone: string, password: string, name: string) => {
+//     try {
+//       // ✅ Try to check phone, but if permission denied, continue anyway
+//       try {
+//         const usersRef = ref(rtdb, 'users');
+//         const phoneQuery = query(usersRef, orderByChild('phone'), equalTo(phone));
+//         const snapshot = await get(phoneQuery);
+        
+//         if (snapshot.exists()) {
+//           throw new Error('Phone number already registered');
+//         }
+//       } catch (checkError: any) {
+//         if (checkError.code === 'PERMISSION_DENIED' || 
+//             checkError.message?.includes('permission_denied') ||
+//             checkError.message?.includes('Permission denied')) {
+//           console.log('⚠️ Permission denied while checking phone, continuing with signup...');
+//         } else {
+//           throw checkError;
+//         }
+//       }
+
+//       const phoneEmail = `${phone}@phone.auth`;
+      
+//       const userCredential = await createUserWithEmailAndPassword(auth, phoneEmail, password);
+//       await updateProfile(userCredential.user, { displayName: name });
+      
+//       const newUserData: UserData = {
+//         uid: userCredential.user.uid,
+//         name: name,
+//         email: '',
+//         phone: phone,
+//         password: password,
+//         isAdmin: false,
+//         isPhone: true,
+//         isEmail: false,
+//         createdAt: new Date().toISOString(),
+//         loginMethod: 'phone',
+//         passwordReset: false,
+//       };
+      
+//       await set(ref(rtdb, `users/${userCredential.user.uid}`), newUserData);
+//       setUserData(newUserData);
+//     } catch (error: any) {
+//       console.error('Phone signup error:', error);
+//       if (error.code === 'auth/email-already-in-use') {
+//         throw new Error('Phone number already registered');
+//       } else if (error.code === 'auth/weak-password') {
+//         throw new Error('Password is too weak. Minimum 6 characters.');
+//       }
+//       throw error;
+//     }
+//   };
+
+//   // ============== LOGIN FUNCTIONS ==============
+
+//   const login = async (email: string, password: string) => {
+//     try {
+//       await signInWithEmailAndPassword(auth, email, password);
+//     } catch (error: any) {
+//       console.error('Login error:', error);
+//       if (error.code === 'auth/user-not-found') {
+//         throw new Error('No account found with this email');
+//       } else if (error.code === 'auth/wrong-password') {
+//         throw new Error('Incorrect password');
+//       } else if (error.code === 'auth/too-many-requests') {
+//         throw new Error('Too many failed attempts. Please try again later');
+//       }
+//       throw error;
+//     }
+//   };
+
+//   const loginWithPhone = async (phone: string, password: string) => {
+//     try {
+//       const phoneEmail = `${phone}@phone.auth`;
+//       await signInWithEmailAndPassword(auth, phoneEmail, password);
+//     } catch (error: any) {
+//       console.error('Phone login error:', error);
+//       if (error.code === 'auth/user-not-found') {
+//         throw new Error('No account found with this phone number');
+//       } else if (error.code === 'auth/wrong-password') {
+//         throw new Error('Incorrect password');
+//       }
+//       throw error;
+//     }
+//   };
+
+//   const loginWithGoogle = async () => {
+//     try {
+//       const provider = new GoogleAuthProvider();
+//       const result = await signInWithPopup(auth, provider);
+//       const userCredential = result.user;
+
+//       const userRef = ref(rtdb, `users/${userCredential.uid}`);
+//       const snapshot = await get(userRef);
+
+//       if (!snapshot.exists()) {
+//         const newUserData: UserData = {
+//           uid: userCredential.uid,
+//           name: userCredential.displayName || '',
+//           email: userCredential.email || '',
+//           phone: '',
+//           password: '',
+//           isAdmin: isAdminEmail(userCredential.email),
+//           isPhone: false,
+//           isEmail: true,
+//           createdAt: new Date().toISOString(),
+//           loginMethod: 'google',
+//           passwordReset: false,
+//         };
+//         await set(userRef, newUserData);
+//         setUserData(newUserData);
+//       }
+//     } catch (error: any) {
+//       console.error('Google login error:', error);
+//       throw error;
+//     }
+//   };
+
+//   // ============== PASSWORD RESET FUNCTIONS ==============
+
+//   const resetPassword = async (email: string) => {
+//     try {
+//       const actionCodeSettings = {
+//         url: `${window.location.origin}/login`,
+//         handleCodeInApp: false,
+//       };
+      
+//       await sendPasswordResetEmail(auth, email, actionCodeSettings);
+//       console.log('✅ Reset email sent to:', email);
+      
+//       try {
+//         const usersRef = ref(rtdb, 'users');
+//         const snapshot = await get(usersRef);
+        
+//         if (snapshot.exists()) {
+//           const data = snapshot.val();
+//           let userUid = null;
+          
+//           Object.keys(data).forEach((key) => {
+//             const userData = data[key];
+//             const userEmail = userData.email || '';
+//             const phoneEmail = `${userData.phone || ''}@phone.auth`;
+            
+//             if (userEmail === email || userEmail === `${email}@phone.auth` || phoneEmail === email) {
+//               userUid = key;
+//               console.log('✅ Found user in RTDB:', key);
+//             }
+//           });
+          
+//           if (userUid) {
+//             await update(ref(rtdb, `users/${userUid}`), {
+//               passwordReset: true,
+//               passwordResetAt: new Date().toISOString(),
+//               updatedAt: new Date().toISOString()
+//             });
+//             console.log('✅✅✅ passwordReset flag set to TRUE for user:', userUid);
+//           } else {
+//             console.warn('⚠️ User NOT found in RTDB for email:', email);
+//           }
+//         }
+//       } catch (err) {
+//         console.error('Error setting passwordReset flag:', err);
+//       }
+      
+//     } catch (error: any) {
+//       console.error('Reset password error:', error);
+//       if (error.code === 'auth/user-not-found') {
+//         throw new Error('No account found with this email address');
+//       } else if (error.code === 'auth/too-many-requests') {
+//         throw new Error('Too many requests. Please try again later');
+//       } else {
+//         throw new Error(error.message || 'Failed to send reset email');
+//       }
+//     }
+//   };
+
+//   const verifyResetCode = async (code: string): Promise<string> => {
+//     try {
+//       const email = await verifyPasswordResetCode(auth, code);
+//       return email;
+//     } catch (error: any) {
+//       console.error('Verify reset code error:', error);
+//       if (error.code === 'auth/expired-action-code') {
+//         throw new Error('Reset link has expired. Please request a new one.');
+//       } else if (error.code === 'auth/invalid-action-code') {
+//         throw new Error('Invalid reset link. Please request a new one.');
+//       } else {
+//         throw new Error(error.message || 'Failed to verify reset code');
+//       }
+//     }
+//   };
+
+//   const confirmResetPassword = async (code: string, newPassword: string) => {
+//     try {
+//       await confirmPasswordReset(auth, code, newPassword);
+      
+//       const email = await verifyPasswordResetCode(auth, code);
+//       console.log('🔍 Email from reset code:', email);
+      
+//       if (email) {
+//         const usersRef = ref(rtdb, 'users');
+//         const snapshot = await get(usersRef);
+        
+//         if (snapshot.exists()) {
+//           const data = snapshot.val();
+//           let userUid = null;
+          
+//           Object.keys(data).forEach((key) => {
+//             const userData = data[key];
+//             const userEmail = userData.email || '';
+//             const phoneEmail = `${userData.phone || ''}@phone.auth`;
+            
+//             if (userEmail === email || userEmail === `${email}@phone.auth` || phoneEmail === email) {
+//               userUid = key;
+//               console.log('✅ Found user in RTDB:', key);
+//             }
+//           });
+          
+//           if (userUid) {
+//             await update(ref(rtdb, `users/${userUid}`), {
+//               password: newPassword,
+//               passwordReset: true,
+//               passwordResetAt: new Date().toISOString(),
+//               updatedAt: new Date().toISOString()
+//             });
+//             console.log('✅ Password updated in RTDB with reset flag for:', email);
+//           } else {
+//             console.warn('⚠️ User NOT found in RTDB for email:', email);
+//           }
+//         }
+//       }
+      
+//       console.log('✅ Password reset successfully');
+//     } catch (error: any) {
+//       console.error('Confirm reset password error:', error);
+//       if (error.code === 'auth/expired-action-code') {
+//         throw new Error('Reset link has expired. Please request a new one.');
+//       } else if (error.code === 'auth/invalid-action-code') {
+//         throw new Error('Invalid reset link. Please request a new one.');
+//       } else if (error.code === 'auth/weak-password') {
+//         throw new Error('Password is too weak. Minimum 6 characters.');
+//       } else {
+//         throw new Error(error.message || 'Failed to reset password');
+//       }
+//     }
+//   };
+
+//   const updateRTDBPasswordAfterReset = async (email: string): Promise<void> => {
+//     try {
+//       const usersRef = ref(rtdb, 'users');
+//       const snapshot = await get(usersRef);
+      
+//       if (snapshot.exists()) {
+//         const data = snapshot.val();
+//         let userUid = null;
+        
+//         Object.keys(data).forEach((key) => {
+//           const userData = data[key];
+//           if (userData.email === email || userData.email === `${email}@phone.auth`) {
+//             userUid = key;
+//           }
+//         });
+        
+//         if (userUid) {
+//           await update(ref(rtdb, `users/${userUid}`), {
+//             passwordReset: true,
+//             passwordResetAt: new Date().toISOString(),
+//             updatedAt: new Date().toISOString()
+//           });
+//           console.log('✅ Password reset flag set in RTDB for:', email);
+//         }
+//       }
+//     } catch (error) {
+//       console.error('RTDB update error:', error);
+//     }
+//   };
+
+//   const updateRTDBPasswordByEmail = async (email: string, newPassword: string, setResetFlag: boolean = false) => {
+//     try {
+//       const usersRef = ref(rtdb, 'users');
+//       const snapshot = await get(usersRef);
+      
+//       if (snapshot.exists()) {
+//         const data = snapshot.val();
+//         let userUid = null;
+        
+//         Object.keys(data).forEach((key) => {
+//           const userData = data[key];
+//           const userEmail = userData.email || '';
+//           const phoneEmail = `${userData.phone || ''}@phone.auth`;
+          
+//           if (userEmail === email || userEmail === `${email}@phone.auth` || phoneEmail === email) {
+//             userUid = key;
+//           }
+//         });
+        
+//         if (userUid) {
+//           const updateData: any = {
+//             password: newPassword,
+//             updatedAt: new Date().toISOString()
+//           };
+          
+//           if (setResetFlag) {
+//             updateData.passwordReset = true;
+//           }
+          
+//           await update(ref(rtdb, `users/${userUid}`), updateData);
+//           console.log('✅ Password updated in RTDB for:', email);
+//         } else {
+//           console.warn('⚠️ User not found in RTDB, only Firebase Auth updated');
+//         }
+//       }
+//     } catch (error) {
+//       console.error('RTDB update error:', error);
+//     }
+//   };
+
+//   // ============== CHECK RTDB PASSWORD ==============
+
+//   const checkAndUpdateRTDBPassword = async (user: User): Promise<boolean> => {
+//     try {
+//       const userRef = ref(rtdb, `users/${user.uid}`);
+//       const snapshot = await get(userRef);
+      
+//       if (snapshot.exists()) {
+//         const userData = snapshot.val();
+//         console.log('🔍 RTDB Data:', { 
+//           password: userData.password ? '✅ exists' : '❌ missing',
+//           passwordReset: userData.passwordReset,
+//           email: userData.email,
+//           uid: user.uid
+//         });
+        
+//         if (userData.passwordReset === true || !userData.password || userData.password === '') {
+//           console.log('⚠️ Password reset required (flag or missing password)');
+//           return true;
+//         }
+//         return false;
+//       }
+      
+//       console.log('⚠️ User not found in RTDB');
+//       return true;
+      
+//     } catch (error) {
+//       console.error('Error checking RTDB password:', error);
+//       return true;
+//     }
+//   };
+
+//   // ============== UPDATE RTDB PASSWORD ==============
+
+//   const updateRTDBPassword = async (uid: string, newPassword: string): Promise<void> => {
+//     try {
+//       const userRef = ref(rtdb, `users/${uid}`);
+//       const snapshot = await get(userRef);
+      
+//       if (snapshot.exists()) {
+//         await update(userRef, {
+//           password: newPassword,
+//           passwordReset: false,
+//           updatedAt: new Date().toISOString()
+//         });
+//         console.log('✅ RTDB password updated for user:', uid);
+//       } else {
+//         await set(userRef, {
+//           uid: uid,
+//           password: newPassword,
+//           passwordReset: false,
+//           createdAt: new Date().toISOString(),
+//           updatedAt: new Date().toISOString()
+//         });
+//         console.log('✅ New user created in RTDB with password:', uid);
+//       }
+//     } catch (error) {
+//       console.error('Error updating RTDB password:', error);
+//       throw error;
+//     }
+//   };
+
+//   // ============== CHANGE PASSWORD WITH OLD ==============
+
+//   const changePasswordWithOld = async (oldPassword: string, newPassword: string) => {
+//     try {
+//       if (!user || !user.email) {
+//         throw new Error('No user logged in');
+//       }
+
+//       const credential = EmailAuthProvider.credential(user.email, oldPassword);
+//       await reauthenticateWithCredential(user, credential);
+      
+//       await updatePassword(user, newPassword);
+      
+//       const userRef = ref(rtdb, `users/${user.uid}`);
+//       await update(userRef, { 
+//         password: newPassword,
+//         passwordReset: false,
+//         updatedAt: new Date().toISOString()
+//       });
+      
+//       console.log('✅ Password changed successfully in both Auth and RTDB');
+//     } catch (error: any) {
+//       console.error('Change password error:', error);
+//       if (error.code === 'auth/wrong-password') {
+//         throw new Error('Current password is incorrect');
+//       } else if (error.code === 'auth/requires-recent-login') {
+//         throw new Error('Please login again to change password');
+//       } else if (error.code === 'auth/weak-password') {
+//         throw new Error('Password is too weak. Minimum 6 characters.');
+//       } else {
+//         throw new Error(error.message || 'Failed to change password');
+//       }
+//     }
+//   };
+
+//   // ============== CHANGE PASSWORD ==============
+
+//   const changePassword = async (oldPassword: string, newPassword: string) => {
+//     try {
+//       if (!user || !user.email) {
+//         throw new Error('No user logged in');
+//       }
+
+//       const credential = EmailAuthProvider.credential(user.email, oldPassword);
+//       await reauthenticateWithCredential(user, credential);
+      
+//       await updatePassword(user, newPassword);
+      
+//       const userRef = ref(rtdb, `users/${user.uid}`);
+//       await update(userRef, { 
+//         password: newPassword,
+//         passwordReset: false,
+//         updatedAt: new Date().toISOString()
+//       });
+      
+//       console.log('✅ Password changed successfully');
+//     } catch (error: any) {
+//       console.error('Change password error:', error);
+//       if (error.code === 'auth/wrong-password') {
+//         throw new Error('Current password is incorrect');
+//       } else if (error.code === 'auth/requires-recent-login') {
+//         throw new Error('Please login again to change password');
+//       } else if (error.code === 'auth/weak-password') {
+//         throw new Error('Password is too weak. Minimum 6 characters.');
+//       } else {
+//         throw new Error(error.message || 'Failed to change password');
+//       }
+//     }
+//   };
+
+//   // ============== LOGOUT ==============
+
+//   const logout = async () => {
+//     try {
+//       await signOut(auth);
+//       setUserData(null);
+//     } catch (error) {
+//       console.error('Logout error:', error);
+//       throw error;
+//     }
+//   };
+
+//   // ============== EXPORT VALUE ==============
+
+//   const isAdminValue = userData?.isAdmin || false;
+  
+//   const value: AuthContextType = {
+//     user,
+//     userData,
+//     loading,
+//     signup,
+//     signupWithPhone,
+//     login,
+//     loginWithPhone,
+//     loginWithGoogle,
+//     logout,
+//     isAdmin: isAdminValue,
+//     resetPassword,
+//     confirmResetPassword,
+//     verifyResetCode,
+//     changePassword,
+//     changePasswordWithOld,
+//     updateRTDBPasswordAfterReset,
+//     checkAndUpdateRTDBPassword,
+//     updateRTDBPassword,
+//   };
+  
+//   return (
+//     <AuthContext.Provider value={value}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+// export const useAuth = () => {
+//   const context = useContext(AuthContext);
+//   if (!context) {
+//     throw new Error('useAuth must be used within an AuthProvider');
+//   }
+//   return context;
+// };
+
+
+
+
+//logged out scene
+
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -3598,60 +4290,42 @@ import {
   onAuthStateChanged, 
   signOut, 
   User,
-  createUserWithEmailAndPassword,
+  signInWithCustomToken,
   signInWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-  updateProfile,
-  sendPasswordResetEmail,
-  updatePassword,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-  confirmPasswordReset,
-  verifyPasswordResetCode,
 } from 'firebase/auth';
 import { auth, rtdb } from './firebase';
-import { ref, get, set, query, orderByChild, equalTo, update } from 'firebase/database';
+import { ref, get, set, update } from 'firebase/database';
 
 interface UserData {
   uid: string;
   name: string;
   email: string;
   phone: string;
-  password: string;
-  isAdmin: boolean;
-  isPhone: boolean;
-  isEmail: boolean;
+  isGuest: boolean;
+  isAdmin?: boolean;
   createdAt: string;
-  loginMethod: 'email' | 'phone' | 'google';
+  lastOrderAt?: string;
+  password?: string;
   passwordReset?: boolean;
-  passwordResetAt?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   userData: UserData | null;
   loading: boolean;
-  signup: (email: string, password: string, name: string) => Promise<void>;
-  signupWithPhone: (phone: string, password: string, name: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
-  loginWithPhone: (phone: string, password: string) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
+  loginWithToken: (token: string) => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  setUser: (user: User | null) => void;
+  isAuthenticated: boolean;
   isAdmin: boolean;
-  resetPassword: (email: string) => Promise<void>;
-  confirmResetPassword: (code: string, newPassword: string) => Promise<void>;
-  verifyResetCode: (code: string) => Promise<string>;
-  changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
-  changePasswordWithOld: (oldPassword: string, newPassword: string) => Promise<void>;
-  updateRTDBPasswordAfterReset: (email: string) => Promise<void>;
   checkAndUpdateRTDBPassword: (user: User) => Promise<boolean>;
   updateRTDBPassword: (uid: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ✅ TWO ADMIN EMAILS
+// ✅ Admin emails
 const ADMIN_EMAILS = [
   'abdulhaseebkhatri123@gmail.com',
   'haseebkhatri2005@gmail.com'
@@ -3662,12 +4336,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Check if email is admin
-  const isAdminEmail = (email: string | null) => {
-    if (!email) return false;
-    return ADMIN_EMAILS.includes(email.toLowerCase());
-  };
-
+  // ✅ Listen to auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
@@ -3678,32 +4347,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const snapshot = await get(userRef);
           
           if (snapshot.exists()) {
-            const userData = snapshot.val() as UserData;
-            setUserData(userData);
+            const data = snapshot.val() as UserData;
+            setUserData(data);
           } else {
-            const isAdminUser = isAdminEmail(currentUser.email);
-            const isPhoneUser = currentUser.email?.endsWith('@phone.auth') || false;
-            const cleanPhone = isPhoneUser ? currentUser.email?.replace('@phone.auth', '') || '' : '';
-            
+            // ✅ Create minimal user data if missing
+            const isAdminUser = ADMIN_EMAILS.includes(currentUser.email?.toLowerCase() || '');
             const defaultUserData: UserData = {
               uid: currentUser.uid,
-              name: currentUser.displayName || '',
+              name: currentUser.displayName || 'Guest',
               email: currentUser.email || '',
-              phone: cleanPhone || '',
-              password: '',
+              phone: '',
+              isGuest: true,
               isAdmin: isAdminUser,
-              isPhone: isPhoneUser,
-              isEmail: !isPhoneUser && !!currentUser.email,
               createdAt: new Date().toISOString(),
-              loginMethod: isPhoneUser ? 'phone' : (currentUser.email ? 'email' : 'google'),
               passwordReset: false,
             };
-            
             await set(userRef, defaultUserData);
             setUserData(defaultUserData);
           }
         } catch (error) {
-          console.log('[v0] Error fetching user data:', error);
+          console.error('Error fetching user data:', error);
         }
       } else {
         setUserData(null);
@@ -3715,387 +4378,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return unsubscribe;
   }, []);
 
-  // ============== SIGNUP FUNCTIONS ==============
-
-  const signup = async (email: string, password: string, name: string) => {
+  // ✅ Login with custom token (from auto-signup)
+  const loginWithToken = async (customToken: string) => {
     try {
-      // ✅ Try to check email, but if permission denied, continue anyway
-      try {
-        const usersRef = ref(rtdb, 'users');
-        const emailQuery = query(usersRef, orderByChild('email'), equalTo(email));
-        const snapshot = await get(emailQuery);
-        
-        if (snapshot.exists()) {
-          throw new Error('Email already registered');
-        }
-      } catch (checkError: any) {
-        // ✅ If permission denied, just continue (Firebase Auth will handle duplicate emails)
-        if (checkError.code === 'PERMISSION_DENIED' || 
-            checkError.message?.includes('permission_denied') ||
-            checkError.message?.includes('Permission denied')) {
-          console.log('⚠️ Permission denied while checking email, continuing with signup...');
-          // Continue with signup - Firebase Auth will handle duplicate emails
-        } else {
-          // If it's a real error (like email already exists), throw it
-          throw checkError;
-        }
-      }
-
-      // ✅ Create user with Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: name });
+      const userCredential = await signInWithCustomToken(auth, customToken);
+      setUser(userCredential.user);
       
-      const newUserData: UserData = {
-        uid: userCredential.user.uid,
-        name: name,
-        email: email,
-        phone: '',
-        password: password,
-        isAdmin: isAdminEmail(email),
-        isPhone: false,
-        isEmail: true,
-        createdAt: new Date().toISOString(),
-        loginMethod: 'email',
-        passwordReset: false,
-      };
-      
-      await set(ref(rtdb, `users/${userCredential.user.uid}`), newUserData);
-      setUserData(newUserData);
-    } catch (error: any) {
-      console.error('Signup error:', error);
-      
-      // ✅ Handle Firebase Auth errors
-      if (error.code === 'auth/email-already-in-use') {
-        throw new Error('Email already registered');
-      } else if (error.code === 'auth/weak-password') {
-        throw new Error('Password is too weak. Minimum 6 characters.');
-      } else if (error.code === 'auth/invalid-email') {
-        throw new Error('Invalid email address');
-      }
-      
-      throw error;
-    }
-  };
-
-  const signupWithPhone = async (phone: string, password: string, name: string) => {
-    try {
-      // ✅ Try to check phone, but if permission denied, continue anyway
-      try {
-        const usersRef = ref(rtdb, 'users');
-        const phoneQuery = query(usersRef, orderByChild('phone'), equalTo(phone));
-        const snapshot = await get(phoneQuery);
-        
-        if (snapshot.exists()) {
-          throw new Error('Phone number already registered');
-        }
-      } catch (checkError: any) {
-        if (checkError.code === 'PERMISSION_DENIED' || 
-            checkError.message?.includes('permission_denied') ||
-            checkError.message?.includes('Permission denied')) {
-          console.log('⚠️ Permission denied while checking phone, continuing with signup...');
-        } else {
-          throw checkError;
-        }
-      }
-
-      const phoneEmail = `${phone}@phone.auth`;
-      
-      const userCredential = await createUserWithEmailAndPassword(auth, phoneEmail, password);
-      await updateProfile(userCredential.user, { displayName: name });
-      
-      const newUserData: UserData = {
-        uid: userCredential.user.uid,
-        name: name,
-        email: '',
-        phone: phone,
-        password: password,
-        isAdmin: false,
-        isPhone: true,
-        isEmail: false,
-        createdAt: new Date().toISOString(),
-        loginMethod: 'phone',
-        passwordReset: false,
-      };
-      
-      await set(ref(rtdb, `users/${userCredential.user.uid}`), newUserData);
-      setUserData(newUserData);
-    } catch (error: any) {
-      console.error('Phone signup error:', error);
-      if (error.code === 'auth/email-already-in-use') {
-        throw new Error('Phone number already registered');
-      } else if (error.code === 'auth/weak-password') {
-        throw new Error('Password is too weak. Minimum 6 characters.');
-      }
-      throw error;
-    }
-  };
-
-  // ============== LOGIN FUNCTIONS ==============
-
-  const login = async (email: string, password: string) => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error: any) {
-      console.error('Login error:', error);
-      if (error.code === 'auth/user-not-found') {
-        throw new Error('No account found with this email');
-      } else if (error.code === 'auth/wrong-password') {
-        throw new Error('Incorrect password');
-      } else if (error.code === 'auth/too-many-requests') {
-        throw new Error('Too many failed attempts. Please try again later');
-      }
-      throw error;
-    }
-  };
-
-  const loginWithPhone = async (phone: string, password: string) => {
-    try {
-      const phoneEmail = `${phone}@phone.auth`;
-      await signInWithEmailAndPassword(auth, phoneEmail, password);
-    } catch (error: any) {
-      console.error('Phone login error:', error);
-      if (error.code === 'auth/user-not-found') {
-        throw new Error('No account found with this phone number');
-      } else if (error.code === 'auth/wrong-password') {
-        throw new Error('Incorrect password');
-      }
-      throw error;
-    }
-  };
-
-  const loginWithGoogle = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const userCredential = result.user;
-
-      const userRef = ref(rtdb, `users/${userCredential.uid}`);
+      // ✅ Fetch or create user data
+      const userRef = ref(rtdb, `users/${userCredential.user.uid}`);
       const snapshot = await get(userRef);
-
-      if (!snapshot.exists()) {
+      
+      if (snapshot.exists()) {
+        setUserData(snapshot.val() as UserData);
+      } else {
+        const isAdminUser = ADMIN_EMAILS.includes(userCredential.user.email?.toLowerCase() || '');
         const newUserData: UserData = {
-          uid: userCredential.uid,
-          name: userCredential.displayName || '',
-          email: userCredential.email || '',
+          uid: userCredential.user.uid,
+          name: userCredential.user.displayName || 'Guest',
+          email: userCredential.user.email || '',
           phone: '',
-          password: '',
-          isAdmin: isAdminEmail(userCredential.email),
-          isPhone: false,
-          isEmail: true,
+          isGuest: true,
+          isAdmin: isAdminUser,
           createdAt: new Date().toISOString(),
-          loginMethod: 'google',
           passwordReset: false,
         };
         await set(userRef, newUserData);
         setUserData(newUserData);
       }
-    } catch (error: any) {
-      console.error('Google login error:', error);
+    } catch (error) {
+      console.error('Login with token error:', error);
       throw error;
     }
   };
 
-  // ============== PASSWORD RESET FUNCTIONS ==============
-
-  const resetPassword = async (email: string) => {
+  // ✅ Login with email/password (for admin)
+  const loginWithEmail = async (email: string, password: string) => {
     try {
-      const actionCodeSettings = {
-        url: `${window.location.origin}/login`,
-        handleCodeInApp: false,
-      };
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      setUser(userCredential.user);
       
-      await sendPasswordResetEmail(auth, email, actionCodeSettings);
-      console.log('✅ Reset email sent to:', email);
-      
-      try {
-        const usersRef = ref(rtdb, 'users');
-        const snapshot = await get(usersRef);
-        
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          let userUid = null;
-          
-          Object.keys(data).forEach((key) => {
-            const userData = data[key];
-            const userEmail = userData.email || '';
-            const phoneEmail = `${userData.phone || ''}@phone.auth`;
-            
-            if (userEmail === email || userEmail === `${email}@phone.auth` || phoneEmail === email) {
-              userUid = key;
-              console.log('✅ Found user in RTDB:', key);
-            }
-          });
-          
-          if (userUid) {
-            await update(ref(rtdb, `users/${userUid}`), {
-              passwordReset: true,
-              passwordResetAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
-            });
-            console.log('✅✅✅ passwordReset flag set to TRUE for user:', userUid);
-          } else {
-            console.warn('⚠️ User NOT found in RTDB for email:', email);
-          }
-        }
-      } catch (err) {
-        console.error('Error setting passwordReset flag:', err);
-      }
-      
-    } catch (error: any) {
-      console.error('Reset password error:', error);
-      if (error.code === 'auth/user-not-found') {
-        throw new Error('No account found with this email address');
-      } else if (error.code === 'auth/too-many-requests') {
-        throw new Error('Too many requests. Please try again later');
-      } else {
-        throw new Error(error.message || 'Failed to send reset email');
-      }
-    }
-  };
-
-  const verifyResetCode = async (code: string): Promise<string> => {
-    try {
-      const email = await verifyPasswordResetCode(auth, code);
-      return email;
-    } catch (error: any) {
-      console.error('Verify reset code error:', error);
-      if (error.code === 'auth/expired-action-code') {
-        throw new Error('Reset link has expired. Please request a new one.');
-      } else if (error.code === 'auth/invalid-action-code') {
-        throw new Error('Invalid reset link. Please request a new one.');
-      } else {
-        throw new Error(error.message || 'Failed to verify reset code');
-      }
-    }
-  };
-
-  const confirmResetPassword = async (code: string, newPassword: string) => {
-    try {
-      await confirmPasswordReset(auth, code, newPassword);
-      
-      const email = await verifyPasswordResetCode(auth, code);
-      console.log('🔍 Email from reset code:', email);
-      
-      if (email) {
-        const usersRef = ref(rtdb, 'users');
-        const snapshot = await get(usersRef);
-        
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          let userUid = null;
-          
-          Object.keys(data).forEach((key) => {
-            const userData = data[key];
-            const userEmail = userData.email || '';
-            const phoneEmail = `${userData.phone || ''}@phone.auth`;
-            
-            if (userEmail === email || userEmail === `${email}@phone.auth` || phoneEmail === email) {
-              userUid = key;
-              console.log('✅ Found user in RTDB:', key);
-            }
-          });
-          
-          if (userUid) {
-            await update(ref(rtdb, `users/${userUid}`), {
-              password: newPassword,
-              passwordReset: true,
-              passwordResetAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
-            });
-            console.log('✅ Password updated in RTDB with reset flag for:', email);
-          } else {
-            console.warn('⚠️ User NOT found in RTDB for email:', email);
-          }
-        }
-      }
-      
-      console.log('✅ Password reset successfully');
-    } catch (error: any) {
-      console.error('Confirm reset password error:', error);
-      if (error.code === 'auth/expired-action-code') {
-        throw new Error('Reset link has expired. Please request a new one.');
-      } else if (error.code === 'auth/invalid-action-code') {
-        throw new Error('Invalid reset link. Please request a new one.');
-      } else if (error.code === 'auth/weak-password') {
-        throw new Error('Password is too weak. Minimum 6 characters.');
-      } else {
-        throw new Error(error.message || 'Failed to reset password');
-      }
-    }
-  };
-
-  const updateRTDBPasswordAfterReset = async (email: string): Promise<void> => {
-    try {
-      const usersRef = ref(rtdb, 'users');
-      const snapshot = await get(usersRef);
-      
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        let userUid = null;
-        
-        Object.keys(data).forEach((key) => {
-          const userData = data[key];
-          if (userData.email === email || userData.email === `${email}@phone.auth`) {
-            userUid = key;
-          }
+      // ✅ Update admin flag if needed
+      const isAdminUser = ADMIN_EMAILS.includes(email.toLowerCase());
+      if (isAdminUser) {
+        const userRef = ref(rtdb, `users/${userCredential.user.uid}`);
+        await update(userRef, {
+          isAdmin: true,
+          lastLogin: new Date().toISOString()
         });
-        
-        if (userUid) {
-          await update(ref(rtdb, `users/${userUid}`), {
-            passwordReset: true,
-            passwordResetAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          });
-          console.log('✅ Password reset flag set in RTDB for:', email);
-        }
       }
-    } catch (error) {
-      console.error('RTDB update error:', error);
-    }
-  };
-
-  const updateRTDBPasswordByEmail = async (email: string, newPassword: string, setResetFlag: boolean = false) => {
-    try {
-      const usersRef = ref(rtdb, 'users');
-      const snapshot = await get(usersRef);
       
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        let userUid = null;
-        
-        Object.keys(data).forEach((key) => {
-          const userData = data[key];
-          const userEmail = userData.email || '';
-          const phoneEmail = `${userData.phone || ''}@phone.auth`;
-          
-          if (userEmail === email || userEmail === `${email}@phone.auth` || phoneEmail === email) {
-            userUid = key;
-          }
-        });
-        
-        if (userUid) {
-          const updateData: any = {
-            password: newPassword,
-            updatedAt: new Date().toISOString()
-          };
-          
-          if (setResetFlag) {
-            updateData.passwordReset = true;
-          }
-          
-          await update(ref(rtdb, `users/${userUid}`), updateData);
-          console.log('✅ Password updated in RTDB for:', email);
-        } else {
-          console.warn('⚠️ User not found in RTDB, only Firebase Auth updated');
-        }
-      }
+      return userCredential.user;
     } catch (error) {
-      console.error('RTDB update error:', error);
+      console.error('Login with email error:', error);
+      throw error;
     }
   };
 
-  // ============== CHECK RTDB PASSWORD ==============
-
+  // ✅ Check RTDB password and reset flag
   const checkAndUpdateRTDBPassword = async (user: User): Promise<boolean> => {
     try {
       const userRef = ref(rtdb, `users/${user.uid}`);
@@ -4103,166 +4442,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (snapshot.exists()) {
         const userData = snapshot.val();
-        console.log('🔍 RTDB Data:', { 
-          password: userData.password ? '✅ exists' : '❌ missing',
-          passwordReset: userData.passwordReset,
-          email: userData.email,
-          uid: user.uid
-        });
-        
+        // ✅ Check if password reset is needed
         if (userData.passwordReset === true || !userData.password || userData.password === '') {
-          console.log('⚠️ Password reset required (flag or missing password)');
           return true;
         }
         return false;
       }
-      
-      console.log('⚠️ User not found in RTDB');
       return true;
-      
     } catch (error) {
       console.error('Error checking RTDB password:', error);
       return true;
     }
   };
 
-  // ============== UPDATE RTDB PASSWORD ==============
-
+  // ✅ Update RTDB password
   const updateRTDBPassword = async (uid: string, newPassword: string): Promise<void> => {
     try {
       const userRef = ref(rtdb, `users/${uid}`);
-      const snapshot = await get(userRef);
-      
-      if (snapshot.exists()) {
-        await update(userRef, {
-          password: newPassword,
-          passwordReset: false,
-          updatedAt: new Date().toISOString()
-        });
-        console.log('✅ RTDB password updated for user:', uid);
-      } else {
-        await set(userRef, {
-          uid: uid,
-          password: newPassword,
-          passwordReset: false,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        });
-        console.log('✅ New user created in RTDB with password:', uid);
-      }
+      await update(userRef, {
+        password: newPassword,
+        passwordReset: false,
+        updatedAt: new Date().toISOString()
+      });
+      console.log('✅ RTDB password updated for user:', uid);
     } catch (error) {
       console.error('Error updating RTDB password:', error);
       throw error;
     }
   };
 
-  // ============== CHANGE PASSWORD WITH OLD ==============
-
-  const changePasswordWithOld = async (oldPassword: string, newPassword: string) => {
-    try {
-      if (!user || !user.email) {
-        throw new Error('No user logged in');
-      }
-
-      const credential = EmailAuthProvider.credential(user.email, oldPassword);
-      await reauthenticateWithCredential(user, credential);
-      
-      await updatePassword(user, newPassword);
-      
-      const userRef = ref(rtdb, `users/${user.uid}`);
-      await update(userRef, { 
-        password: newPassword,
-        passwordReset: false,
-        updatedAt: new Date().toISOString()
-      });
-      
-      console.log('✅ Password changed successfully in both Auth and RTDB');
-    } catch (error: any) {
-      console.error('Change password error:', error);
-      if (error.code === 'auth/wrong-password') {
-        throw new Error('Current password is incorrect');
-      } else if (error.code === 'auth/requires-recent-login') {
-        throw new Error('Please login again to change password');
-      } else if (error.code === 'auth/weak-password') {
-        throw new Error('Password is too weak. Minimum 6 characters.');
-      } else {
-        throw new Error(error.message || 'Failed to change password');
-      }
-    }
-  };
-
-  // ============== CHANGE PASSWORD ==============
-
-  const changePassword = async (oldPassword: string, newPassword: string) => {
-    try {
-      if (!user || !user.email) {
-        throw new Error('No user logged in');
-      }
-
-      const credential = EmailAuthProvider.credential(user.email, oldPassword);
-      await reauthenticateWithCredential(user, credential);
-      
-      await updatePassword(user, newPassword);
-      
-      const userRef = ref(rtdb, `users/${user.uid}`);
-      await update(userRef, { 
-        password: newPassword,
-        passwordReset: false,
-        updatedAt: new Date().toISOString()
-      });
-      
-      console.log('✅ Password changed successfully');
-    } catch (error: any) {
-      console.error('Change password error:', error);
-      if (error.code === 'auth/wrong-password') {
-        throw new Error('Current password is incorrect');
-      } else if (error.code === 'auth/requires-recent-login') {
-        throw new Error('Please login again to change password');
-      } else if (error.code === 'auth/weak-password') {
-        throw new Error('Password is too weak. Minimum 6 characters.');
-      } else {
-        throw new Error(error.message || 'Failed to change password');
-      }
-    }
-  };
-
-  // ============== LOGOUT ==============
-
+  // ✅ Logout
   const logout = async () => {
     try {
       await signOut(auth);
+      setUser(null);
       setUserData(null);
     } catch (error) {
       console.error('Logout error:', error);
-      throw error;
     }
   };
 
-  // ============== EXPORT VALUE ==============
-
-  const isAdminValue = userData?.isAdmin || false;
+  // ✅ Check if user is authenticated
+  const isAuthenticated = !!user;
   
+  // ✅ Check if user is admin
+  const isAdmin = userData?.isAdmin || ADMIN_EMAILS.includes(user?.email?.toLowerCase() || '');
+
   const value: AuthContextType = {
     user,
     userData,
     loading,
-    signup,
-    signupWithPhone,
-    login,
-    loginWithPhone,
-    loginWithGoogle,
+    loginWithToken,
+    loginWithEmail,
     logout,
-    isAdmin: isAdminValue,
-    resetPassword,
-    confirmResetPassword,
-    verifyResetCode,
-    changePassword,
-    changePasswordWithOld,
-    updateRTDBPasswordAfterReset,
+    setUser,
+    isAuthenticated,
+    isAdmin,
     checkAndUpdateRTDBPassword,
     updateRTDBPassword,
   };
-  
+
   return (
     <AuthContext.Provider value={value}>
       {children}

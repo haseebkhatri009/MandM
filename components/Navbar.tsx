@@ -1881,175 +1881,499 @@
 
 //loggedout user cart icon not show
 
+// 'use client';
+
+// import Link from 'next/link';
+// import { useRouter, usePathname } from 'next/navigation';
+// import { useAuth } from '@/lib/authContext';
+// import { useCart } from '@/lib/cartContext';
+// import { ShoppingCart, Menu, X, User, MessageCircle } from 'lucide-react';
+// import { useState, useEffect } from 'react';
+// import { motion, AnimatePresence } from 'framer-motion';
+// import { rtdb } from '@/lib/firebase';
+// import { ref, onValue } from 'firebase/database';
+
+// export default function Navbar() {
+//   const { user, isAdmin, logout } = useAuth();
+//   const { cartItems } = useCart();
+//   const router = useRouter();
+//   const pathname = usePathname();
+//   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+//   const [newOrderCount, setNewOrderCount] = useState(0);
+//   const [totalOrders, setTotalOrders] = useState(0);
+//   const [lastSeenOrderCount, setLastSeenOrderCount] = useState(0);
+  
+//   // ✅ Support Unread Count
+//   const [unreadSupportCount, setUnreadSupportCount] = useState(0);
+//   const [lastSeenSupportCount, setLastSeenSupportCount] = useState(0);
+//   const [totalSupportMessages, setTotalSupportMessages] = useState(0);
+
+//   // Get the number of unique products (types) in cart
+//   const uniqueProductCount = cartItems.length;
+
+//   // ✅ Load last seen order count from localStorage
+//   useEffect(() => {
+//     if (typeof window !== 'undefined' && isAdmin) {
+//       const saved = localStorage.getItem('adminLastSeenOrders');
+//       if (saved) {
+//         const parsed = parseInt(saved);
+//         setLastSeenOrderCount(parsed);
+//         if (totalOrders > parsed) {
+//           setNewOrderCount(totalOrders - parsed);
+//         }
+//       }
+//     }
+//   }, [isAdmin, totalOrders]);
+
+//   // ✅ Load last seen support count from localStorage
+//   useEffect(() => {
+//     if (typeof window !== 'undefined' && isAdmin) {
+//       const saved = localStorage.getItem('adminLastSeenSupport');
+//       if (saved) {
+//         const parsed = parseInt(saved);
+//         setLastSeenSupportCount(parsed);
+//         if (totalSupportMessages > parsed) {
+//           setUnreadSupportCount(totalSupportMessages - parsed);
+//         }
+//       }
+//     }
+//   }, [isAdmin, totalSupportMessages]);
+
+//   // ✅ Listen for new orders
+//   useEffect(() => {
+//     if (!isAdmin) return;
+
+//     const ordersRef = ref(rtdb, 'orders');
+//     const unsubscribe = onValue(ordersRef, (snapshot) => {
+//       if (snapshot.exists()) {
+//         const data = snapshot.val();
+//         const orderIds = Object.keys(data);
+//         const total = orderIds.length;
+//         setTotalOrders(total);
+        
+//         if (lastSeenOrderCount > 0 && total > lastSeenOrderCount) {
+//           const newOrders = total - lastSeenOrderCount;
+//           setNewOrderCount(prev => prev + newOrders);
+//         } else if (lastSeenOrderCount === 0) {
+//           setLastSeenOrderCount(total);
+//           localStorage.setItem('adminLastSeenOrders', total.toString());
+//           setNewOrderCount(0);
+//         }
+//       } else {
+//         setTotalOrders(0);
+//         setNewOrderCount(0);
+//       }
+//     });
+
+//     return () => unsubscribe();
+//   }, [isAdmin, lastSeenOrderCount]);
+
+//   // ✅ Listen for unread support messages
+//   useEffect(() => {
+//     if (!isAdmin) return;
+
+//     const supportRef = ref(rtdb, 'all_messages');
+//     const unsubscribe = onValue(supportRef, (snapshot) => {
+//       if (snapshot.exists()) {
+//         const data = snapshot.val();
+//         const messages = Object.values(data);
+//         const unread = messages.filter((msg: any) => !msg.isAdmin && !msg.isRead).length;
+//         const total = messages.length;
+        
+//         setTotalSupportMessages(total);
+//         setUnreadSupportCount(unread);
+        
+//         if (lastSeenSupportCount === 0) {
+//           setLastSeenSupportCount(total);
+//           localStorage.setItem('adminLastSeenSupport', total.toString());
+//           setUnreadSupportCount(0);
+//         }
+//       } else {
+//         setTotalSupportMessages(0);
+//         setUnreadSupportCount(0);
+//       }
+//     });
+
+//     return () => unsubscribe();
+//   }, [isAdmin, lastSeenSupportCount]);
+
+//   // ✅ Mark orders as seen when admin visits admin page
+//   useEffect(() => {
+//     if (isAdmin && pathname === '/admin' && totalOrders > 0) {
+//       setLastSeenOrderCount(totalOrders);
+//       localStorage.setItem('adminLastSeenOrders', totalOrders.toString());
+//       setNewOrderCount(0);
+//     }
+//   }, [isAdmin, pathname, totalOrders]);
+
+//   // ✅ Mark support as seen when admin visits support page
+//   useEffect(() => {
+//     if (isAdmin && pathname === '/admin/support' && totalSupportMessages > 0) {
+//       setLastSeenSupportCount(totalSupportMessages);
+//       localStorage.setItem('adminLastSeenSupport', totalSupportMessages.toString());
+//       setUnreadSupportCount(0);
+//     }
+//   }, [isAdmin, pathname, totalSupportMessages]);
+
+//   // ✅ Mark as seen when admin clicks on admin button (navigation)
+//   const handleAdminClick = () => {
+//     if (totalOrders > 0) {
+//       setLastSeenOrderCount(totalOrders);
+//       localStorage.setItem('adminLastSeenOrders', totalOrders.toString());
+//       setNewOrderCount(0);
+//     }
+//     setMobileMenuOpen(false);
+//     router.push('/admin');
+//   };
+
+//   // ✅ Handle support button click
+//   const handleSupportClick = () => {
+//     if (totalSupportMessages > 0) {
+//       setLastSeenSupportCount(totalSupportMessages);
+//       localStorage.setItem('adminLastSeenSupport', totalSupportMessages.toString());
+//       setUnreadSupportCount(0);
+//     }
+//     setMobileMenuOpen(false);
+//     router.push('/admin/support');
+//   };
+
+//   const handleLogout = async () => {
+//     try {
+//       await logout();
+//       router.push('/');
+//       setMobileMenuOpen(false);
+//     } catch (error) {
+//       console.error('Logout failed:', error);
+//     }
+//   };
+
+//   return (
+//     <>
+//       <nav className="sticky top-0 z-50 bg-white border-gray-200 shadow-sm">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//           <div className="flex justify-between items-center h-16 md:h-20">
+//             {/* Logo */}
+//             <Link href="/" className="flex items-center group">
+//               <motion.div
+//                 whileHover={{ scale: 1.05, rotate: -3 }}
+//                 transition={{ type: "spring", stiffness: 300 }}
+//                 className="flex-shrink-0"
+//               >
+//                 <img 
+//                   src="https://i.ibb.co/G3JRrdXQ/Logo2-removebg-preview.png" 
+//                   alt="M&M Scents Logo" 
+//                   className="h-10 sm:h-12 md:h-14 w-auto object-contain"
+//                 />
+//               </motion.div>
+//             </Link>
+
+//             {/* Desktop Menu */}
+//             <div className="hidden md:flex items-center gap-6">
+//               <Link 
+//                 href="/products" 
+//                 className="text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105"
+//               >
+//                 Shop
+//               </Link>
+              
+//               {user && (
+//                 <Link 
+//                   href="/orders" 
+//                   className="text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105"
+//                 >
+//                   My Orders
+//                 </Link>
+//               )}
+              
+//               {user && isAdmin && (
+//                 <>
+//                   {/* ✅ Admin Button with Order Notification */}
+//                   <button
+//                     onClick={handleAdminClick}
+//                     className="relative px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium hover:shadow-lg"
+//                   >
+//                     Admin
+//                     {newOrderCount > 0 && (
+//                       <motion.span 
+//                         initial={{ scale: 0 }}
+//                         animate={{ scale: 1 }}
+//                         className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center shadow-md font-bold"
+//                       >
+//                         {newOrderCount}
+//                       </motion.span>
+//                     )}
+//                   </button>
+
+//                   {/* ✅ Support Button with Unread Notification */}
+//                   <button
+//                     onClick={handleSupportClick}
+//                     className="relative px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 font-medium hover:shadow-lg flex items-center gap-1.5"
+//                   >
+//                     <MessageCircle className="w-4 h-4" />
+//                     Support
+//                     {unreadSupportCount > 0 && (
+//                       <motion.span 
+//                         initial={{ scale: 0 }}
+//                         animate={{ scale: 1 }}
+//                         className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center shadow-md font-bold"
+//                       >
+//                         {unreadSupportCount}
+//                       </motion.span>
+//                     )}
+//                   </button>
+//                 </>
+//               )}
+
+//               {user && !isAdmin && (
+//                 <Link 
+//                   href="/profile" 
+//                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium hover:scale-105 flex items-center gap-2"
+//                 >
+//                   <User className="w-4 h-4" />
+//                   Profile
+//                 </Link>
+//               )}
+
+//               {user ? (
+//                 <div className="flex items-center gap-4">
+//                   <button
+//                     onClick={handleLogout}
+//                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium hover:scale-105"
+//                   >
+//                     Logout
+//                   </button>
+//                 </div>
+//               ) : (
+//                 <Link 
+//                   href="/login" 
+//                   className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium hover:shadow-lg hover:scale-105"
+//                 >
+//                   Login
+//                 </Link>
+//               )}
+
+//               {/* ✅ Cart Icon - Only show when user is logged in */}
+//               {user && (
+//                 <Link href="/cart" className="relative group">
+//                   <motion.div
+//                     whileHover={{ scale: 1.1 }}
+//                     whileTap={{ scale: 0.9 }}
+//                   >
+//                     <ShoppingCart className="w-6 h-6 text-gray-700 group-hover:text-primary transition-colors duration-300" />
+//                   </motion.div>
+//                   {uniqueProductCount > 0 && (
+//                     <motion.span 
+//                       initial={{ scale: 0 }}
+//                       animate={{ scale: 1 }}
+//                       className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
+//                     >
+//                       {uniqueProductCount}
+//                     </motion.span>
+//                   )}
+//                 </Link>
+//               )}
+//             </div>
+
+//             {/* Mobile Menu Button */}
+//             <div className="md:hidden flex items-center gap-3">
+//               {/* ✅ Cart Icon - Only show when user is logged in */}
+//               {user && (
+//                 <Link href="/cart" className="relative">
+//                   <ShoppingCart className="w-5 h-5 text-gray-700" />
+//                   {uniqueProductCount > 0 && (
+//                     <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px] shadow-md">
+//                       {uniqueProductCount}
+//                     </span>
+//                   )}
+//                 </Link>
+//               )}
+//               <button
+//                 onClick={() => setMobileMenuOpen(true)}
+//                 className="text-gray-700 hover:text-primary transition-colors"
+//               >
+//                 <Menu size={24} />
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       </nav>
+
+//       {/* Mobile Sidebar Overlay */}
+//       <AnimatePresence>
+//         {mobileMenuOpen && (
+//           <>
+//             {/* Backdrop */}
+//             <motion.div
+//               initial={{ opacity: 0 }}
+//               animate={{ opacity: 0.5 }}
+//               exit={{ opacity: 0 }}
+//               onClick={() => setMobileMenuOpen(false)}
+//               className="fixed inset-0 bg-black z-40 md:hidden"
+//             />
+            
+//             {/* Sidebar */}
+//             <motion.div
+//               initial={{ x: '100%' }}
+//               animate={{ x: 0 }}
+//               exit={{ x: '100%' }}
+//               transition={{ type: "tween", duration: 0.3 }}
+//               className="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-50 md:hidden"
+//             >
+//               {/* Close button */}
+//               <div className="flex justify-between items-center p-4 border-b border-gray-200">
+//                 <span className="font-semibold text-lg">Menu</span>
+//                 <button
+//                   onClick={() => setMobileMenuOpen(false)}
+//                   className="text-gray-700 hover:text-primary transition-colors p-1"
+//                 >
+//                   <X size={24} />
+//                 </button>
+//               </div>
+
+//               {/* Menu Items */}
+//               <div className="flex flex-col p-4 space-y-2">
+//                 <Link 
+//                   href="/products" 
+//                   className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center"
+//                   onClick={() => setMobileMenuOpen(false)}
+//                 >
+//                   Shop
+//                 </Link>
+
+//                 {user && (
+//                   <Link 
+//                     href="/orders" 
+//                     className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center"
+//                     onClick={() => setMobileMenuOpen(false)}
+//                   >
+//                     My Orders
+//                   </Link>
+//                 )}
+                
+//                 {user && isAdmin && (
+//                   <>
+//                     <button
+//                       onClick={handleAdminClick}
+//                       className="relative px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium flex items-center justify-center"
+//                     >
+//                       Admin Dashboard
+//                       {newOrderCount > 0 && (
+//                         <motion.span 
+//                           initial={{ scale: 0 }}
+//                           animate={{ scale: 1 }}
+//                           className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
+//                         >
+//                           {newOrderCount}
+//                         </motion.span>
+//                       )}
+//                     </button>
+
+//                     <button
+//                       onClick={handleSupportClick}
+//                       className="relative px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 font-medium flex items-center justify-center gap-2"
+//                     >
+//                       <MessageCircle className="w-4 h-4" />
+//                       Support Inbox
+//                       {unreadSupportCount > 0 && (
+//                         <motion.span 
+//                           initial={{ scale: 0 }}
+//                           animate={{ scale: 1 }}
+//                           className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
+//                         >
+//                           {unreadSupportCount}
+//                         </motion.span>
+//                       )}
+//                     </button>
+//                   </>
+//                 )}
+
+//                 {user && !isAdmin && (
+//                   <Link 
+//                     href="/profile" 
+//                     className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium flex items-center gap-2"
+//                     onClick={() => setMobileMenuOpen(false)}
+//                   >
+//                     <User className="w-4 h-4" />
+//                     Profile
+//                   </Link>
+//                 )}
+
+//                 {user ? (
+//                   <button
+//                     onClick={handleLogout}
+//                     className="px-4 py-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-300 font-medium text-left flex items-center"
+//                   >
+//                     Logout
+//                   </button>
+//                 ) : (
+//                   <Link 
+//                     href="/login" 
+//                     className="px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium text-center"
+//                     onClick={() => setMobileMenuOpen(false)}
+//                   >
+//                     Login
+//                   </Link>
+//                 )}
+//               </div>
+//             </motion.div>
+//           </>
+//         )}
+//       </AnimatePresence>
+//     </>
+//   );
+// }
+
+
+
+//logged out scene
 'use client';
 
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/authContext';
 import { useCart } from '@/lib/cartContext';
-import { ShoppingCart, Menu, X, User, MessageCircle } from 'lucide-react';
+import { ShoppingCart, Menu, X, Package } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { rtdb } from '@/lib/firebase';
-import { ref, onValue } from 'firebase/database';
 
 export default function Navbar() {
-  const { user, isAdmin, logout } = useAuth();
+  const { user } = useAuth();
   const { cartItems } = useCart();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [newOrderCount, setNewOrderCount] = useState(0);
-  const [totalOrders, setTotalOrders] = useState(0);
-  const [lastSeenOrderCount, setLastSeenOrderCount] = useState(0);
-  
-  // ✅ Support Unread Count
-  const [unreadSupportCount, setUnreadSupportCount] = useState(0);
-  const [lastSeenSupportCount, setLastSeenSupportCount] = useState(0);
-  const [totalSupportMessages, setTotalSupportMessages] = useState(0);
+  const [showMyOrders, setShowMyOrders] = useState(false);
 
-  // Get the number of unique products (types) in cart
+  // ✅ Get unique product count in cart
   const uniqueProductCount = cartItems.length;
 
-  // ✅ Load last seen order count from localStorage
+  // ✅ Check if user is logged in OR guest has placed an order
   useEffect(() => {
-    if (typeof window !== 'undefined' && isAdmin) {
-      const saved = localStorage.getItem('adminLastSeenOrders');
-      if (saved) {
-        const parsed = parseInt(saved);
-        setLastSeenOrderCount(parsed);
-        if (totalOrders > parsed) {
-          setNewOrderCount(totalOrders - parsed);
-        }
-      }
+    // ✅ If user is logged in, show My Orders
+    if (user) {
+      setShowMyOrders(true);
+      return;
     }
-  }, [isAdmin, totalOrders]);
 
-  // ✅ Load last seen support count from localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined' && isAdmin) {
-      const saved = localStorage.getItem('adminLastSeenSupport');
-      if (saved) {
-        const parsed = parseInt(saved);
-        setLastSeenSupportCount(parsed);
-        if (totalSupportMessages > parsed) {
-          setUnreadSupportCount(totalSupportMessages - parsed);
-        }
-      }
-    }
-  }, [isAdmin, totalSupportMessages]);
-
-  // ✅ Listen for new orders
-  useEffect(() => {
-    if (!isAdmin) return;
-
-    const ordersRef = ref(rtdb, 'orders');
-    const unsubscribe = onValue(ordersRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const orderIds = Object.keys(data);
-        const total = orderIds.length;
-        setTotalOrders(total);
-        
-        if (lastSeenOrderCount > 0 && total > lastSeenOrderCount) {
-          const newOrders = total - lastSeenOrderCount;
-          setNewOrderCount(prev => prev + newOrders);
-        } else if (lastSeenOrderCount === 0) {
-          setLastSeenOrderCount(total);
-          localStorage.setItem('adminLastSeenOrders', total.toString());
-          setNewOrderCount(0);
-        }
+    // ✅ Check if guest email exists in localStorage
+    if (typeof window !== 'undefined') {
+      const guestEmail = localStorage.getItem('guestEmail');
+      if (guestEmail && guestEmail.includes('@')) {
+        setShowMyOrders(true);
       } else {
-        setTotalOrders(0);
-        setNewOrderCount(0);
+        setShowMyOrders(false);
       }
-    });
-
-    return () => unsubscribe();
-  }, [isAdmin, lastSeenOrderCount]);
-
-  // ✅ Listen for unread support messages
-  useEffect(() => {
-    if (!isAdmin) return;
-
-    const supportRef = ref(rtdb, 'all_messages');
-    const unsubscribe = onValue(supportRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const messages = Object.values(data);
-        const unread = messages.filter((msg: any) => !msg.isAdmin && !msg.isRead).length;
-        const total = messages.length;
-        
-        setTotalSupportMessages(total);
-        setUnreadSupportCount(unread);
-        
-        if (lastSeenSupportCount === 0) {
-          setLastSeenSupportCount(total);
-          localStorage.setItem('adminLastSeenSupport', total.toString());
-          setUnreadSupportCount(0);
-        }
-      } else {
-        setTotalSupportMessages(0);
-        setUnreadSupportCount(0);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [isAdmin, lastSeenSupportCount]);
-
-  // ✅ Mark orders as seen when admin visits admin page
-  useEffect(() => {
-    if (isAdmin && pathname === '/admin' && totalOrders > 0) {
-      setLastSeenOrderCount(totalOrders);
-      localStorage.setItem('adminLastSeenOrders', totalOrders.toString());
-      setNewOrderCount(0);
     }
-  }, [isAdmin, pathname, totalOrders]);
+  }, [user]);
 
-  // ✅ Mark support as seen when admin visits support page
+  // ✅ Close mobile menu on route change
   useEffect(() => {
-    if (isAdmin && pathname === '/admin/support' && totalSupportMessages > 0) {
-      setLastSeenSupportCount(totalSupportMessages);
-      localStorage.setItem('adminLastSeenSupport', totalSupportMessages.toString());
-      setUnreadSupportCount(0);
-    }
-  }, [isAdmin, pathname, totalSupportMessages]);
-
-  // ✅ Mark as seen when admin clicks on admin button (navigation)
-  const handleAdminClick = () => {
-    if (totalOrders > 0) {
-      setLastSeenOrderCount(totalOrders);
-      localStorage.setItem('adminLastSeenOrders', totalOrders.toString());
-      setNewOrderCount(0);
-    }
     setMobileMenuOpen(false);
-    router.push('/admin');
-  };
-
-  // ✅ Handle support button click
-  const handleSupportClick = () => {
-    if (totalSupportMessages > 0) {
-      setLastSeenSupportCount(totalSupportMessages);
-      localStorage.setItem('adminLastSeenSupport', totalSupportMessages.toString());
-      setUnreadSupportCount(0);
-    }
-    setMobileMenuOpen(false);
-    router.push('/admin/support');
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push('/');
-      setMobileMenuOpen(false);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
+  }, [pathname]);
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-white border-gray-200 shadow-sm">
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
@@ -2069,124 +2393,60 @@ export default function Navbar() {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-6">
+              {/* Shop Link - Always visible */}
               <Link 
                 href="/products" 
-                className="text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105"
+                className={`text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105 ${
+                  pathname === '/products' ? 'text-primary' : ''
+                }`}
               >
                 Shop
               </Link>
               
-              {user && (
+              {/* ✅ My Orders - Show if user is logged in OR guest has placed an order */}
+              {showMyOrders && (
                 <Link 
                   href="/orders" 
-                  className="text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105"
+                  className={`text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105 flex items-center gap-1.5 ${
+                    pathname === '/orders' ? 'text-primary' : ''
+                  }`}
                 >
+                  <Package className="w-4 h-4" />
                   My Orders
                 </Link>
               )}
-              
-              {user && isAdmin && (
-                <>
-                  {/* ✅ Admin Button with Order Notification */}
-                  <button
-                    onClick={handleAdminClick}
-                    className="relative px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium hover:shadow-lg"
-                  >
-                    Admin
-                    {newOrderCount > 0 && (
-                      <motion.span 
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center shadow-md font-bold"
-                      >
-                        {newOrderCount}
-                      </motion.span>
-                    )}
-                  </button>
 
-                  {/* ✅ Support Button with Unread Notification */}
-                  <button
-                    onClick={handleSupportClick}
-                    className="relative px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 font-medium hover:shadow-lg flex items-center gap-1.5"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    Support
-                    {unreadSupportCount > 0 && (
-                      <motion.span 
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center shadow-md font-bold"
-                      >
-                        {unreadSupportCount}
-                      </motion.span>
-                    )}
-                  </button>
-                </>
-              )}
-
-              {user && !isAdmin && (
-                <Link 
-                  href="/profile" 
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium hover:scale-105 flex items-center gap-2"
+              {/* ✅ Cart Icon - Always visible */}
+              <Link href="/cart" className="relative group">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
-                  <User className="w-4 h-4" />
-                  Profile
-                </Link>
-              )}
-
-              {user ? (
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={handleLogout}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium hover:scale-105"
+                  <ShoppingCart className="w-6 h-6 text-gray-700 group-hover:text-primary transition-colors duration-300" />
+                </motion.div>
+                {uniqueProductCount > 0 && (
+                  <motion.span 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
                   >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <Link 
-                  href="/login" 
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium hover:shadow-lg hover:scale-105"
-                >
-                  Login
-                </Link>
-              )}
-
-              {/* ✅ Cart Icon - Only show when user is logged in */}
-              {user && (
-                <Link href="/cart" className="relative group">
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <ShoppingCart className="w-6 h-6 text-gray-700 group-hover:text-primary transition-colors duration-300" />
-                  </motion.div>
-                  {uniqueProductCount > 0 && (
-                    <motion.span 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
-                    >
-                      {uniqueProductCount}
-                    </motion.span>
-                  )}
-                </Link>
-              )}
+                    {uniqueProductCount}
+                  </motion.span>
+                )}
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center gap-3">
-              {/* ✅ Cart Icon - Only show when user is logged in */}
-              {user && (
-                <Link href="/cart" className="relative">
-                  <ShoppingCart className="w-5 h-5 text-gray-700" />
-                  {uniqueProductCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px] shadow-md">
-                      {uniqueProductCount}
-                    </span>
-                  )}
-                </Link>
-              )}
+              {/* ✅ Cart Icon - Always visible */}
+              <Link href="/cart" className="relative">
+                <ShoppingCart className="w-5 h-5 text-gray-700" />
+                {uniqueProductCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px] shadow-md">
+                    {uniqueProductCount}
+                  </span>
+                )}
+              </Link>
               <button
                 onClick={() => setMobileMenuOpen(true)}
                 className="text-gray-700 hover:text-primary transition-colors"
@@ -2232,6 +2492,7 @@ export default function Navbar() {
 
               {/* Menu Items */}
               <div className="flex flex-col p-4 space-y-2">
+                {/* Shop - Always visible */}
                 <Link 
                   href="/products" 
                   className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center"
@@ -2240,80 +2501,42 @@ export default function Navbar() {
                   Shop
                 </Link>
 
-                {user && (
+                {/* ✅ My Orders - Show if user is logged in OR guest has placed an order */}
+                {showMyOrders && (
                   <Link 
                     href="/orders" 
-                    className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center"
+                    className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center gap-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
+                    <Package className="w-4 h-4" />
                     My Orders
                   </Link>
                 )}
-                
-                {user && isAdmin && (
-                  <>
-                    <button
-                      onClick={handleAdminClick}
-                      className="relative px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium flex items-center justify-center"
-                    >
-                      Admin Dashboard
-                      {newOrderCount > 0 && (
-                        <motion.span 
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
-                        >
-                          {newOrderCount}
-                        </motion.span>
-                      )}
-                    </button>
 
-                    <button
-                      onClick={handleSupportClick}
-                      className="relative px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 font-medium flex items-center justify-center gap-2"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      Support Inbox
-                      {unreadSupportCount > 0 && (
-                        <motion.span 
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
-                        >
-                          {unreadSupportCount}
-                        </motion.span>
-                      )}
-                    </button>
-                  </>
-                )}
+                {/* Cart - Always visible */}
+                <Link 
+                  href="/cart" 
+                  className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center justify-between"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span>Cart</span>
+                  {uniqueProductCount > 0 && (
+                    <span className="bg-primary text-white text-xs rounded-full px-2 py-0.5">
+                      {uniqueProductCount}
+                    </span>
+                  )}
+                </Link>
 
-                {user && !isAdmin && (
-                  <Link 
-                    href="/profile" 
-                    className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium flex items-center gap-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <User className="w-4 h-4" />
-                    Profile
-                  </Link>
-                )}
+                {/* ✅ No Login/Logout buttons */}
+                {/* ✅ No Profile button */}
+                {/* ✅ No Admin button */}
+              </div>
 
-                {user ? (
-                  <button
-                    onClick={handleLogout}
-                    className="px-4 py-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-300 font-medium text-left flex items-center"
-                  >
-                    Logout
-                  </button>
-                ) : (
-                  <Link 
-                    href="/login" 
-                    className="px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium text-center"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                )}
+              {/* Footer Text */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+                <p className="text-xs text-gray-400 text-center">
+                  © 2026 M&M Scents
+                </p>
               </div>
             </motion.div>
           </>
