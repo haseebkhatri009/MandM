@@ -2326,18 +2326,242 @@
 
 
 //logged out scene
+// 'use client';
+
+// import Link from 'next/link';
+// import { useRouter, usePathname } from 'next/navigation';
+// import { useAuth } from '@/lib/authContext';
+// import { useCart } from '@/lib/cartContext';
+// import { ShoppingCart, Menu, X, Package } from 'lucide-react';
+// import { useState, useEffect } from 'react';
+// import { motion, AnimatePresence } from 'framer-motion';
+
+// export default function Navbar() {
+//   const { user } = useAuth();
+//   const { cartItems } = useCart();
+//   const router = useRouter();
+//   const pathname = usePathname();
+//   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+//   const [showMyOrders, setShowMyOrders] = useState(false);
+
+//   // ✅ Get unique product count in cart
+//   const uniqueProductCount = cartItems.length;
+
+//   // ✅ Check if user is logged in OR guest has placed an order
+//   useEffect(() => {
+//     // ✅ If user is logged in, show My Orders
+//     if (user) {
+//       setShowMyOrders(true);
+//       return;
+//     }
+
+//     // ✅ Check if guest email exists in localStorage
+//     if (typeof window !== 'undefined') {
+//       const guestEmail = localStorage.getItem('guestEmail');
+//       if (guestEmail && guestEmail.includes('@')) {
+//         setShowMyOrders(true);
+//       } else {
+//         setShowMyOrders(false);
+//       }
+//     }
+//   }, [user]);
+
+//   // ✅ Close mobile menu on route change
+//   useEffect(() => {
+//     setMobileMenuOpen(false);
+//   }, [pathname]);
+
+//   return (
+//     <>
+//       <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//           <div className="flex justify-between items-center h-16 md:h-20">
+//             {/* Logo */}
+//             <Link href="/" className="flex items-center group">
+//               <motion.div
+//                 whileHover={{ scale: 1.05, rotate: -3 }}
+//                 transition={{ type: "spring", stiffness: 300 }}
+//                 className="flex-shrink-0"
+//               >
+//                 <img 
+//                   src="https://i.ibb.co/G3JRrdXQ/Logo2-removebg-preview.png" 
+//                   alt="M&M Scents Logo" 
+//                   className="h-10 sm:h-12 md:h-14 w-auto object-contain"
+//                 />
+//               </motion.div>
+//             </Link>
+
+//             {/* Desktop Menu */}
+//             <div className="hidden md:flex items-center gap-6">
+//               {/* Shop Link - Always visible */}
+//               <Link 
+//                 href="/products" 
+//                 className={`text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105 ${
+//                   pathname === '/products' ? 'text-primary' : ''
+//                 }`}
+//               >
+//                 Shop
+//               </Link>
+              
+//               {/* ✅ My Orders - Show if user is logged in OR guest has placed an order */}
+//               {showMyOrders && (
+//                 <Link 
+//                   href="/orders" 
+//                   className={`text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105 flex items-center gap-1.5 ${
+//                     pathname === '/orders' ? 'text-primary' : ''
+//                   }`}
+//                 >
+//                   <Package className="w-4 h-4" />
+//                   My Orders
+//                 </Link>
+//               )}
+
+//               {/* ✅ Cart Icon - Always visible */}
+//               <Link href="/cart" className="relative group">
+//                 <motion.div
+//                   whileHover={{ scale: 1.1 }}
+//                   whileTap={{ scale: 0.9 }}
+//                 >
+//                   <ShoppingCart className="w-6 h-6 text-gray-700 group-hover:text-primary transition-colors duration-300" />
+//                 </motion.div>
+//                 {uniqueProductCount > 0 && (
+//                   <motion.span 
+//                     initial={{ scale: 0 }}
+//                     animate={{ scale: 1 }}
+//                     className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
+//                   >
+//                     {uniqueProductCount}
+//                   </motion.span>
+//                 )}
+//               </Link>
+//             </div>
+
+//             {/* Mobile Menu Button */}
+//             <div className="md:hidden flex items-center gap-3">
+//               {/* ✅ Cart Icon - Always visible */}
+//               <Link href="/cart" className="relative">
+//                 <ShoppingCart className="w-5 h-5 text-gray-700" />
+//                 {uniqueProductCount > 0 && (
+//                   <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px] shadow-md">
+//                     {uniqueProductCount}
+//                   </span>
+//                 )}
+//               </Link>
+//               <button
+//                 onClick={() => setMobileMenuOpen(true)}
+//                 className="text-gray-700 hover:text-primary transition-colors"
+//               >
+//                 <Menu size={24} />
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       </nav>
+
+//       {/* Mobile Sidebar Overlay */}
+//       <AnimatePresence>
+//         {mobileMenuOpen && (
+//           <>
+//             {/* Backdrop */}
+//             <motion.div
+//               initial={{ opacity: 0 }}
+//               animate={{ opacity: 0.5 }}
+//               exit={{ opacity: 0 }}
+//               onClick={() => setMobileMenuOpen(false)}
+//               className="fixed inset-0 bg-black z-40 md:hidden"
+//             />
+            
+//             {/* Sidebar */}
+//             <motion.div
+//               initial={{ x: '100%' }}
+//               animate={{ x: 0 }}
+//               exit={{ x: '100%' }}
+//               transition={{ type: "tween", duration: 0.3 }}
+//               className="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-50 md:hidden"
+//             >
+//               {/* Close button */}
+//               <div className="flex justify-between items-center p-4 border-b border-gray-200">
+//                 <span className="font-semibold text-lg">Menu</span>
+//                 <button
+//                   onClick={() => setMobileMenuOpen(false)}
+//                   className="text-gray-700 hover:text-primary transition-colors p-1"
+//                 >
+//                   <X size={24} />
+//                 </button>
+//               </div>
+
+//               {/* Menu Items */}
+//               <div className="flex flex-col p-4 space-y-2">
+//                 {/* Shop - Always visible */}
+//                 <Link 
+//                   href="/products" 
+//                   className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center"
+//                   onClick={() => setMobileMenuOpen(false)}
+//                 >
+//                   Shop
+//                 </Link>
+
+//                 {/* ✅ My Orders - Show if user is logged in OR guest has placed an order */}
+//                 {showMyOrders && (
+//                   <Link 
+//                     href="/orders" 
+//                     className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center gap-2"
+//                     onClick={() => setMobileMenuOpen(false)}
+//                   >
+//                     <Package className="w-4 h-4" />
+//                     My Orders
+//                   </Link>
+//                 )}
+
+//                 {/* Cart - Always visible */}
+//                 <Link 
+//                   href="/cart" 
+//                   className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center justify-between"
+//                   onClick={() => setMobileMenuOpen(false)}
+//                 >
+//                   <span>Cart</span>
+//                   {uniqueProductCount > 0 && (
+//                     <span className="bg-primary text-white text-xs rounded-full px-2 py-0.5">
+//                       {uniqueProductCount}
+//                     </span>
+//                   )}
+//                 </Link>
+
+//                 {/* ✅ No Login/Logout buttons */}
+//                 {/* ✅ No Profile button */}
+//                 {/* ✅ No Admin button */}
+//               </div>
+
+//               {/* Footer Text */}
+//               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+//                 <p className="text-xs text-gray-400 text-center">
+//                   © 2026 M&M Scents
+//                 </p>
+//               </div>
+//             </motion.div>
+//           </>
+//         )}
+//       </AnimatePresence>
+//     </>
+//   );
+// }
+
+
+//is admin true
+
+
 'use client';
 
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/authContext';
 import { useCart } from '@/lib/cartContext';
-import { ShoppingCart, Menu, X, Package } from 'lucide-react';
+import { ShoppingCart, Menu, X, Package, Shield } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { cartItems } = useCart();
   const router = useRouter();
   const pathname = usePathname();
@@ -2413,6 +2637,19 @@ export default function Navbar() {
                 >
                   <Package className="w-4 h-4" />
                   My Orders
+                </Link>
+              )}
+
+              {/* ✅ Admin Button - Show only if user is admin */}
+              {isAdmin && (
+                <Link 
+                  href="/admin" 
+                  className={`text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105 flex items-center gap-1.5 ${
+                    pathname.startsWith('/admin') ? 'text-primary' : ''
+                  }`}
+                >
+                  <Shield className="w-4 h-4" />
+                  Admin
                 </Link>
               )}
 
@@ -2513,6 +2750,18 @@ export default function Navbar() {
                   </Link>
                 )}
 
+                {/* ✅ Admin Button - Show only if user is admin */}
+                {isAdmin && (
+                  <Link 
+                    href="/admin" 
+                    className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center gap-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Shield className="w-4 h-4" />
+                    Admin Panel
+                  </Link>
+                )}
+
                 {/* Cart - Always visible */}
                 <Link 
                   href="/cart" 
@@ -2529,7 +2778,6 @@ export default function Navbar() {
 
                 {/* ✅ No Login/Logout buttons */}
                 {/* ✅ No Profile button */}
-                {/* ✅ No Admin button */}
               </div>
 
               {/* Footer Text */}

@@ -4283,6 +4283,244 @@
 
 //logged out scene
 
+// 'use client';
+
+// import React, { createContext, useContext, useEffect, useState } from 'react';
+// import { 
+//   onAuthStateChanged, 
+//   signOut, 
+//   User,
+//   signInWithCustomToken,
+//   signInWithEmailAndPassword,
+// } from 'firebase/auth';
+// import { auth, rtdb } from './firebase';
+// import { ref, get, set, update } from 'firebase/database';
+
+// interface UserData {
+//   uid: string;
+//   name: string;
+//   email: string;
+//   phone: string;
+//   isGuest: boolean;
+//   isAdmin?: boolean;
+//   createdAt: string;
+//   lastOrderAt?: string;
+//   password?: string;
+//   passwordReset?: boolean;
+// }
+
+// interface AuthContextType {
+//   user: User | null;
+//   userData: UserData | null;
+//   loading: boolean;
+//   loginWithToken: (token: string) => Promise<void>;
+//   loginWithEmail: (email: string, password: string) => Promise<void>;
+//   logout: () => Promise<void>;
+//   setUser: (user: User | null) => void;
+//   isAuthenticated: boolean;
+//   isAdmin: boolean;
+//   checkAndUpdateRTDBPassword: (user: User) => Promise<boolean>;
+//   updateRTDBPassword: (uid: string, newPassword: string) => Promise<void>;
+// }
+
+// const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// // ✅ Admin emails
+// const ADMIN_EMAILS = [
+//   'abdulhaseebkhatri123@gmail.com',
+//   'haseebkhatri2005@gmail.com'
+// ];
+
+// export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+//   const [user, setUser] = useState<User | null>(null);
+//   const [userData, setUserData] = useState<UserData | null>(null);
+//   const [loading, setLoading] = useState(true);
+
+//   // ✅ Listen to auth state changes
+//   useEffect(() => {
+//     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+//       setUser(currentUser);
+      
+//       if (currentUser) {
+//         try {
+//           const userRef = ref(rtdb, `users/${currentUser.uid}`);
+//           const snapshot = await get(userRef);
+          
+//           if (snapshot.exists()) {
+//             const data = snapshot.val() as UserData;
+//             setUserData(data);
+//           } else {
+//             // ✅ Create minimal user data if missing
+//             const isAdminUser = ADMIN_EMAILS.includes(currentUser.email?.toLowerCase() || '');
+//             const defaultUserData: UserData = {
+//               uid: currentUser.uid,
+//               name: currentUser.displayName || 'Guest',
+//               email: currentUser.email || '',
+//               phone: '',
+//               isGuest: true,
+//               isAdmin: isAdminUser,
+//               createdAt: new Date().toISOString(),
+//               passwordReset: false,
+//             };
+//             await set(userRef, defaultUserData);
+//             setUserData(defaultUserData);
+//           }
+//         } catch (error) {
+//           console.error('Error fetching user data:', error);
+//         }
+//       } else {
+//         setUserData(null);
+//       }
+      
+//       setLoading(false);
+//     });
+
+//     return unsubscribe;
+//   }, []);
+
+//   // ✅ Login with custom token (from auto-signup)
+//   const loginWithToken = async (customToken: string) => {
+//     try {
+//       const userCredential = await signInWithCustomToken(auth, customToken);
+//       setUser(userCredential.user);
+      
+//       // ✅ Fetch or create user data
+//       const userRef = ref(rtdb, `users/${userCredential.user.uid}`);
+//       const snapshot = await get(userRef);
+      
+//       if (snapshot.exists()) {
+//         setUserData(snapshot.val() as UserData);
+//       } else {
+//         const isAdminUser = ADMIN_EMAILS.includes(userCredential.user.email?.toLowerCase() || '');
+//         const newUserData: UserData = {
+//           uid: userCredential.user.uid,
+//           name: userCredential.user.displayName || 'Guest',
+//           email: userCredential.user.email || '',
+//           phone: '',
+//           isGuest: true,
+//           isAdmin: isAdminUser,
+//           createdAt: new Date().toISOString(),
+//           passwordReset: false,
+//         };
+//         await set(userRef, newUserData);
+//         setUserData(newUserData);
+//       }
+//     } catch (error) {
+//       console.error('Login with token error:', error);
+//       throw error;
+//     }
+//   };
+
+//   // ✅ Login with email/password (for admin)
+//   const loginWithEmail = async (email: string, password: string) => {
+//     try {
+//       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+//       setUser(userCredential.user);
+      
+//       // ✅ Update admin flag if needed
+//       const isAdminUser = ADMIN_EMAILS.includes(email.toLowerCase());
+//       if (isAdminUser) {
+//         const userRef = ref(rtdb, `users/${userCredential.user.uid}`);
+//         await update(userRef, {
+//           isAdmin: true,
+//           lastLogin: new Date().toISOString()
+//         });
+//       }
+      
+//       return userCredential.user;
+//     } catch (error) {
+//       console.error('Login with email error:', error);
+//       throw error;
+//     }
+//   };
+
+//   // ✅ Check RTDB password and reset flag
+//   const checkAndUpdateRTDBPassword = async (user: User): Promise<boolean> => {
+//     try {
+//       const userRef = ref(rtdb, `users/${user.uid}`);
+//       const snapshot = await get(userRef);
+      
+//       if (snapshot.exists()) {
+//         const userData = snapshot.val();
+//         // ✅ Check if password reset is needed
+//         if (userData.passwordReset === true || !userData.password || userData.password === '') {
+//           return true;
+//         }
+//         return false;
+//       }
+//       return true;
+//     } catch (error) {
+//       console.error('Error checking RTDB password:', error);
+//       return true;
+//     }
+//   };
+
+//   // ✅ Update RTDB password
+//   const updateRTDBPassword = async (uid: string, newPassword: string): Promise<void> => {
+//     try {
+//       const userRef = ref(rtdb, `users/${uid}`);
+//       await update(userRef, {
+//         password: newPassword,
+//         passwordReset: false,
+//         updatedAt: new Date().toISOString()
+//       });
+//       console.log('✅ RTDB password updated for user:', uid);
+//     } catch (error) {
+//       console.error('Error updating RTDB password:', error);
+//       throw error;
+//     }
+//   };
+
+//   // ✅ Logout
+//   const logout = async () => {
+//     try {
+//       await signOut(auth);
+//       setUser(null);
+//       setUserData(null);
+//     } catch (error) {
+//       console.error('Logout error:', error);
+//     }
+//   };
+
+//   // ✅ Check if user is authenticated
+//   const isAuthenticated = !!user;
+  
+//   // ✅ Check if user is admin
+//   const isAdmin = userData?.isAdmin || ADMIN_EMAILS.includes(user?.email?.toLowerCase() || '');
+
+//   const value: AuthContextType = {
+//     user,
+//     userData,
+//     loading,
+//     loginWithToken,
+//     loginWithEmail,
+//     logout,
+//     setUser,
+//     isAuthenticated,
+//     isAdmin,
+//     checkAndUpdateRTDBPassword,
+//     updateRTDBPassword,
+//   };
+
+//   return (
+//     <AuthContext.Provider value={value}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+// export const useAuth = () => {
+//   const context = useContext(AuthContext);
+//   if (!context) {
+//     throw new Error('useAuth must be used within an AuthProvider');
+//   }
+//   return context;
+// };
+
+
+
+//is admin true 
+
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -4294,7 +4532,7 @@ import {
   signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { auth, rtdb } from './firebase';
-import { ref, get, set, update } from 'firebase/database';
+import { ref, get, set, update, onValue } from 'firebase/database';
 
 interface UserData {
   uid: string;
@@ -4325,7 +4563,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ✅ Admin emails
+// ✅ Admin emails list
 const ADMIN_EMAILS = [
   'abdulhaseebkhatri123@gmail.com',
   'haseebkhatri2005@gmail.com'
@@ -4335,6 +4573,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // ✅ Fetch user data from RTDB
+  const fetchUserData = async (uid: string, email: string | null) => {
+    try {
+      const userRef = ref(rtdb, `users/${uid}`);
+      const snapshot = await get(userRef);
+      
+      if (snapshot.exists()) {
+        const data = snapshot.val() as UserData;
+        setUserData(data);
+        
+        // ✅ Check if user is admin from database OR from email list
+        const isAdminUser = data.isAdmin === true || ADMIN_EMAILS.includes(email?.toLowerCase() || '');
+        setIsAdmin(isAdminUser);
+        
+        // ✅ If admin email but not set in DB, update it
+        if (isAdminUser && data.isAdmin !== true) {
+          await update(userRef, {
+            isAdmin: true,
+            updatedAt: new Date().toISOString()
+          });
+          setUserData({ ...data, isAdmin: true });
+        }
+        
+        return data;
+      } else {
+        // ✅ Create new user if not exists
+        const isAdminUser = ADMIN_EMAILS.includes(email?.toLowerCase() || '');
+        const defaultUserData: UserData = {
+          uid: uid,
+          name: email?.split('@')[0] || 'Guest',
+          email: email || '',
+          phone: '',
+          isGuest: false,
+          isAdmin: isAdminUser,
+          createdAt: new Date().toISOString(),
+          passwordReset: false,
+        };
+        await set(userRef, defaultUserData);
+        setUserData(defaultUserData);
+        setIsAdmin(isAdminUser);
+        return defaultUserData;
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      // ✅ Fallback: check email only
+      const isAdminUser = ADMIN_EMAILS.includes(email?.toLowerCase() || '');
+      setIsAdmin(isAdminUser);
+      return null;
+    }
+  };
 
   // ✅ Listen to auth state changes
   useEffect(() => {
@@ -4342,34 +4632,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
       
       if (currentUser) {
-        try {
-          const userRef = ref(rtdb, `users/${currentUser.uid}`);
-          const snapshot = await get(userRef);
-          
-          if (snapshot.exists()) {
-            const data = snapshot.val() as UserData;
-            setUserData(data);
-          } else {
-            // ✅ Create minimal user data if missing
-            const isAdminUser = ADMIN_EMAILS.includes(currentUser.email?.toLowerCase() || '');
-            const defaultUserData: UserData = {
-              uid: currentUser.uid,
-              name: currentUser.displayName || 'Guest',
-              email: currentUser.email || '',
-              phone: '',
-              isGuest: true,
-              isAdmin: isAdminUser,
-              createdAt: new Date().toISOString(),
-              passwordReset: false,
-            };
-            await set(userRef, defaultUserData);
-            setUserData(defaultUserData);
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
+        await fetchUserData(currentUser.uid, currentUser.email);
       } else {
         setUserData(null);
+        setIsAdmin(false);
       }
       
       setLoading(false);
@@ -4381,56 +4647,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // ✅ Login with custom token (from auto-signup)
   const loginWithToken = async (customToken: string) => {
     try {
+      setLoading(true);
       const userCredential = await signInWithCustomToken(auth, customToken);
       setUser(userCredential.user);
       
-      // ✅ Fetch or create user data
-      const userRef = ref(rtdb, `users/${userCredential.user.uid}`);
-      const snapshot = await get(userRef);
-      
-      if (snapshot.exists()) {
-        setUserData(snapshot.val() as UserData);
-      } else {
-        const isAdminUser = ADMIN_EMAILS.includes(userCredential.user.email?.toLowerCase() || '');
-        const newUserData: UserData = {
-          uid: userCredential.user.uid,
-          name: userCredential.user.displayName || 'Guest',
-          email: userCredential.user.email || '',
-          phone: '',
-          isGuest: true,
-          isAdmin: isAdminUser,
-          createdAt: new Date().toISOString(),
-          passwordReset: false,
-        };
-        await set(userRef, newUserData);
-        setUserData(newUserData);
-      }
+      await fetchUserData(userCredential.user.uid, userCredential.user.email);
     } catch (error) {
       console.error('Login with token error:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   // ✅ Login with email/password (for admin)
   const loginWithEmail = async (email: string, password: string) => {
     try {
+      setLoading(true);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       setUser(userCredential.user);
       
-      // ✅ Update admin flag if needed
-      const isAdminUser = ADMIN_EMAILS.includes(email.toLowerCase());
-      if (isAdminUser) {
-        const userRef = ref(rtdb, `users/${userCredential.user.uid}`);
-        await update(userRef, {
-          isAdmin: true,
-          lastLogin: new Date().toISOString()
-        });
-      }
+      await fetchUserData(userCredential.user.uid, userCredential.user.email);
       
       return userCredential.user;
     } catch (error) {
       console.error('Login with email error:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -4442,7 +4686,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (snapshot.exists()) {
         const userData = snapshot.val();
-        // ✅ Check if password reset is needed
         if (userData.passwordReset === true || !userData.password || userData.password === '') {
           return true;
         }
@@ -4477,6 +4720,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await signOut(auth);
       setUser(null);
       setUserData(null);
+      setIsAdmin(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -4484,9 +4728,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // ✅ Check if user is authenticated
   const isAuthenticated = !!user;
-  
-  // ✅ Check if user is admin
-  const isAdmin = userData?.isAdmin || ADMIN_EMAILS.includes(user?.email?.toLowerCase() || '');
 
   const value: AuthContextType = {
     user,
