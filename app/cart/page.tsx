@@ -2380,20 +2380,28 @@ export default function CartPage() {
   }
 
   // ✅ Show user info banner
-  const userInfo = user ? (
+  // const userInfo = user ? (
+  //   <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700 flex items-center gap-2">
+  //     <span>👤</span>
+  //     {user.email}
+  //     <span className="text-green-600 ml-auto">✓ Logged in</span>
+  //   </div>
+  // ) : (
+  //   <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700 flex items-center gap-2">
+  //     <span>🛒</span>
+  //     You are viewing as a guest. Your cart is saved locally.
+  //     <Link href="/login?from=cart" className="text-primary font-semibold hover:underline ml-1">Login</Link>
+  //     <span className="text-yellow-600 ml-auto">to save your cart</span>
+  //   </div>
+  // );
+
+    const userInfo = user ? (
     <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700 flex items-center gap-2">
       <span>👤</span>
       {user.email}
       <span className="text-green-600 ml-auto">✓ Logged in</span>
     </div>
-  ) : (
-    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700 flex items-center gap-2">
-      <span>🛒</span>
-      You are viewing as a guest. Your cart is saved locally.
-      <Link href="/login?from=cart" className="text-primary font-semibold hover:underline ml-1">Login</Link>
-      <span className="text-yellow-600 ml-auto">to save your cart</span>
-    </div>
-  );
+  ) : null ;
 
   return (
     <div className="min-h-screen bg-background">

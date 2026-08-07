@@ -7337,14 +7337,14 @@ export default function CheckoutPage() {
               <div className="bg-card rounded-lg shadow-lg p-8 border border-border">
                 <h1 className="text-3xl font-serif font-bold mb-8">Checkout</h1>
 
-                {!user && (
+                {/* {!user && (
                   <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700 flex items-center gap-2">
                     <span>🛒</span>
                     You are checking out as a guest. 
                     <Link href="/login?from=checkout" className="text-primary font-semibold hover:underline ml-1">Login</Link>
                     <span className="text-yellow-600 ml-auto">to save your orders</span>
                   </div>
-                )}
+                )} */}
 
                 {user && (
                   <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700 flex items-center gap-2">
