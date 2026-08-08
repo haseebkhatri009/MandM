@@ -143,22 +143,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'M&M Scents - Premium Perfumes, Wax & Skincare',
   description: 'Shop premium beauty products including perfumes, waxing services, and facial creams for women',
-  generator: 'v0.app',
+  generator: 'Khatri',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
+    icon: '/favicon3.png',  // ✅ SIMPLE - SAB KE LIYE EK HI
     apple: '/apple-icon.png',
   },
 }
@@ -178,10 +165,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`bg-background ${geistSans.variable} ${geistMono.variable}`}>
+      <head>
+        {/* ✅ FORCE FAVICON - EXTRA SAFETY */}
+        <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
+      </head>
       <body className="font-sans antialiased" suppressHydrationWarning>
         <RootLayoutClient>
           {children}
-          {/* ✅ Toaster for all pages - 1 second duration */}
           <Toaster 
             position="top-right"
             toastOptions={{
