@@ -37,7 +37,7 @@ export default function ContactPage() {
       title: 'WhatsApp',
       description: 'Chat with us on WhatsApp',
       // value: '+92 300 1234597',
-      action: 'https://wa.me/923411293604',
+      action: 'https://wa.me/923312885639',
       color: 'text-green-500',
       bg: 'bg-green-50',
     },
@@ -428,7 +428,7 @@ export default function ContactPage() {
                 <div className="space-y-4">
                   {/* WhatsApp Button */}
                   <motion.a
-                    href="https://wa.me/923411293604"
+                    href="https://wa.me/923312885639"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.02 }}
