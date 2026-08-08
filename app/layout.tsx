@@ -133,6 +133,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import RootLayoutClient from './layout-client'
 import { Toaster } from 'react-hot-toast'
+import Footer from '@/components/Footer'  // ✅ Footer import kiya
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({
@@ -173,6 +174,7 @@ export default function RootLayout({
       <body className="font-sans antialiased" suppressHydrationWarning>
         <RootLayoutClient>
           {children}
+          <Footer />  {/* ✅ Footer component yahan add kiya */}
           <Toaster 
             position="top-right"
             toastOptions={{

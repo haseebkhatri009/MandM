@@ -2556,7 +2556,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/authContext';
 import { useCart } from '@/lib/cartContext';
-import { ShoppingCart, Menu, X, Package, Shield } from 'lucide-react';
+import { ShoppingCart, Menu, X, Package, Shield, Info, Phone } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -2625,6 +2625,28 @@ export default function Navbar() {
                 }`}
               >
                 Shop
+              </Link>
+
+              {/* ✅ About Link */}
+              <Link 
+                href="/about" 
+                className={`text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105 flex items-center gap-1.5 ${
+                  pathname === '/about' ? 'text-primary' : ''
+                }`}
+              >
+                <Info className="w-4 h-4" />
+                About
+              </Link>
+
+              {/* ✅ Contact Us Link */}
+              <Link 
+                href="/contact" 
+                className={`text-gray-700 hover:text-primary transition-all duration-300 font-medium hover:scale-105 flex items-center gap-1.5 ${
+                  pathname === '/contact' ? 'text-primary' : ''
+                }`}
+              >
+                <Phone className="w-4 h-4" />
+                Contact
               </Link>
               
               {/* ✅ My Orders - Show if user is logged in OR guest has placed an order */}
@@ -2736,6 +2758,26 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Shop
+                </Link>
+
+                {/* ✅ About - Always visible */}
+                <Link 
+                  href="/about" 
+                  className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Info className="w-4 h-4" />
+                  About
+                </Link>
+
+                {/* ✅ Contact Us - Always visible */}
+                <Link 
+                  href="/contact" 
+                  className="px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-300 text-gray-700 font-medium flex items-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Phone className="w-4 h-4" />
+                  Contact Us
                 </Link>
 
                 {/* ✅ My Orders - Show if user is logged in OR guest has placed an order */}

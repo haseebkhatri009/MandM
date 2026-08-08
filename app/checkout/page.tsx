@@ -7694,11 +7694,7 @@ export default function CheckoutPage() {
         </div>
       </section>
 
-      <footer className="bg-secondary py-8 px-4 mt-12 border-t border-border">
-        <div className="max-w-7xl mx-auto text-center text-muted-foreground text-sm">
-          <p>&copy; 2026 M&M Scents. All rights reserved.</p>
-        </div>
-      </footer>
+
     </div>
   );
 }

@@ -5278,18 +5278,7 @@ export default function ProductDetailsPage() {
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        viewport={{ once: true }}
-        className="bg-gradient-to-t from-secondary to-background py-12 px-4 mt-8 border-t border-border relative z-10"
-      >
-        <div className="max-w-7xl mx-auto text-center text-muted-foreground text-sm">
-          <p>&copy; 2026 M&M Scents. All rights reserved.</p>
-        </div>
-      </motion.footer>
+
     </div>
   );
 }
