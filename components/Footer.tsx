@@ -1,47 +1,47 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { Mail, Phone, MapPin, Clock, Heart } from 'lucide-react';
-import { FaFacebook, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Mail, Phone, MapPin, Clock, Heart } from "lucide-react";
+import { FaFacebook, FaInstagram, FaWhatsapp } from "react-icons/fa";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
     {
-      name: 'Instagram',
+      name: "Instagram",
       icon: FaInstagram,
-      href: 'https://www.instagram.com/mandmscentsandglow?igsh=NXVleHFocXI2N2Mx',
-      color: 'hover:text-pink-500',
+      href: "https://www.instagram.com/mandmscentsandglow?igsh=NXVleHFocXI2N2Mx",
+      color: "hover:text-pink-500",
     },
     {
-      name: 'Facebook',
+      name: "Facebook",
       icon: FaFacebook,
-      href: 'https://www.facebook.com/share/1Ck2neszuH/',
-      color: 'hover:text-blue-600',
+      href: "https://www.facebook.com/share/1Ck2neszuH/",
+      color: "hover:text-blue-600",
     },
     {
-      name: 'WhatsApp',
+      name: "WhatsApp",
       icon: FaWhatsapp,
-      href: 'https://wa.me/923312885639',
-      color: 'hover:text-green-500',
+      href: "https://wa.me/923312885639",
+      color: "hover:text-green-500",
     },
   ];
 
   const quickLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Products', href: '/products' },
-    { name: 'About Us', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: "Home", href: "/" },
+    { name: "Products", href: "/products" },
+    { name: "Contact", href: "/contact" },
+    { name: "About Us", href: "/about" },
   ];
 
   const categories = [
-    { name: 'Perfumes' },
-    { name: 'Wax' },
-    { name: 'Facial Cream' },
-    { name: 'Body Lotion' },
-    { name: 'Deals' },
+    { name: "Perfumes" },
+    { name: "Wax" },
+    { name: "Facial Cream" },
+    { name: "Body Lotion" },
+    { name: "Deals" },
   ];
 
   return (
@@ -55,7 +55,6 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          
           {/* Brand Section */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -69,9 +68,10 @@ export default function Footer() {
               </h2>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Premium perfumes, luxurious wax collections, and skincare essentials crafted for elegance and quality.
+              Premium perfumes, luxurious wax collections, and skincare
+              essentials crafted for elegance and quality.
             </p>
-            
+
             {/* Social Icons */}
             <div className="flex items-center gap-3 pt-2">
               {socialLinks.map((social, index) => {
@@ -156,23 +156,38 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                <MapPin size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                <MapPin
+                  size={16}
+                  className="text-primary mt-0.5 flex-shrink-0"
+                />
                 <span>Pakistan</span>
               </li>
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                <Phone size={16} className="text-primary mt-0.5 flex-shrink-0" />
-                <a href="tel:+923001234567" className="hover:text-primary transition-colors">
+                <Phone
+                  size={16}
+                  className="text-primary mt-0.5 flex-shrink-0"
+                />
+                <a
+                  href="tel:+923001234567"
+                  className="hover:text-primary transition-colors"
+                >
                   +92 331 2885639
                 </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Mail size={16} className="text-primary mt-0.5 flex-shrink-0" />
-                <a href="mailto:mandmscents@gmail.com" className="hover:text-primary transition-colors">
+                <a
+                  href="mailto:mandmscents@gmail.com"
+                  className="hover:text-primary transition-colors"
+                >
                   mandscents@gmail.com
                 </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                <Clock size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                <Clock
+                  size={16}
+                  className="text-primary mt-0.5 flex-shrink-0"
+                />
                 <span>Mon-Sat: 9:00 AM - 9:00 PM</span>
               </li>
             </ul>
@@ -194,9 +209,7 @@ export default function Footer() {
           transition={{ delay: 0.6 }}
           className="text-center text-sm text-muted-foreground"
         >
-          <p>
-            &copy; {currentYear} M&M Scents. All rights reserved.
-          </p>
+          <p>&copy; {currentYear} M&M Scents. All rights reserved.</p>
         </motion.div>
       </div>
     </motion.footer>
